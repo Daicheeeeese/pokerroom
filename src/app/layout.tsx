@@ -7,8 +7,18 @@ import { Footer } from "@/components/layout/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PokerRoom - プライベートポーカールーム予約サイト",
-  description: "東京のプライベートポーカールームを簡単に検索・予約できるプラットフォーム",
+  title: {
+    default: 'ポーカールーム予約',
+    template: '%s | ポーカールーム予約',
+  },
+  description: "東京のポーカールームを簡単に検索・予約できるサービスです。",
+  keywords: ['ポーカー', 'ポーカールーム', '予約', '東京'],
+  openGraph: {
+    title: 'ポーカールーム予約',
+    description: '東京のポーカールームを簡単に検索・予約できるサービスです。',
+    type: 'website',
+    locale: 'ja_JP',
+  },
 };
 
 export default function RootLayout({

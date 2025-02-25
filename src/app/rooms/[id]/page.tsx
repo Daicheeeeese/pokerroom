@@ -41,11 +41,13 @@ const room = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     // TODO: 実際のルームデータを取得する
+    const id = params.id // paramsを使用
+    console.log(`Generating metadata for room ${id}`)
     return {
       title: `${room.name} | ポーカールーム予約`,
       description: room.description.trim(),
     }
-  } catch (error) {
+  } catch (_error) { // エラー変数の名前を_errorに変更
     return {
       title: 'ルームが見つかりません | ポーカールーム予約',
       description: 'お探しのルームは見つかりませんでした。',
@@ -162,7 +164,7 @@ export default async function RoomPage({ params }: Props) {
         </div>
       </div>
     )
-  } catch (error) {
+  } catch (_error) { // エラー変数の名前を_errorに変更
     return notFound()
   }
 } 
