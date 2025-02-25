@@ -31,6 +31,9 @@ const room = {
 }
 
 export default function RoomPage({ params }: { params: { id: string } }) {
+  // TODO: paramsのidを使用して実際のルームデータを取得する
+  console.log(`Room ID: ${params.id}`);
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー画像 */}
