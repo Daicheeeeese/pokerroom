@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { GoogleMap, useLoadScript, Libraries, Marker } from '@react-google-maps/api'
 
 type LocationMapProps = {
@@ -17,31 +17,35 @@ const mapContainerStyle = {
 const libraries: Libraries = ['places']
 
 export function LocationMap({ latitude, longitude, address }: LocationMapProps) {
+  const [mounted, setMounted] = useState(false)
+
+  // 基本的なマウント確認
   useEffect(() => {
-    // クライアントサイドでのデバッグ情報
-    console.log('Client-side debug info:')
-    console.log('Environment:', {
-      isDevelopment: process.env.NODE_ENV === 'development',
-      isProduction: process.env.NODE_ENV === 'production',
-      currentUrl: window.location.href
-    })
-
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
-    console.log('API Key debug:', {
-      exists: !!apiKey,
-      length: apiKey.length,
-      firstChar: apiKey ? apiKey[0] : 'none',
-      lastChar: apiKey ? apiKey[apiKey.length - 1] : 'none'
-    })
-
-    console.log('Location debug:', {
-      latitude,
-      longitude,
-      hasAddress: !!address
-    })
-  }, [latitude, longitude, address])
+    setMounted(true)
+    // 基本的なデバッグ情報
+    try {
+      alert('Component mounted. Debug info: ' + 
+        JSON.stringify({
+          env: process.env.NODE_ENV,
+          hasApiKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+          coords: { latitude, longitude }
+        }, null, 2)
+      )
+    } catch (error) {
+      alert('Debug error: ' + error)
+    }
+  }, [latitude, longitude])
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
+
+  // APIキーが存在しない場合の早期リターン
+  if (!apiKey) {
+    return (
+      <div className="h-[400px] bg-red-100 flex items-center justify-center">
+        <p className="text-red-600">Google Maps APIキーが設定されていません</p>
+      </div>
+    )
+  }
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
