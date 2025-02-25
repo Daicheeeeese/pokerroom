@@ -30,7 +30,14 @@ const room = {
   ],
 }
 
-export default function RoomPage({ params }: { params: { id: string } }) {
+type Props = {
+  params: {
+    id: string
+  }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export default async function RoomPage({ params, searchParams }: Props) {
   // TODO: paramsのidを使用して実際のルームデータを取得する
   console.log(`Room ID: ${params.id}`);
   
