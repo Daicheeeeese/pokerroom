@@ -17,8 +17,11 @@ const mapContainerStyle = {
 const libraries: Libraries = ['places']
 
 export function LocationMap({ latitude, longitude, address }: LocationMapProps) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
+  console.log('API Key exists:', !!apiKey) // デバッグ用（本番確認後に削除）
+
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+    googleMapsApiKey: apiKey,
     libraries,
   })
 
