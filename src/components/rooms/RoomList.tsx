@@ -39,7 +39,7 @@ const rooms: Room[] = [
     rating: 4.5,
     reviewCount: 32,
     facilities: ["tournament-chips", "food", "drink", "wifi"],
-    imageUrl: "https://placehold.co/600x400",
+    imageUrl: "/images/rooms/room-sample-01.jpg",
     availability: {
       "2024-02-26": "available",
       "2024-02-27": "few",
@@ -67,7 +67,7 @@ const rooms: Room[] = [
     rating: 4.2,
     reviewCount: 28,
     facilities: ["tournament-chips", "cash-chips", "timer", "food", "drink"],
-    imageUrl: "https://placehold.co/600x400",
+    imageUrl: "/images/rooms/room-sample-02.jpg",
     availability: {
       "2024-02-26": "few",
       "2024-02-27": "available",

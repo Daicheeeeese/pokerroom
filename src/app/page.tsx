@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -69,15 +70,26 @@ export default function Home() {
             人気のエリア
           </h2>
           <div className="grid md:grid-cols-4 gap-6">
-            {["渋谷", "新宿", "池袋", "銀座"].map((area) => (
+            {[
+              { name: "渋谷", image: "/images/areas/shibuya.jpg" },
+              { name: "新宿", image: "/images/areas/shinjuku.jpg" },
+              { name: "池袋", image: "/images/areas/ikebukuro.jpg" },
+              { name: "銀座", image: "/images/areas/ginza.jpg" },
+            ].map((area) => (
               <Link
-                key={area}
-                href={`/rooms/search?area=${area}`}
+                key={area.name}
+                href={`/rooms/search?area=${area.name}`}
                 className="relative h-40 rounded-lg overflow-hidden group"
               >
+                <Image
+                  src={area.image}
+                  alt={`${area.name}エリア`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">{area}</span>
+                  <span className="text-white text-xl font-bold">{area.name}</span>
                 </div>
               </Link>
             ))}
