@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { GoogleMap, useLoadScript, Libraries, Marker } from '@react-google-maps/api'
 
 type LocationMapProps = {
