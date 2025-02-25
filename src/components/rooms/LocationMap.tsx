@@ -18,7 +18,10 @@ const libraries: Libraries = ['places']
 
 export function LocationMap({ latitude, longitude, address }: LocationMapProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
-  console.log('API Key exists:', !!apiKey) // デバッグ用（本番確認後に削除）
+  console.log('API Key exists:', !!apiKey)
+  console.log('API Key length:', apiKey.length)
+  console.log('Latitude:', latitude)
+  console.log('Longitude:', longitude)
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
@@ -44,7 +47,7 @@ export function LocationMap({ latitude, longitude, address }: LocationMapProps) 
   )
 
   if (loadError) {
-    console.error('Map load error:', loadError)
+    console.error('Detailed Map load error:', loadError)
     return (
       <div className="h-[400px] bg-gray-100 flex items-center justify-center">
         <p className="text-red-600">地図の読み込みに失敗しました</p>
