@@ -9,52 +9,37 @@ type Props = {
   }
 }
 
-// 仮のデータ
+// 仮のルームデータ
 const room = {
-  id: 1,
+  id: "1",
   name: "渋谷ポーカールーム",
-  area: "渋谷",
+  description: "渋谷駅から徒歩5分の好立地。トーナメントやキャッシュゲームに対応した本格的なポーカールームです。初心者から上級者まで楽しめる空間をご用意しています。",
   address: "東京都渋谷区渋谷1-1-1",
-  latitude: 35.658034,
-  longitude: 139.701636,
   price: 3000,
   capacity: 8,
   rating: 4.5,
   reviewCount: 32,
-  facilities: ["tournament-chips", "food", "drink", "wifi"],
-  description: `
-    渋谷駅から徒歩5分の好立地にあるポーカールームです。
-    トーナメントチップやタイマーなど、本格的な設備を完備しています。
-    初心者から上級者まで、幅広いプレイヤーにご利用いただけます。
-  `,
-  images: [
-    "https://placehold.co/800x600",
-    "https://placehold.co/800x600",
-    "https://placehold.co/800x600",
-    "https://placehold.co/800x600",
-  ],
+  latitude: 35.658034,
+  longitude: 139.701636,
   amenities: [
-    { name: "トーナメントチップ", description: "本格的なチップセットを完備" },
-    { name: "Wi-Fi", description: "高速インターネット完備" },
+    { name: "トーナメントチップ", description: "本格的なトーナメント用チップセット完備" },
+    { name: "タイマー", description: "プロ仕様のトーナメントタイマー" },
     { name: "ドリンク", description: "ソフトドリンク飲み放題" },
-    { name: "フード", description: "軽食メニューあり（有料）" },
+    { name: "Wi-Fi", description: "高速Wi-Fi完備" },
+  ],
+  images: [
+    "/images/rooms/room-sample-01.jpg",
+    "/images/rooms/room-sample-02.jpg",
+    "/images/rooms/room-sample-01.jpg",
+    "/images/rooms/room-sample-02.jpg",
   ],
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  try {
-    // TODO: 実際のルームデータを取得する
-    const id = params.id
-    console.log(`Generating metadata for room ${id}`)
-    return {
-      title: `${room.name} | ポーカールーム予約`,
-      description: room.description.trim(),
-    }
-  } catch (_error) {
-    return {
-      title: 'ルームが見つかりません | ポーカールーム予約',
-      description: 'お探しのルームは見つかりませんでした。',
-    }
+  // TODO: 実際のルームデータを取得する
+  return {
+    title: `${room.name} | PokerRoom`,
+    description: room.description,
   }
 }
 

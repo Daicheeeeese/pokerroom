@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'maps.gstatic.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
     ],
   },
   // パフォーマンスとセキュリティの設定
