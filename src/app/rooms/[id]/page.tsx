@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { LocationMap } from '@/components/rooms/LocationMap'
 
 type Props = {
   params: {
@@ -14,6 +15,8 @@ const room = {
   name: "渋谷ポーカールーム",
   area: "渋谷",
   address: "東京都渋谷区渋谷1-1-1",
+  latitude: 35.658034,
+  longitude: 139.701636,
   price: 3000,
   capacity: 8,
   rating: 4.5,
@@ -41,13 +44,13 @@ const room = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     // TODO: 実際のルームデータを取得する
-    const id = params.id // paramsを使用
+    const id = params.id
     console.log(`Generating metadata for room ${id}`)
     return {
       title: `${room.name} | ポーカールーム予約`,
       description: room.description.trim(),
     }
-  } catch (_error) { // エラー変数の名前を_errorに変更
+  } catch (_error) {
     return {
       title: 'ルームが見つかりません | ポーカールーム予約',
       description: 'お探しのルームは見つかりませんでした。',
@@ -129,6 +132,15 @@ export default async function RoomPage({ params }: Props) {
                   ))}
                 </div>
               </section>
+
+              {/* 地図 */}
+              <section className="bg-white p-6 rounded-lg shadow-sm mb-8">
+                <LocationMap
+                  latitude={room.latitude}
+                  longitude={room.longitude}
+                  address={room.address}
+                />
+              </section>
             </div>
 
             {/* サイドバー */}
@@ -164,7 +176,7 @@ export default async function RoomPage({ params }: Props) {
         </div>
       </div>
     )
-  } catch (_error) { // エラー変数の名前を_errorに変更
+  } catch (_error) {
     return notFound()
   }
 } 
