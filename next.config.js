@@ -1,19 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['placehold.co', 'maps.googleapis.com', 'maps.gstatic.com'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: 'maps.googleapis.com',
       },
       {
         protocol: 'https',
-        hostname: '*.googleapis.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.gstatic.com',
+        hostname: 'maps.gstatic.com',
       },
     ],
   },
