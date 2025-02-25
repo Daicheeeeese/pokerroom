@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { GoogleMap, useLoadScript, Libraries, Marker } from '@react-google-maps/api'
 
 type LocationMapProps = {
@@ -17,6 +17,7 @@ const mapContainerStyle = {
 const libraries: Libraries = ['places']
 
 export function LocationMap({ latitude, longitude, address }: LocationMapProps) {
+  const [debugInfo, setDebugInfo] = useState<string>('')
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
   
   const { isLoaded, loadError } = useLoadScript({
@@ -44,17 +45,16 @@ export function LocationMap({ latitude, longitude, address }: LocationMapProps) 
 
   // デバッグ情報
   useEffect(() => {
-    try {
-      alert('Component mounted. Debug info: ' + 
-        JSON.stringify({
-          env: process.env.NODE_ENV,
-          hasApiKey: !!apiKey,
-          coords: { latitude, longitude }
-        }, null, 2)
-      )
-    } catch (error) {
-      alert('Debug error: ' + error)
+    const info = {
+      env: process.env.NODE_ENV,
+      hasApiKey: !!apiKey,
+      apiKeyLength: apiKey.length,
+      coords: { latitude, longitude },
+      url: typeof window !== 'undefined' ? window.location.href : 'no window'
     }
+    
+    console.log('Debug info:', info)
+    setDebugInfo(JSON.stringify(info, null, 2))
   }, [latitude, longitude, apiKey])
 
   // エラーハンドリング
@@ -71,16 +71,23 @@ export function LocationMap({ latitude, longitude, address }: LocationMapProps) 
 
   if (!apiKey) {
     return (
-      <div className="h-[400px] bg-red-100 flex items-center justify-center">
-        <p className="text-red-600">Google Maps APIキーが設定されていません</p>
+      <div className="h-[400px] bg-red-100 flex flex-col items-center justify-center p-4">
+        <p className="text-red-600 mb-4">Google Maps APIキーが設定されていません</p>
+        <pre className="text-xs bg-white p-4 rounded-lg overflow-auto max-w-full">
+          {debugInfo}
+        </pre>
       </div>
     )
   }
 
   if (loadError) {
     return (
-      <div className="h-[400px] bg-gray-100 flex items-center justify-center">
-        <p className="text-red-600">地図の読み込みに失敗しました</p>
+      <div className="h-[400px] bg-gray-100 flex flex-col items-center justify-center p-4">
+        <p className="text-red-600 mb-4">地図の読み込みに失敗しました</p>
+        <pre className="text-xs bg-white p-4 rounded-lg overflow-auto max-w-full">
+          {debugInfo}
+          {'\n\nError details:\n' + JSON.stringify(loadError, null, 2)}
+        </pre>
       </div>
     )
   }
