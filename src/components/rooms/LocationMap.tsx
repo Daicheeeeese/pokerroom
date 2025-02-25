@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { GoogleMap, useLoadScript, Libraries, Marker } from '@react-google-maps/api'
 
 type LocationMapProps = {
@@ -17,30 +17,47 @@ const mapContainerStyle = {
 const libraries: Libraries = ['places']
 
 export function LocationMap({ latitude, longitude, address }: LocationMapProps) {
-  // 環境変数のデバッグ
-  console.log('Environment:', {
-    isDevelopment: process.env.NODE_ENV === 'development',
-    isProduction: process.env.NODE_ENV === 'production'
-  })
+  useEffect(() => {
+    // クライアントサイドでのデバッグ情報
+    console.log('Client-side debug info:')
+    console.log('Environment:', {
+      isDevelopment: process.env.NODE_ENV === 'development',
+      isProduction: process.env.NODE_ENV === 'production',
+      currentUrl: window.location.href
+    })
+
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
+    console.log('API Key debug:', {
+      exists: !!apiKey,
+      length: apiKey.length,
+      firstChar: apiKey ? apiKey[0] : 'none',
+      lastChar: apiKey ? apiKey[apiKey.length - 1] : 'none'
+    })
+
+    console.log('Location debug:', {
+      latitude,
+      longitude,
+      hasAddress: !!address
+    })
+  }, [latitude, longitude, address])
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
-  console.log('API Key debug:', {
-    exists: !!apiKey,
-    length: apiKey.length,
-    firstChar: apiKey ? apiKey[0] : 'none',
-    lastChar: apiKey ? apiKey[apiKey.length - 1] : 'none'
-  })
-
-  console.log('Location debug:', {
-    latitude,
-    longitude,
-    hasAddress: !!address
-  })
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
     libraries,
   })
+
+  useEffect(() => {
+    if (loadError) {
+      console.error('Detailed load error:', {
+        error: loadError,
+        message: loadError.message,
+        type: loadError.name,
+        stack: loadError.stack
+      })
+    }
+  }, [loadError])
 
   const center = useMemo(
     () => ({ lat: latitude, lng: longitude }),
