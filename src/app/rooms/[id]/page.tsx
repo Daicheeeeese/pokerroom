@@ -2,6 +2,8 @@ import Image from "next/image"
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LocationMap } from '@/components/rooms/LocationMap'
+import { AvailabilityCalendar } from '@/components/rooms/AvailabilityCalendar'
+import { format, addDays } from "date-fns"
 
 type Props = {
   params: {
@@ -33,6 +35,13 @@ const room = {
     "/images/rooms/room-sample-01.jpg",
     "/images/rooms/room-sample-02.jpg",
   ],
+  availability: Object.fromEntries(
+    Array.from({ length: 14 }, (_, i) => {
+      const date = addDays(new Date(), i);
+      const status = ["available", "few", "unavailable"][Math.floor(Math.random() * 3)] as "available" | "few" | "unavailable";
+      return [format(date, "yyyy-MM-dd"), status];
+    })
+  ),
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -80,6 +89,9 @@ export default async function RoomPage({ params }: Props) {
                 <h2 className="text-2xl font-bold mb-4">基本情報</h2>
                 <p className="text-gray-600 whitespace-pre-line">{room.description}</p>
               </section>
+
+              {/* 予約可能状況 */}
+              <AvailabilityCalendar availability={room.availability} />
 
               {/* 設備・アメニティ */}
               <section className="bg-white p-6 rounded-lg shadow-sm mb-8">
