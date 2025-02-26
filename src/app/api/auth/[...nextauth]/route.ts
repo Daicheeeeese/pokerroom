@@ -1,11 +1,17 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { compare } from "bcryptjs"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import prisma from "@/lib/prisma"
+import { compare } from "bcryptjs"
+
+// テストユーザー情報
+const TEST_USER = {
+  id: "1",
+  name: "テストユーザー",
+  email: "test@example.com",
+  // パスワード: "test1234" をハッシュ化した値
+  password: "$2a$12$9VVeQKS9Pw9D7NQfGAYwPeQH5oFHb7omXRKVHzJX.J4GUlPYr1Rey"
+}
 
 const handler = NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -18,27 +24,21 @@ const handler = NextAuth({
           throw new Error("メールアドレスとパスワードを入力してください")
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        })
-
-        if (!user || !user.password) {
+        // テストユーザーの認証
+        if (credentials.email !== TEST_USER.email) {
           throw new Error("メールアドレスまたはパスワードが正しくありません")
         }
 
-        const isValid = await compare(credentials.password, user.password)
+        const isValid = await compare(credentials.password, TEST_USER.password)
 
         if (!isValid) {
           throw new Error("メールアドレスまたはパスワードが正しくありません")
         }
 
         return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
+          id: TEST_USER.id,
+          email: TEST_USER.email,
+          name: TEST_USER.name,
         }
       },
     }),
