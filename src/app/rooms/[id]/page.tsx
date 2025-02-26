@@ -52,10 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function RoomPage({ params }: Props) {
+export default async function RoomPage({ params: _params }: Props) {
   try {
     // TODO: paramsのidを使用して実際のルームデータを取得する
-    console.log(`Room ID: ${params.id}`);
+    console.log(`Room ID: ${_params.id}`);
     
     if (!room) {
       notFound()
