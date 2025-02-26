@@ -29,7 +29,7 @@ type AvailabilityIcon = {
 }
 
 // 仮のデータ
-const rooms: Room[] = [
+const initialRooms: Room[] = [
   {
     id: 1,
     name: "渋谷ポーカールーム",
@@ -97,7 +97,7 @@ const availabilityIcons: Record<AvailabilityStatus, AvailabilityIcon> = {
 
 export function RoomList() {
   const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i))
-  const [rooms, setRooms] = useState<Room[]>([])
+  const [rooms, setRooms] = useState<Room[]>(initialRooms)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
