@@ -30,10 +30,10 @@ const room = {
     { name: "Wi-Fi", description: "高速Wi-Fi完備" },
   ],
   images: [
-    "/images/rooms/room-sample-01.jpg",
-    "/images/rooms/room-sample-02.jpg",
-    "/images/rooms/room-sample-01.jpg",
-    "/images/rooms/room-sample-02.jpg",
+    { src: "/images/rooms/room-sample-01.jpg", alt: "メインルーム" },
+    { src: "/images/rooms/room-sample-02.jpg", alt: "サブルーム" },
+    { src: "/images/rooms/room-sample-01.jpg", alt: "トーナメントエリア" },
+    { src: "/images/rooms/room-sample-02.jpg", alt: "休憩スペース" },
   ],
   availability: Object.fromEntries(
     Array.from({ length: 14 }, (_, i) => {
@@ -66,9 +66,11 @@ export default async function RoomPage({ params: _params }: Props) {
         {/* ヘッダー画像 */}
         <div className="relative h-[400px] bg-gray-900">
           <Image
-            src={room.images[0]}
-            alt={room.name}
+            src={room.images[0].src}
+            alt={room.images[0].alt}
             fill
+            priority
+            sizes="100vw"
             className="object-cover opacity-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -120,9 +122,10 @@ export default async function RoomPage({ params: _params }: Props) {
                   {room.images.map((image, index) => (
                     <div key={index} className="relative aspect-[4/3]">
                       <Image
-                        src={image}
-                        alt={`${room.name}の写真 ${index + 1}`}
+                        src={image.src}
+                        alt={image.alt}
                         fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
                         className="object-cover rounded-lg"
                       />
                     </div>

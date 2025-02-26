@@ -15,6 +15,9 @@ const nextConfig = {
         hostname: 'placehold.co',
       },
     ],
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
   },
   // パフォーマンスとセキュリティの設定
   poweredByHeader: false,
