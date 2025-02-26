@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { format, addDays } from "date-fns"
 import { ja } from "date-fns/locale"
+import { useState, useEffect } from "react"
 
 type AvailabilityStatus = "available" | "few" | "unavailable"
 
@@ -41,20 +42,20 @@ const rooms: Room[] = [
     facilities: ["tournament-chips", "food", "drink", "wifi"],
     imageUrl: "/images/rooms/room-sample-01.jpg",
     availability: {
-      "2024-02-26": "available",
-      "2024-02-27": "few",
-      "2024-02-28": "unavailable",
-      "2024-02-29": "available",
-      "2024-03-01": "few",
-      "2024-03-02": "unavailable",
-      "2024-03-03": "available",
-      "2024-03-04": "available",
-      "2024-03-05": "few",
-      "2024-03-06": "unavailable",
-      "2024-03-07": "available",
-      "2024-03-08": "few",
-      "2024-03-09": "available",
-      "2024-03-10": "available",
+      "2024-03-19": "available",
+      "2024-03-20": "few",
+      "2024-03-21": "unavailable",
+      "2024-03-22": "available",
+      "2024-03-23": "few",
+      "2024-03-24": "unavailable",
+      "2024-03-25": "available",
+      "2024-03-26": "available",
+      "2024-03-27": "few",
+      "2024-03-28": "unavailable",
+      "2024-03-29": "available",
+      "2024-03-30": "few",
+      "2024-03-31": "available",
+      "2024-04-01": "available",
     },
   },
   {
@@ -69,20 +70,20 @@ const rooms: Room[] = [
     facilities: ["tournament-chips", "cash-chips", "timer", "food", "drink"],
     imageUrl: "/images/rooms/room-sample-02.jpg",
     availability: {
-      "2024-02-26": "few",
-      "2024-02-27": "available",
-      "2024-02-28": "available",
-      "2024-02-29": "unavailable",
-      "2024-03-01": "available",
-      "2024-03-02": "few",
-      "2024-03-03": "unavailable",
-      "2024-03-04": "available",
-      "2024-03-05": "available",
-      "2024-03-06": "few",
-      "2024-03-07": "unavailable",
-      "2024-03-08": "available",
-      "2024-03-09": "few",
-      "2024-03-10": "available",
+      "2024-03-19": "few",
+      "2024-03-20": "available",
+      "2024-03-21": "available",
+      "2024-03-22": "unavailable",
+      "2024-03-23": "available",
+      "2024-03-24": "few",
+      "2024-03-25": "unavailable",
+      "2024-03-26": "available",
+      "2024-03-27": "available",
+      "2024-03-28": "few",
+      "2024-03-29": "unavailable",
+      "2024-03-30": "available",
+      "2024-03-31": "few",
+      "2024-04-01": "available",
     },
   },
   // 他のルームデータ...
@@ -96,6 +97,31 @@ const availabilityIcons: Record<AvailabilityStatus, AvailabilityIcon> = {
 
 export function RoomList() {
   const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i))
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch('/api/rooms')
+        if (!response.ok) {
+          throw new Error('Failed to fetch rooms')
+        }
+        const data = await response.json()
+        setRooms(data)
+      } catch (error) {
+        console.error('Error fetching rooms:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRooms()
+  }, [])
+
+  if (loading) {
+    return <div className="text-center py-8">読み込み中...</div>
+  }
 
   return (
     <div className="space-y-6">
