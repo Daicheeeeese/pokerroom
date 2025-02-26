@@ -44,7 +44,7 @@ const room = {
   ),
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: _params }: Props): Promise<Metadata> {
   // TODO: 実際のルームデータを取得する
   return {
     title: `${room.name} | PokerRoom`,
