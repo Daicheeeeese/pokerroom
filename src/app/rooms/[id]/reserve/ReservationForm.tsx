@@ -7,10 +7,10 @@ import { ja } from "date-fns/locale"
 import Image from "next/image"
 import { Calendar } from "@/components/Calendar"
 import { useSession } from "next-auth/react"
-import { Room } from "@prisma/client"
+import { room } from "@prisma/client"
 
 type Props = {
-  room: Room
+  room: room
 }
 
 export function ReservationForm({ room }: Props) {
