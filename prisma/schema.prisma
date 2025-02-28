@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model room {
+model Room {
   id          String        @id @default(cuid())
   name        String
   description String
@@ -25,25 +25,25 @@ model room {
   longitude   Float
   imageUrl    String
   facilities  String[]
-  reviews     review[]
-  reservations reservation[]
+  reviews     Review[]
+  reservations Reservation[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
-model review {
+model Review {
   id        String   @id @default(cuid())
   rating    Int
   comment   String
-  room      room     @relation(fields: [roomId], references: [id])
+  room      Room     @relation(fields: [roomId], references: [id])
   roomId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model reservation {
+model Reservation {
   id          String   @id @default(cuid())
-  room        room     @relation(fields: [roomId], references: [id])
+  room        Room     @relation(fields: [roomId], references: [id])
   roomId      String
   userId      String
   date        DateTime
