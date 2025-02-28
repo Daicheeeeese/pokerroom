@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Room } from "@prisma/client"
-import { DatePicker } from "@/components/DatePicker"
-import { TimePicker } from "@/components/TimePicker"
+import DatePicker from "@/components/DatePicker"
+import TimePicker from "@/components/TimePicker"
 
 type Props = {
   room: Room

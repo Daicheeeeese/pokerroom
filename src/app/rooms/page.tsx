@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import Image from "next/image"
-import { Room, Review } from "@prisma/client"
 
 export default async function RoomsPage() {
   console.log("Fetching rooms") // デバッグ用ログ
