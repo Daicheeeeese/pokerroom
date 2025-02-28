@@ -1,38 +1,39 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma"
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
-        email: { label: "メールアドレス", type: "email" },
-        password: { label: "パスワード", type: "password" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error("メールアドレスとパスワードを入力してください")
-          }
-
-          // テストユーザーの認証（開発用の簡易的な実装）
-          if (
-            credentials.email === "test@example.com" &&
-            credentials.password === "test1234"
-          ) {
-            return {
-              id: "1",
-              email: "test@example.com",
-              name: "テストユーザー",
-            }
-          }
-
-          throw new Error("メールアドレスまたはパスワードが正しくありません")
-        } catch (error) {
-          console.error("認証エラー:", error)
+        if (!credentials?.email || !credentials?.password) {
           return null
         }
+
+        // テストユーザーの認証
+        const testUser = {
+          id: "1",
+          name: "Test User",
+          email: "test@example.com",
+          password: "password123",
+        }
+
+        if (
+          credentials.email === testUser.email &&
+          credentials.password === testUser.password
+        ) {
+          return {
+            id: testUser.id,
+            name: testUser.name,
+            email: testUser.email,
+          }
+        }
+
+        return null
       },
     }),
   ],

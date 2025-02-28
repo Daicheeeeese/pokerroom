@@ -6,6 +6,7 @@ async function main() {
   // ルームデータの作成
   const room1 = await prisma.room.create({
     data: {
+      id: "1",
       name: "渋谷ポーカールーム",
       description: "渋谷駅から徒歩5分の好立地。トーナメントやキャッシュゲームに対応した本格的なポーカールームです。初心者から上級者まで楽しめる空間をご用意しています。",
       address: "東京都渋谷区渋谷1-1-1",
@@ -21,6 +22,7 @@ async function main() {
 
   const room2 = await prisma.room.create({
     data: {
+      id: "2",
       name: "新宿ポーカールーム",
       description: "新宿駅東口から徒歩3分。24時間営業の本格ポーカールーム。プロ仕様のテーブルとチップを完備。上質な空間で思う存分ポーカーをお楽しみください。",
       address: "東京都新宿区新宿3-1-1",

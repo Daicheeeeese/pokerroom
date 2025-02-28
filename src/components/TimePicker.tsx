@@ -12,7 +12,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) =>
   i.toString().padStart(2, "0") + ":00"
 )
 
-export const TimePicker = forwardRef<HTMLSelectElement, Props>(
+const TimePicker = forwardRef<HTMLSelectElement, Props>(
   ({ value, onChange, className }, ref) => {
     return (
       <select
@@ -30,4 +30,8 @@ export const TimePicker = forwardRef<HTMLSelectElement, Props>(
       </select>
     )
   }
-) 
+)
+
+TimePicker.displayName = "TimePicker"
+
+export default TimePicker 

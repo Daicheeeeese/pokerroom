@@ -12,7 +12,7 @@ type Props = {
   className?: string
 }
 
-export const DatePicker = forwardRef<ReactDatePicker, Props>(
+const DatePicker = forwardRef<ReactDatePicker, Props>(
   ({ selected, onChange, minDate, placeholderText, className }, ref) => {
     return (
       <ReactDatePicker
@@ -27,4 +27,8 @@ export const DatePicker = forwardRef<ReactDatePicker, Props>(
       />
     )
   }
-) 
+)
+
+DatePicker.displayName = "DatePicker"
+
+export default DatePicker 

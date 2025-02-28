@@ -3,10 +3,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Room, Review } from "@prisma/client"
 
-type RoomWithReviews = Room & {
-  reviews: Review[]
-}
-
 export default async function RoomsPage() {
   console.log("Fetching rooms") // デバッグ用ログ
 
