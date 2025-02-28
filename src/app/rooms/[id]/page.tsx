@@ -1,10 +1,12 @@
 import Image from "next/image"
+import Link from "next/link"
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LocationMap } from '@/components/rooms/LocationMap'
 import { AvailabilityCalendar } from '@/components/rooms/AvailabilityCalendar'
 import { format, addDays } from "date-fns"
 import { ReviewSection } from "@/components/rooms/ReviewSection"
+import { prisma } from "@/lib/prisma"
 
 type Props = {
   params: {
@@ -52,63 +54,87 @@ const reviews = [
   },
 ]
 
-// 仮のルームデータ
-const room = {
-  id: "1",
-  name: "渋谷ポーカールーム",
-  description: "渋谷駅から徒歩5分の好立地。トーナメントやキャッシュゲームに対応した本格的なポーカールームです。初心者から上級者まで楽しめる空間をご用意しています。",
-  address: "東京都渋谷区渋谷1-1-1",
-  price: 3000,
-  capacity: 8,
-  rating: 4.7,
-  reviewCount: 32,
-  latitude: 35.658034,
-  longitude: 139.701636,
-  amenities: [
-    { name: "トーナメントチップ", description: "本格的なトーナメント用チップセット完備" },
-    { name: "タイマー", description: "プロ仕様のトーナメントタイマー" },
-    { name: "ドリンク", description: "ソフトドリンク飲み放題" },
-    { name: "Wi-Fi", description: "高速Wi-Fi完備" },
-  ],
-  images: [
-    { src: "/images/rooms/room-sample-01.jpg", alt: "メインルーム" },
-    { src: "/images/rooms/room-sample-02.jpg", alt: "サブルーム" },
-    { src: "/images/rooms/room-sample-01.jpg", alt: "トーナメントエリア" },
-    { src: "/images/rooms/room-sample-02.jpg", alt: "休憩スペース" },
-  ],
-  availability: Object.fromEntries(
-    Array.from({ length: 14 }, (_, i) => {
-      const date = addDays(new Date(), i);
-      const status = ["available", "few", "unavailable"][Math.floor(Math.random() * 3)] as "available" | "few" | "unavailable";
-      return [format(date, "yyyy-MM-dd"), status];
-    })
-  ),
-}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const room = await prisma.room.findUnique({
+    where: {
+      id: params.id,
+    },
+  })
 
-export async function generateMetadata({ params: _params }: Props): Promise<Metadata> {
-  // TODO: 実際のルームデータを取得する
+  if (!room) {
+    return {
+      title: "ルームが見つかりません | PokerRoom",
+      description: "お探しのルームは存在しないか、削除された可能性があります。",
+    }
+  }
+
   return {
     title: `${room.name} | PokerRoom`,
     description: room.description,
   }
 }
 
-export default async function RoomPage({ params: _params }: Props) {
+export default async function RoomPage({ params }: Props) {
   try {
-    // TODO: paramsのidを使用して実際のルームデータを取得する
-    console.log(`Room ID: ${_params.id}`);
-    
+    console.log("Fetching room with ID:", params.id) // デバッグ用ログ
+
+    const room = await prisma.room.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        reviews: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    })
+
+    console.log("Found room:", room) // デバッグ用ログ
+
     if (!room) {
-      notFound()
+      console.log("Room not found") // デバッグ用ログ
+      return notFound()
     }
+
+    // 予約可能状況の生成（仮のデータ）
+    const availability = Object.fromEntries(
+      Array.from({ length: 14 }, (_, i) => {
+        const date = addDays(new Date(), i)
+        const status = ["available", "few", "unavailable"][
+          Math.floor(Math.random() * 3)
+        ] as "available" | "few" | "unavailable"
+        return [format(date, "yyyy-MM-dd"), status]
+      })
+    )
+
+    // アメニティデータの生成
+    const amenities = room.facilities.map((facility) => ({
+      name: facility,
+      description: `${facility}を完備`,
+    }))
+
+    // 画像データの生成
+    const images = [
+      { src: room.imageUrl, alt: "メインルーム" },
+      { src: "https://images.unsplash.com/photo-1596451190630-186aff535bf2?q=80&w=2574&auto=format&fit=crop", alt: "サブルーム" },
+      { src: "https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?q=80&w=2574&auto=format&fit=crop", alt: "トーナメントエリア" },
+      { src: "https://images.unsplash.com/photo-1505816014357-96b5ff457e9a?q=80&w=2574&auto=format&fit=crop", alt: "休憩スペース" },
+    ]
+
+    // 評価の平均を計算
+    const rating = room.reviews.length > 0
+      ? room.reviews.reduce((acc, review) => acc + review.rating, 0) / room.reviews.length
+      : 0
 
     return (
       <div className="min-h-screen bg-gray-50">
         {/* ヘッダー画像 */}
         <div className="relative h-[400px] bg-gray-900">
           <Image
-            src={room.images[0].src}
-            alt={room.images[0].alt}
+            src={room.imageUrl}
+            alt={room.name}
             fill
             priority
             sizes="100vw"
@@ -134,13 +160,13 @@ export default async function RoomPage({ params: _params }: Props) {
               </section>
 
               {/* 予約可能状況 */}
-              <AvailabilityCalendar availability={room.availability} />
+              <AvailabilityCalendar availability={availability} />
 
               {/* 設備・アメニティ */}
               <section className="bg-white p-6 rounded-lg shadow-sm mb-8">
                 <h2 className="text-2xl font-bold mb-4">設備・アメニティ</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {room.amenities.map((amenity) => (
+                  {amenities.map((amenity) => (
                     <div
                       key={amenity.name}
                       className="flex items-start p-4 border rounded-lg"
@@ -160,7 +186,7 @@ export default async function RoomPage({ params: _params }: Props) {
               <section className="bg-white p-6 rounded-lg shadow-sm mb-8">
                 <h2 className="text-2xl font-bold mb-4">写真</h2>
                 <div className="grid grid-cols-2 gap-4">
-                  {room.images.map((image, index) => (
+                  {images.map((image, index) => (
                     <div key={index} className="relative aspect-[4/3]">
                       <Image
                         src={image.src}
@@ -186,8 +212,8 @@ export default async function RoomPage({ params: _params }: Props) {
               {/* 口コミセクション */}
               <ReviewSection
                 reviews={reviews}
-                averageRating={room.rating}
-                totalReviews={room.reviewCount}
+                averageRating={rating}
+                totalReviews={room.reviews.length}
               />
             </div>
 
@@ -205,15 +231,17 @@ export default async function RoomPage({ params: _params }: Props) {
                 <div className="flex items-center justify-center mb-6">
                   <div className="flex items-center">
                     <span className="text-yellow-400 text-xl">★</span>
-                    <span className="ml-1 font-semibold">{room.rating}</span>
+                    <span className="ml-1 font-semibold">{rating.toFixed(1)}</span>
                   </div>
                   <span className="mx-2 text-gray-300">|</span>
-                  <span className="text-gray-600">{room.reviewCount}件の評価</span>
+                  <span className="text-gray-600">{room.reviews.length}件の評価</span>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors mb-4">
-                  予約する
-                </button>
+                <Link href={`/rooms/${room.id}/reserve`} className="block">
+                  <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors mb-4">
+                    予約する
+                  </button>
+                </Link>
 
                 <button className="w-full border border-blue-600 text-blue-600 py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors">
                   お気に入りに追加
@@ -224,7 +252,8 @@ export default async function RoomPage({ params: _params }: Props) {
         </div>
       </div>
     )
-  } catch (_error) {
+  } catch (error) {
+    console.error(error)
     return notFound()
   }
 } 

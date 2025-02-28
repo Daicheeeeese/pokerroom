@@ -51,7 +51,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   reviews       Review[]
-  bookings      Booking[]
+  reservations  Reservation[]
 }
 
 model VerificationToken {
@@ -66,7 +66,8 @@ model Review {
   id        String   @id @default(cuid())
   rating    Float
   comment   String
-  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   userId    String
   roomId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -86,17 +87,19 @@ model Room {
   imageUrl    String
   facilities  String[]
   reviews     Review[]
-  bookings    Booking[]
+  reservations Reservation[]
 }
 
-model Booking {
-  id        String   @id @default(cuid())
-  date      DateTime
-  startTime DateTime
-  endTime   DateTime
-  status    String   @default("pending")
-  userId    String
-  roomId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+model Reservation {
+  id          String   @id @default(cuid())
+  date        DateTime
+  startTime   String
+  endTime     String
+  totalPrice  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  roomId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }

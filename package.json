@@ -4,15 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:seed": "ts-node prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^6.4.1",
     "@react-google-maps/api": "^2.20.6",
     "@types/leaflet": "^1.9.16",
+    "@types/react-datepicker": "^6.2.0",
     "bcryptjs": "^3.0.2",
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",
@@ -20,6 +25,7 @@
     "next-auth": "^4.24.11",
     "prisma": "^6.4.1",
     "react": "^18.2.0",
+    "react-datepicker": "^8.1.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1"
   },
@@ -38,6 +44,7 @@
     "postcss": "^8",
     "rimraf": "^5.0.5",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   },
   "engines": {
