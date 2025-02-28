@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { NextAuthProvider } from "@/providers/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,13 +28,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
+    <html lang="ja" className={inter.className}>
       <body className={inter.className}>
-        <Header />
-        <main className="min-h-screen bg-white pt-16">
-          {children}
-        </main>
-        <Footer />
+        <div className="flex flex-col min-h-screen">
+          <NextAuthProvider>
+            <Header />
+            <main className="flex-grow bg-white pt-16">
+              {children}
+            </main>
+            <Footer />
+          </NextAuthProvider>
+        </div>
       </body>
     </html>
   );

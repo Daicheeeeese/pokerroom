@@ -23,15 +23,18 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: "/"
       })
 
-      if (result?.error) {
-        setError(result.error)
-      } else {
-        router.push("/")
-        router.refresh()
+      if (!result?.ok) {
+        setError(result?.error || "ログインに失敗しました")
+        return
       }
+
+      router.push("/")
+      router.refresh()
     } catch (error) {
+      console.error("ログインエラー:", error)
       setError("ログインに失敗しました")
     } finally {
       setLoading(false)
