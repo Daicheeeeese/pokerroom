@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { format, addDays } from 'date-fns'
+import { prisma } from '@/lib/prisma'
 
 // 仮のデータを生成する関数
 function generateAvailability() {
@@ -17,34 +18,33 @@ function generateAvailability() {
 
 // APIハンドラー
 export async function GET() {
-  const rooms = [
-    {
-      id: 1,
-      name: "渋谷ポーカールーム",
-      area: "渋谷",
-      address: "東京都渋谷区渋谷1-1-1",
-      price: 3000,
-      capacity: 8,
-      rating: 4.5,
-      reviewCount: 32,
-      facilities: ["tournament-chips", "food", "drink", "wifi"],
-      imageUrl: "/images/rooms/room-sample-01.jpg",
-      availability: generateAvailability(),
-    },
-    {
-      id: 2,
-      name: "新宿ポーカースペース",
-      area: "新宿",
-      address: "東京都新宿区新宿2-2-2",
-      price: 5000,
-      capacity: 12,
-      rating: 4.2,
-      reviewCount: 28,
-      facilities: ["tournament-chips", "cash-chips", "timer", "food", "drink"],
-      imageUrl: "/images/rooms/room-sample-02.jpg",
-      availability: generateAvailability(),
-    },
-  ]
+  try {
+    const rooms = await prisma.room.findMany({
+      include: {
+        reviews: true,
+      },
+    })
 
-  return NextResponse.json(rooms)
+    // レビューの平均評価を計算し、可用性データを追加
+    const roomsWithAvailability = rooms.map(room => {
+      const rating = room.reviews.length > 0
+        ? room.reviews.reduce((acc, review) => acc + review.rating, 0) / room.reviews.length
+        : null
+
+      return {
+        ...room,
+        rating,
+        reviewCount: room.reviews.length,
+        availability: generateAvailability(),
+      }
+    })
+
+    return NextResponse.json(roomsWithAvailability)
+  } catch (error) {
+    console.error('Error fetching rooms:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch rooms' },
+      { status: 500 }
+    )
+  }
 } 

@@ -5,21 +5,14 @@ import Link from "next/link"
 import { format, addDays } from "date-fns"
 import { ja } from "date-fns/locale"
 import { useState, useEffect } from "react"
+import { Room } from "@prisma/client"
 
 type AvailabilityStatus = "available" | "few" | "unavailable"
 
-type Room = {
-  id: number
-  name: string
-  area: string
-  address: string
-  price: number
-  capacity: number
-  rating: number
-  reviewCount: number
-  facilities: string[]
-  imageUrl: string
-  availability: Record<string, AvailabilityStatus>
+type RoomWithAvailability = Room & {
+  rating?: number
+  reviewCount?: number
+  availability?: Record<string, AvailabilityStatus>
 }
 
 type AvailabilityIcon = {
@@ -29,9 +22,9 @@ type AvailabilityIcon = {
 }
 
 // 仮のデータ
-const initialRooms: Room[] = [
+const initialRooms: RoomWithAvailability[] = [
   {
-    id: 1,
+    id: "1",
     name: "渋谷ポーカールーム",
     area: "渋谷",
     address: "東京都渋谷区渋谷1-1-1",
@@ -41,6 +34,11 @@ const initialRooms: Room[] = [
     reviewCount: 32,
     facilities: ["tournament-chips", "food", "drink", "wifi"],
     imageUrl: "/images/rooms/room-sample-01.jpg",
+    latitude: 35.658034,
+    longitude: 139.701636,
+    description: "渋谷駅から徒歩5分の好立地。トーナメントやキャッシュゲームに対応した本格的なポーカールームです。",
+    createdAt: new Date(),
+    updatedAt: new Date(),
     availability: {
       "2024-03-19": "available",
       "2024-03-20": "few",
@@ -59,7 +57,7 @@ const initialRooms: Room[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     name: "新宿ポーカースペース",
     area: "新宿",
     address: "東京都新宿区新宿2-2-2",
@@ -69,6 +67,11 @@ const initialRooms: Room[] = [
     reviewCount: 28,
     facilities: ["tournament-chips", "cash-chips", "timer", "food", "drink"],
     imageUrl: "/images/rooms/room-sample-02.jpg",
+    latitude: 35.690921,
+    longitude: 139.700258,
+    description: "新宿駅東口から徒歩3分。24時間営業の本格ポーカールーム。",
+    createdAt: new Date(),
+    updatedAt: new Date(),
     availability: {
       "2024-03-19": "few",
       "2024-03-20": "available",
@@ -97,7 +100,7 @@ const availabilityIcons: Record<AvailabilityStatus, AvailabilityIcon> = {
 
 export function RoomList() {
   const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i))
-  const [rooms, setRooms] = useState<Room[]>(initialRooms)
+  const [rooms, setRooms] = useState<RoomWithAvailability[]>(initialRooms)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -179,16 +182,18 @@ export function RoomList() {
                       </div>
 
                       {/* 評価 */}
-                      <div className="mt-4 flex items-center">
-                        <div className="flex items-center">
-                          <span className="text-yellow-400">★</span>
-                          <span className="ml-1 font-semibold">{room.rating}</span>
+                      {room.rating && room.reviewCount && (
+                        <div className="mt-4 flex items-center">
+                          <div className="flex items-center">
+                            <span className="text-yellow-400">★</span>
+                            <span className="ml-1 font-semibold">{room.rating}</span>
+                          </div>
+                          <span className="mx-2 text-gray-300">|</span>
+                          <span className="text-gray-600">
+                            {room.reviewCount}件の評価
+                          </span>
                         </div>
-                        <span className="mx-2 text-gray-300">|</span>
-                        <span className="text-gray-600">
-                          {room.reviewCount}件の評価
-                        </span>
-                      </div>
+                      )}
 
                       {/* 設備アイコン */}
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -214,7 +219,7 @@ export function RoomList() {
                     <div className="inline-flex gap-1 pb-2">
                       {dates.map((date) => {
                         const dateStr = format(date, "yyyy-MM-dd")
-                        const status = room.availability[dateStr] || "unavailable"
+                        const status = room.availability?.[dateStr] || "unavailable"
                         const { icon, label, className } = availabilityIcons[status]
 
                         return (
