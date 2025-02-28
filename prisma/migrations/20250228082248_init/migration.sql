@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Room" (
+CREATE TABLE "room" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -14,11 +14,11 @@ CREATE TABLE "Room" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Room_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "room_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Review" (
+CREATE TABLE "review" (
     "id" TEXT NOT NULL,
     "rating" INTEGER NOT NULL,
     "comment" TEXT NOT NULL,
@@ -26,11 +26,11 @@ CREATE TABLE "Review" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "review_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Reservation" (
+CREATE TABLE "reservation" (
     "id" TEXT NOT NULL,
     "roomId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -41,11 +41,11 @@ CREATE TABLE "Reservation" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Reservation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "reservation_pkey" PRIMARY KEY ("id")
 );
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "review" ADD CONSTRAINT "review_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reservation" ADD CONSTRAINT "reservation_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "room"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
