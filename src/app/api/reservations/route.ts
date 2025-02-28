@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 予約の作成
-    const reservation = await prisma.Reservation.create({
+    const reservation = await prisma.reservation.create({
       data: {
         roomId,
         userId: session.user.id,
