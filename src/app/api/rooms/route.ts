@@ -19,11 +19,20 @@ function generateAvailability() {
 // APIハンドラー
 export async function GET() {
   try {
+    console.log('Fetching rooms from database...')
+    
     const rooms = await prisma.room.findMany({
       include: {
         reviews: true,
       },
     })
+
+    console.log('Rooms fetched:', rooms)
+
+    if (!rooms || rooms.length === 0) {
+      console.log('No rooms found')
+      return NextResponse.json([])
+    }
 
     // レビューの平均評価を計算し、可用性データを追加
     const roomsWithAvailability = rooms.map(room => {
@@ -39,11 +48,16 @@ export async function GET() {
       }
     })
 
+    console.log('Processed rooms:', roomsWithAvailability)
+
     return NextResponse.json(roomsWithAvailability)
   } catch (error) {
-    console.error('Error fetching rooms:', error)
+    console.error('Error details:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch rooms' },
+      { 
+        error: 'Failed to fetch rooms',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
