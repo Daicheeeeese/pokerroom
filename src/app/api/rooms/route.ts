@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { format, addDays } from 'date-fns'
-import { prisma } from '@/lib/prisma'
+import { sql } from '@/lib/db'
 
 // 仮のデータを生成する関数
 function generateAvailability() {
@@ -21,11 +21,15 @@ export async function GET() {
   try {
     console.log('Fetching rooms from database...')
     
-    const rooms = await prisma.room.findMany({
-      include: {
-        reviews: true,
-      },
-    })
+    const { rows: rooms } = await sql`
+      SELECT 
+        r.*,
+        COALESCE(AVG(rev.rating), 0) as average_rating,
+        COUNT(rev.id) as review_count
+      FROM "Room" r
+      LEFT JOIN "Review" rev ON r.id = rev."roomId"
+      GROUP BY r.id
+    `
 
     console.log('Rooms fetched:', rooms)
 
@@ -34,19 +38,13 @@ export async function GET() {
       return NextResponse.json([])
     }
 
-    // レビューの平均評価を計算し、可用性データを追加
-    const roomsWithAvailability = rooms.map(room => {
-      const rating = room.reviews.length > 0
-        ? room.reviews.reduce((acc, review) => acc + review.rating, 0) / room.reviews.length
-        : null
-
-      return {
-        ...room,
-        rating,
-        reviewCount: room.reviews.length,
-        availability: generateAvailability(),
-      }
-    })
+    // 可用性データを追加
+    const roomsWithAvailability = rooms.map(room => ({
+      ...room,
+      rating: parseFloat(room.average_rating),
+      reviewCount: parseInt(room.review_count),
+      availability: generateAvailability(),
+    }))
 
     console.log('Processed rooms:', roomsWithAvailability)
 
