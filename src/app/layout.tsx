@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </NextAuthProvider>
+          <Toaster />
         </div>
       </body>
     </html>

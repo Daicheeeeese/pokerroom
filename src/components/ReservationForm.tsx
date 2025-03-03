@@ -4,6 +4,7 @@ import { useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
+import { toast } from "react-hot-toast"
 
 type Room = {
   id: string
@@ -43,6 +44,14 @@ export default function ReservationForm({ room }: Props) {
       return
     }
 
+    // 開始時間と終了時間の検証
+    const [startHour] = startTime.split(":").map(Number)
+    const [endHour] = endTime.split(":").map(Number)
+    if (startHour >= endHour) {
+      setError("終了時間は開始時間より後にしてください")
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
@@ -61,13 +70,18 @@ export default function ReservationForm({ room }: Props) {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error("予約に失敗しました")
+        throw new Error(data.error || "予約に失敗しました")
       }
 
+      toast.success("予約が完了しました")
       router.push("/reservations")
+      router.refresh()
     } catch (error) {
       setError(error instanceof Error ? error.message : "予約に失敗しました")
+      toast.error(error instanceof Error ? error.message : "予約に失敗しました")
     } finally {
       setIsSubmitting(false)
     }
@@ -125,7 +139,11 @@ export default function ReservationForm({ room }: Props) {
         </div>
       )}
 
-      {error && <div className="text-red-600">{error}</div>}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
 
       <button
         type="submit"
