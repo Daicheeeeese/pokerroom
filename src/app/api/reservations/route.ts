@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { z } from "zod"
+
+// バリデーションスキーマ
+const reservationSchema = z.object({
+  roomId: z.string(),
+  date: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  totalPrice: z.number(),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,15 +23,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { roomId, date, startTime, endTime, totalPrice } = await request.json()
-
-    // バリデーション
-    if (!roomId || !date || !startTime || !endTime || !totalPrice) {
+    const body = await request.json()
+    
+    // リクエストボディのバリデーション
+    const result = reservationSchema.safeParse(body)
+    if (!result.success) {
       return NextResponse.json(
-        { error: "必須項目が不足しています" },
+        { error: "無効なリクエストデータです", details: result.error },
         { status: 400 }
       )
     }
+
+    const { roomId, date, startTime, endTime, totalPrice } = result.data
 
     // 日付のバリデーション
     const reservationDate = new Date(date)
@@ -29,6 +42,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "無効な日付です" },
         { status: 400 }
+      )
+    }
+
+    // 時間のバリデーション
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/
+    if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
+      return NextResponse.json(
+        { error: "無効な時間形式です" },
+        { status: 400 }
+      )
+    }
+
+    // ルームの存在確認
+    const room = await prisma.room.findUnique({
+      where: { id: roomId }
+    })
+
+    if (!room) {
+      return NextResponse.json(
+        { error: "指定されたルームが見つかりません" },
+        { status: 404 }
       )
     }
 
@@ -71,6 +105,9 @@ export async function POST(request: NextRequest) {
         endTime,
         totalPrice,
       },
+      include: {
+        room: true
+      }
     })
 
     return NextResponse.json(reservation)
