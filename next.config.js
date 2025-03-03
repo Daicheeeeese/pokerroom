@@ -30,6 +30,11 @@ const nextConfig = {
     maxInactiveAge: 60 * 60 * 1000,
     pagesBufferLength: 2,
   },
+  // ESLintの設定
+  eslint: {
+    ignoreDuringBuilds: false,
+    dirs: ['src'],
+  },
 };
 
 module.exports = nextConfig;
