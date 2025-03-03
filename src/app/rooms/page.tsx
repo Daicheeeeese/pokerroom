@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma"
-import Link from "next/link"
-import Image from "next/image"
+import RoomList from "@/components/rooms/RoomList"
 
 export const dynamic = "force-dynamic"
 
 export default async function RoomsPage() {
   try {
-    console.log("Fetching rooms") // デバッグ用ログ
+    console.log("Fetching rooms...") // デバッグ用ログ
 
     const rooms = await prisma.room.findMany({
       include: {
@@ -14,62 +13,39 @@ export default async function RoomsPage() {
       },
     })
 
-    console.log("Found rooms:", rooms) // デバッグ用ログ
+    console.log("Found rooms:", JSON.stringify(rooms, null, 2)) // デバッグ用ログ
+
+    if (!rooms || rooms.length === 0) {
+      console.log("No rooms found") // デバッグ用ログ
+      return (
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">ポーカールーム一覧</h1>
+          <p>現在、利用可能なルームはありません。</p>
+        </div>
+      )
+    }
 
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">ポーカールーム一覧</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room) => {
-            console.log("Room ID:", room.id) // デバッグ用ログ
-            const averageRating = room.reviews.length > 0
-              ? room.reviews.reduce((acc, review) => acc + review.rating, 0) / room.reviews.length
-              : null
-
-            return (
-              <Link
-                key={room.id}
-                href={`/rooms/${room.id}`}
-                className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="relative h-48">
-                  <Image
-                    src={room.imageUrl}
-                    alt={room.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
-                  <p className="text-gray-600 mb-2">{room.area}</p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-blue-600 font-semibold">
-                      ¥{room.price.toLocaleString()}/時間
-                    </p>
-                    {averageRating && (
-                      <div className="flex items-center">
-                        <span className="text-yellow-400 mr-1">★</span>
-                        <span>{averageRating.toFixed(1)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-gray-500 mt-2">
-                    最大{room.capacity}人 · {room.facilities.join(" · ")}
-                  </p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+        <RoomList rooms={rooms} />
       </div>
     )
-  } catch (error) {
-    console.error("Error fetching rooms:", error)
+  } catch (error: any) {
+    console.error("Error details:", {
+      name: error?.name,
+      message: error?.message,
+      stack: error?.stack,
+    })
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">エラーが発生しました</h1>
-        <p>ルーム情報の取得中にエラーが発生しました。しばらくしてから再度お試しください。</p>
+        <h1 className="text-3xl font-bold mb-8 text-red-600">エラーが発生しました</h1>
+        <p className="text-gray-600 mb-4">ルーム情報の取得中にエラーが発生しました。</p>
+        {process.env.NODE_ENV === "development" && (
+          <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
+            {JSON.stringify(error, null, 2)}
+          </pre>
+        )}
       </div>
     )
   }
