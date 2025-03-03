@@ -4,10 +4,11 @@ import Image from "next/image"
 import ReservationForm from "@/components/ReservationForm"
 import { Metadata } from "next"
 
-interface Props {
+type Props = {
   params: {
     id: string
   }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 type Room = {

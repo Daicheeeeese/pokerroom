@@ -11,5 +11,8 @@
         "caughtErrorsIgnorePattern": "^_"
       }
     ]
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 } 
