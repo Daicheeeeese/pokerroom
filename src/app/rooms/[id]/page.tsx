@@ -4,7 +4,7 @@ import Image from "next/image"
 import ReservationForm from "@/components/ReservationForm"
 import { Metadata } from "next"
 
-type Props = {
+type PageProps = {
   params: {
     id: string
   }
@@ -24,7 +24,7 @@ type Room = {
   review_count: number
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { rows: [room] } = await sql`
     SELECT *
     FROM "Room"
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function RoomDetailPage({ params }: Props) {
+export default async function RoomDetailPage({ params, searchParams }: PageProps) {
   const { rows: [roomData] } = await sql`
     SELECT 
       r.*,
