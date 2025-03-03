@@ -73,15 +73,19 @@ export default function ReservationForm({ room }: Props) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "予約に失敗しました")
+        const errorMessage = data.details 
+          ? `${data.error}: ${JSON.stringify(data.details)}`
+          : data.error || "予約に失敗しました"
+        throw new Error(errorMessage)
       }
 
       toast.success("予約が完了しました")
       router.push("/reservations")
       router.refresh()
     } catch (error) {
-      setError(error instanceof Error ? error.message : "予約に失敗しました")
-      toast.error(error instanceof Error ? error.message : "予約に失敗しました")
+      const errorMessage = error instanceof Error ? error.message : "予約に失敗しました"
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -140,7 +144,7 @@ export default function ReservationForm({ room }: Props) {
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md whitespace-pre-wrap">
           {error}
         </div>
       )}
