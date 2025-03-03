@@ -1,15 +1,8 @@
-import { sql } from "@/lib/db"
+import { dbsql } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import ReservationForm from "@/components/ReservationForm"
 import { Metadata } from "next"
-
-type PageProps = {
-  params: {
-    id: string
-  }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
 
 type Room = {
   id: string
@@ -24,8 +17,13 @@ type Room = {
   review_count: number
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { rows: [room] } = await sql`
+type Props = {
+  params: { id: string }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { rows: [room] } = await dbsql`
     SELECT *
     FROM "Room"
     WHERE id = ${params.id}
@@ -42,8 +40,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function RoomDetailPage({ params, searchParams }: PageProps) {
-  const { rows: [roomData] } = await sql`
+export default async function RoomDetailPage({ params }: Props) {
+  const { rows: [roomData] } = await dbsql`
     SELECT 
       r.*,
       COALESCE(AVG(rev.rating), 0) as average_rating,
@@ -71,7 +69,7 @@ export default async function RoomDetailPage({ params, searchParams }: PageProps
     review_count: roomData.review_count,
   }
 
-  const { rows: reviews } = await sql`
+  const { rows: reviews } = await dbsql`
     SELECT 
       rev.*,
       rev."createdAt" as created_at
