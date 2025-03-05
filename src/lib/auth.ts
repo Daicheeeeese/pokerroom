@@ -1,10 +1,15 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -90,7 +95,48 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      console.log("サインインコールバック:", {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image
+        },
+        account: {
+          provider: account?.provider,
+          type: account?.type
+        },
+        profile: profile
+      })
+
+      if (account?.provider === "google") {
+        try {
+          // Googleアカウントでログインした場合、ユーザーが存在しない場合は作成
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
+          })
+
+          if (!existingUser) {
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name!,
+                image: user.image,
+                password: "", // Googleログインの場合はパスワードは空
+              }
+            })
+            console.log("新規ユーザー作成:", newUser)
+          }
+        } catch (error) {
+          console.error("Googleログインエラー:", error)
+          return false
+        }
+      }
+
+      return true
+    },
+    async jwt({ token, user, account }) {
       console.log("JWTコールバック:", {
         token: {
           ...token,
@@ -102,6 +148,10 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name
+        } : null,
+        account: account ? {
+          provider: account.provider,
+          type: account.type
         } : null
       })
 
