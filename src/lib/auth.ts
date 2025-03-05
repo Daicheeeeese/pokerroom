@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
+import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -11,7 +12,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("認証開始:", { email: credentials?.email })
+        console.log("認証開始:", { 
+          email: credentials?.email,
+          hasPassword: !!credentials?.password,
+          passwordLength: credentials?.password?.length
+        })
         
         if (!credentials?.email || !credentials?.password) {
           console.log("認証エラー: メールアドレスまたはパスワードが未入力")
@@ -30,7 +35,9 @@ export const authOptions: NextAuthOptions = {
             foundUser: user ? {
               id: user.id,
               email: user.email,
-              name: user.name
+              name: user.name,
+              hasPassword: !!user.password,
+              passwordLength: user.password?.length
             } : null
           })
 
@@ -39,7 +46,20 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          if (user.password !== credentials.password) {
+          if (!user.password) {
+            console.log("認証エラー: ユーザーのパスワードが設定されていません")
+            return null
+          }
+
+          // bcryptを使用してパスワードを比較
+          const isValid = await bcrypt.compare(credentials.password, user.password)
+          console.log("パスワード比較結果:", { 
+            isValid,
+            inputPasswordLength: credentials.password.length,
+            storedPasswordLength: user.password.length
+          })
+
+          if (!isValid) {
             console.log("認証エラー: パスワードが一致しません")
             return null
           }
