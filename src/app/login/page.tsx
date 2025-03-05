@@ -1,13 +1,21 @@
 "use client"
 
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (session?.user) {
+      console.log("セッション更新:", session)
+      router.push("/")
+    }
+  }, [session, router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -19,6 +27,7 @@ export default function LoginPage() {
     const password = formData.get("password") as string
 
     try {
+      console.log("ログイン試行:", { email })
       const result = await signIn("credentials", {
         email,
         password,
@@ -26,12 +35,14 @@ export default function LoginPage() {
         callbackUrl: "/"
       })
 
+      console.log("ログイン結果:", result)
+
       if (!result?.ok) {
         setError(result?.error || "ログインに失敗しました")
         return
       }
 
-      router.push("/")
+      // セッションを更新
       router.refresh()
     } catch (error) {
       console.error("ログインエラー:", error)

@@ -73,7 +73,11 @@ export default function ReservationForm({ room }: Props) {
         totalPrice: calculateTotalPrice(),
         userId: session.user.id,
       }
-      console.log("送信データ:", requestData)
+      console.log("送信データ:", {
+        ...requestData,
+        userId: session.user.id,
+        userEmail: session.user.email
+      })
 
       const response = await fetch("/api/reservations", {
         method: "POST",

@@ -14,4 +14,12 @@ declare module "next-auth" {
       email: string
     }
   }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    name: string | null
+    email: string
+  }
 } 

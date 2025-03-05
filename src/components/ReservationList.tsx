@@ -3,7 +3,7 @@ import Link from "next/link"
 
 type Reservation = {
   id: string
-  date: Date
+  date: string
   startTime: string
   endTime: string
   totalPrice: number

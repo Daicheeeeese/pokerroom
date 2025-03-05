@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     }
 
     // ユーザーの存在確認
-    const user = await prisma.user.findFirst({
+    let user = await prisma.user.findFirst({
       where: {
         OR: [
           { id: session.user.id },
@@ -78,6 +78,7 @@ export async function POST(request: Request) {
           }
         })
         console.log("新しいユーザーを作成しました:", newUser)
+        user = newUser // 作成したユーザーを設定
       } catch (createError) {
         console.error("ユーザー作成エラー:", createError)
         if (createError instanceof Error) {
@@ -94,16 +95,14 @@ export async function POST(request: Request) {
           })
           if (existingUser) {
             console.log("既存のユーザーを使用します:", existingUser)
+            user = existingUser // 既存のユーザーを設定
+          } else {
             return corsResponse(
-              { message: "既存のユーザーを使用します" },
-              200
+              { error: "ユーザーの作成に失敗しました" },
+              500
             )
           }
         }
-        return corsResponse(
-          { error: "ユーザーの作成に失敗しました" },
-          500
-        )
       }
     }
 
@@ -215,42 +214,65 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
+    console.log("API - セッション情報:", {
+      authenticated: !!session,
+      user: session?.user ? {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name
+      } : null
+    })
+
     if (!session?.user?.id) {
-      return corsResponse(
-        { error: "認証が必要です" },
-        401
-      )
+      console.log("API - 認証エラー: ユーザーIDが見つかりません")
+      return NextResponse.json({ error: "認証が必要です" }, { status: 401 })
     }
+
+    // データベースから正しいユーザーIDを取得
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+
+    if (!user) {
+      console.log("API - エラー: ユーザーが見つかりません")
+      return NextResponse.json({ error: "ユーザーが見つかりません" }, { status: 404 })
+    }
+
+    console.log("API - データベースのユーザー情報:", {
+      id: user.id,
+      email: user.email,
+      name: user.name
+    })
 
     const reservations = await prisma.reservation.findMany({
       where: {
-        userId: session.user.id
+        userId: user.id // 正しいユーザーIDを使用
       },
       include: {
-        room: {
-          select: {
-            name: true
-          }
-        }
+        room: true,
       },
       orderBy: {
-        date: 'desc'
-      }
+        date: 'asc',
+      },
     })
 
-    return corsResponse(reservations)
+    console.log("API - 予約データ:", {
+      userId: user.id,
+      userEmail: user.email,
+      reservationsCount: reservations.length,
+      reservations: reservations.map(r => ({
+        id: r.id,
+        date: r.date,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        roomName: r.room.name,
+        totalPrice: r.totalPrice
+      }))
+    })
+
+    return NextResponse.json(reservations)
   } catch (error) {
-    console.error("予約取得エラー:", error)
-    if (error instanceof Error) {
-      console.error("エラーの詳細:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      })
-    }
-    return corsResponse(
-      { error: "予約の取得に失敗しました" },
-      500
-    )
+    console.error("API - エラー:", error)
+    return NextResponse.json({ error: "予約データの取得に失敗しました" }, { status: 500 })
   }
 } 
