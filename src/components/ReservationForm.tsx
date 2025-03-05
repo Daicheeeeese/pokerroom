@@ -30,6 +30,7 @@ export default function ReservationForm({ room }: Props) {
   const [endTime, setEndTime] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const calculateTotalPrice = () => {
     if (!startTime || !endTime) return 0
@@ -96,8 +97,7 @@ export default function ReservationForm({ room }: Props) {
         throw new Error(errorMessage)
       }
 
-      toast.success("予約が完了しました")
-      router.push(`/reservations/${data.id}`)
+      setSuccess("予約が成功しました。")
       router.refresh()
     } catch (error) {
       console.error("予約エラー:", error)
@@ -164,6 +164,12 @@ export default function ReservationForm({ room }: Props) {
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md whitespace-pre-wrap">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md whitespace-pre-wrap">
+          {success}
         </div>
       )}
 
