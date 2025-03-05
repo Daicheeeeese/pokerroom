@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import ReservationList from "@/components/ReservationList"
+import { ReservationList } from "@/components/ReservationList"
 
 type Reservation = {
   id: string
