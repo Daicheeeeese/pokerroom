@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { prisma } from "@/lib/prisma"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,26 +15,22 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // テストユーザーの認証
-        const testUser = {
-          id: "1",
-          name: "Test User",
-          email: "test@example.com",
-          password: "password123",
-        }
-
-        if (
-          credentials.email === testUser.email &&
-          credentials.password === testUser.password
-        ) {
-          return {
-            id: testUser.id,
-            name: testUser.name,
-            email: testUser.email,
+        // Prismaを使用してユーザーを検索
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email
           }
+        })
+
+        if (!user || user.password !== credentials.password) {
+          return null
         }
 
-        return null
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        }
       },
     }),
   ],
@@ -48,12 +45,16 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
+        token.name = user.name
+        token.email = user.email
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
       }
       return session
     },

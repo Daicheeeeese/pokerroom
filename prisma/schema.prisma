@@ -50,6 +50,7 @@ model Reservation {
   startTime  String
   endTime    String
   totalPrice Int
+  status     String   @default("PENDING")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   room       Room     @relation(fields: [roomId], references: [id])

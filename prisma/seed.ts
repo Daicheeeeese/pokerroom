@@ -5,7 +5,18 @@ const prisma = new PrismaClient()
 async function main() {
   // 既存のデータを削除
   await prisma.reservation.deleteMany()
+  await prisma.review.deleteMany()
   await prisma.room.deleteMany()
+  await prisma.user.deleteMany()
+
+  // テストユーザーを作成
+  const testUser = await prisma.user.create({
+    data: {
+      name: "Test User",
+      email: "test@example.com",
+      password: "test1234",
+    },
+  })
 
   // テストデータを追加
   const room1 = await prisma.room.create({

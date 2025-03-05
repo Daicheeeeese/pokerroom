@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={inter.className}>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <div className="flex flex-col min-h-screen">
           <NextAuthProvider>
             <Header />

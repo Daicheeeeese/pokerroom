@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { useSession } from "next-auth/react"
 
 type Room = {
   id: string
@@ -23,6 +24,7 @@ type Props = {
 
 export default function ReservationForm({ room }: Props) {
   const router = useRouter()
+  const { data: session } = useSession()
   const [date, setDate] = useState<Date | null>(null)
   const [startTime, setStartTime] = useState("")
   const [endTime, setEndTime] = useState("")
@@ -44,6 +46,11 @@ export default function ReservationForm({ room }: Props) {
       return
     }
 
+    if (!session?.user?.id) {
+      setError("ログインが必要です")
+      return
+    }
+
     // 開始時間と終了時間の検証
     const [startHour] = startTime.split(":").map(Number)
     const [endHour] = endTime.split(":").map(Number)
@@ -56,26 +63,36 @@ export default function ReservationForm({ room }: Props) {
     setError(null)
 
     try {
-      const response = await fetch("/api/reservations", {
+      console.log("予約リクエスト送信開始")
+      const requestData = {
+        roomId: room.id,
+        date: date.toISOString(),
+        startTime,
+        endTime,
+        totalPrice: calculateTotalPrice(),
+        userId: session.user.id,
+      }
+      console.log("送信データ:", requestData)
+
+      const response = await fetch("http://localhost:3010/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
         },
-        body: JSON.stringify({
-          roomId: room.id,
-          date: date.toISOString(),
-          startTime,
-          endTime,
-          totalPrice: calculateTotalPrice(),
-        }),
+        credentials: "include",
+        body: JSON.stringify(requestData),
       })
 
       const data = await response.json()
+      console.log("予約レスポンス:", data)
 
       if (!response.ok) {
-        const errorMessage = data.details 
-          ? `${data.error}: ${JSON.stringify(data.details)}`
-          : data.error || "予約に失敗しました"
+        console.error("予約エラーレスポンス:", data)
+        console.error("レスポンスステータス:", response.status)
+        console.error("レスポンスヘッダー:", Object.fromEntries(response.headers.entries()))
+        const errorMessage = data.error || "予約に失敗しました"
+        console.error("エラーメッセージ:", errorMessage)
         throw new Error(errorMessage)
       }
 
@@ -83,6 +100,7 @@ export default function ReservationForm({ room }: Props) {
       router.push("/reservations")
       router.refresh()
     } catch (error) {
+      console.error("予約エラー:", error)
       const errorMessage = error instanceof Error ? error.message : "予約に失敗しました"
       setError(errorMessage)
       toast.error(errorMessage)

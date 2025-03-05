@@ -23,10 +23,11 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
   const { rows: [room] } = await dbsql`
     SELECT *
     FROM "Room"
-    WHERE id = ${params.id}
+    WHERE id = ${id}
   `
 
   if (!room) {
@@ -41,6 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function RoomDetailPage({ params }: Props) {
+  const { id } = await params
   const { rows: [roomData] } = await dbsql`
     SELECT 
       r.*,
@@ -48,7 +50,7 @@ export default async function RoomDetailPage({ params }: Props) {
       COUNT(rev.id) as review_count
     FROM "Room" r
     LEFT JOIN "Review" rev ON r.id = rev."roomId"
-    WHERE r.id = ${params.id}
+    WHERE r.id = ${id}
     GROUP BY r.id
   `
 
@@ -74,7 +76,7 @@ export default async function RoomDetailPage({ params }: Props) {
       rev.*,
       rev."createdAt" as created_at
     FROM "Review" rev
-    WHERE rev."roomId" = ${params.id}
+    WHERE rev."roomId" = ${id}
     ORDER BY rev."createdAt" DESC
   `
 

@@ -3,11 +3,15 @@ import "next-auth"
 declare module "next-auth" {
   interface User {
     id: string
+    name: string | null
+    email: string
   }
 
   interface Session {
-    user: User & {
+    user: {
       id: string
+      name: string | null
+      email: string
     }
   }
 } 
