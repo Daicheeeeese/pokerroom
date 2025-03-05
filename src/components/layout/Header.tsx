@@ -28,7 +28,7 @@ export function Header() {
               ルームを探す
             </Link>
             <Link
-              href="/bookings"
+              href="/reservations"
               className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               予約確認

@@ -97,7 +97,7 @@ export default function ReservationForm({ room }: Props) {
       }
 
       toast.success("予約が完了しました")
-      router.push("/reservations")
+      router.push(`/reservations/${data.id}`)
       router.refresh()
     } catch (error) {
       console.error("予約エラー:", error)
