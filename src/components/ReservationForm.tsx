@@ -74,7 +74,7 @@ export default function ReservationForm({ room }: Props) {
       }
       console.log("送信データ:", requestData)
 
-      const response = await fetch("http://localhost:3010/api/reservations", {
+      const response = await fetch("/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

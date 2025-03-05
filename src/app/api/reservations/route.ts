@@ -7,10 +7,14 @@ export const dynamic = 'force-dynamic'
 
 // CORSヘッダーを設定する関数
 function corsResponse(data: any, status: number = 200) {
+  const origin = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : 'http://localhost:3010'
+
   return NextResponse.json(data, {
     status,
     headers: {
-      'Access-Control-Allow-Origin': 'http://localhost:3010',
+      'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Allow-Credentials': 'true',
