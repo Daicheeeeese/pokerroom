@@ -246,33 +246,37 @@ export async function GET() {
 
     const reservations = await prisma.reservation.findMany({
       where: {
-        userId: user.id // 正しいユーザーIDを使用
+        userId: user.id
       },
       include: {
-        room: true,
+        room: {
+          select: {
+            name: true,
+            image: true
+          }
+        }
       },
       orderBy: {
-        date: 'asc',
-      },
+        date: 'desc'
+      }
     })
 
-    console.log("API - 予約データ:", {
-      userId: user.id,
-      userEmail: user.email,
-      reservationsCount: reservations.length,
+    console.log("API - 取得した予約データ:", {
+      count: reservations.length,
       reservations: reservations.map(r => ({
         id: r.id,
         date: r.date,
-        startTime: r.startTime,
-        endTime: r.endTime,
-        roomName: r.room.name,
-        totalPrice: r.totalPrice
+        status: r.status,
+        roomName: r.room.name
       }))
     })
 
-    return NextResponse.json(reservations)
+    return corsResponse(reservations)
   } catch (error) {
-    console.error("API - エラー:", error)
-    return NextResponse.json({ error: "予約データの取得に失敗しました" }, { status: 500 })
+    console.error("予約取得エラー:", error)
+    return corsResponse(
+      { error: "予約の取得中にエラーが発生しました" },
+      500
+    )
   }
 } 
