@@ -17,19 +17,30 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   reservations  Reservation[]
+
+  @@map("users")
 }
 
 model Room {
-  id           String        @id @default(cuid())
-  name         String
-  description  String
-  image        String
-  capacity     Int
-  pricePerHour Int
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  reservations Reservation[]
-  reviews      Review[]
+  id            String      @id @default(cuid())
+  name          String
+  description   String?
+  image         String
+  capacity      Int
+  pricePerHour  Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  reviews       Review[]
+  reservations  Reservation[]
+  hourlyPrices  HourlyPrice[]
+  availabilities RoomAvailability[]
+  address       String?     
+  prefecture    String?     
+  city          String?     
+  latitude      Float?      
+  longitude     Float?      
+
+  @@map("rooms")
 }
 
 model Review {
@@ -40,6 +51,8 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   room      Room     @relation(fields: [roomId], references: [id])
+
+  @@map("reviews")
 }
 
 model Reservation {
@@ -55,4 +68,32 @@ model Reservation {
   updatedAt  DateTime @updatedAt
   room       Room     @relation(fields: [roomId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
+
+  @@map("reservations")
+}
+
+model HourlyPrice {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  hour      Int      
+  price     Int      
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roomId, hour])
+  @@map("hourly_prices")
+}
+
+model RoomAvailability {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id])
+  date        DateTime 
+  isAvailable Boolean  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([roomId, date])
+  @@map("room_availabilities")
 }
