@@ -33,7 +33,12 @@ async function main() {
       description: "東京駅から徒歩5分、アクセス抜群のポーカールーム。初心者から上級者まで楽しめる空間です。",
       image: "/images/rooms/room-01/main.jpg",
       images: {
-        create: []
+        create: [
+          { url: '/images/rooms/room-01/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-01/sub-2.jpg', order: 2 },
+          { url: '/images/rooms/room-01/sub-3.jpg', order: 3 },
+          { url: '/images/rooms/room-01/sub-4.jpg', order: 4 }
+        ]
       },
       capacity: 8,
       pricePerHour: 1000,
