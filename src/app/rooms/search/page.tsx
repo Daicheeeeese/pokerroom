@@ -1,49 +1,82 @@
-import { prisma } from "@/lib/prisma"
-import RoomList from "@/components/rooms/RoomList"
-import SearchFilters from "@/components/rooms/SearchFilters"
+'use client'
 
-export const dynamic = "force-dynamic"
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import RoomCard from '@/components/rooms/RoomCard'
+import SearchBar from '@/components/SearchBar'
+import { Room, Review } from '@prisma/client'
 
-export default async function SearchPage() {
-  try {
-    const rooms = await prisma.room.findMany({
-      include: {
-        reviews: true,
-      },
-    })
+type RoomWithReviews = Room & {
+  reviews: Review[]
+}
 
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">ポーカールーム検索</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* フィルター */}
-          <div className="lg:col-span-1">
-            <SearchFilters />
-          </div>
+export default function RoomSearchPage() {
+  const searchParams = useSearchParams()
+  const [rooms, setRooms] = useState<RoomWithReviews[]>([])
+  const [loading, setLoading] = useState(true)
 
-          {/* 検索結果 */}
-          <div className="lg:col-span-3">
-            <RoomList rooms={rooms} />
-          </div>
+  // 検索パラメータに基づいてルームを取得
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams()
+        
+        // URLから検索パラメータを取得
+        const area = searchParams.get('area')
+        const date = searchParams.get('date')
+        const guests = searchParams.get('guests')
+
+        if (area) params.append('area', area)
+        if (date) params.append('date', date)
+        if (guests) params.append('guests', guests)
+
+        const response = await fetch(`/api/rooms?${params.toString()}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch rooms')
+        }
+        const data = await response.json()
+        setRooms(data)
+      } catch (error) {
+        console.error('Error fetching rooms:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRooms()
+  }, [searchParams]) // searchParamsが変更されたら再取得
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto mb-8">
+        <SearchBar />
+      </div>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-600">読み込み中...</p>
         </div>
-      </div>
-    )
-  } catch (error: any) {
-    console.error("Error details:", {
-      name: error?.name,
-      message: error?.message,
-      stack: error?.stack,
-    })
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-red-600">エラーが発生しました</h1>
-        <p className="text-gray-600 mb-4">ルーム情報の取得中にエラーが発生しました。</p>
-        {process.env.NODE_ENV === "development" && (
-          <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
-            {JSON.stringify(error, null, 2)}
-          </pre>
-        )}
-      </div>
-    )
-  }
+      ) : (
+        <>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold">
+              {rooms.length}件のルームが見つかりました
+              {searchParams.get('area') && `（${searchParams.get('area')}）`}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rooms.map((room) => (
+              <RoomCard
+                key={room.id}
+                room={room}
+                selectedDate={searchParams.get('date') ? new Date(searchParams.get('date')!) : null}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
 } 

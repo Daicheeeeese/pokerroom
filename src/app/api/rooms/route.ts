@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { format, addDays } from 'date-fns'
 import { sql } from '@/lib/db'
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 // 仮のデータを生成する関数
 function generateAvailability() {
@@ -17,45 +19,58 @@ function generateAvailability() {
 }
 
 // APIハンドラー
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const area = searchParams.get('area')
+  const date = searchParams.get('date')
+  const guests = searchParams.get('guests')
+
   try {
-    console.log('Fetching rooms from database...')
-    
-    const { rows: rooms } = await sql`
-      SELECT 
-        r.*,
-        COALESCE(AVG(rev.rating), 0) as average_rating,
-        COUNT(rev.id) as review_count
-      FROM "Room" r
-      LEFT JOIN "Review" rev ON r.id = rev."roomId"
-      GROUP BY r.id
-    `
+    // 検索条件を構築
+    const conditions: Prisma.RoomWhereInput[] = []
 
-    console.log('Rooms fetched:', rooms)
-
-    if (!rooms || rooms.length === 0) {
-      console.log('No rooms found')
-      return NextResponse.json([])
+    // エリア検索条件
+    if (area) {
+      conditions.push({
+        name: { contains: area }
+      })
     }
 
-    // 可用性データを追加
-    const roomsWithAvailability = rooms.map(room => ({
-      ...room,
-      rating: parseFloat(room.average_rating),
-      reviewCount: parseInt(room.review_count),
-      availability: generateAvailability(),
-    }))
+    // 人数検索条件
+    if (guests) {
+      conditions.push({
+        capacity: { gte: parseInt(guests) }
+      })
+    }
 
-    console.log('Processed rooms:', roomsWithAvailability)
+    // Prismaクエリ
+    const rooms = await prisma.room.findMany({
+      where: conditions.length > 0 ? { AND: conditions } : {},
+      include: {
+        reviews: true,
+        reservations: date ? {
+          where: {
+            date: new Date(date as string)
+          }
+        } : false
+      }
+    })
 
-    return NextResponse.json(roomsWithAvailability)
+    // 日付が指定されている場合、予約済みのルームをフィルタリング
+    const filteredRooms = date
+      ? rooms.filter(room => {
+          return !room.reservations?.length
+        })
+      : rooms
+
+    // reservationsフィールドを除外して返す
+    const sanitizedRooms = filteredRooms.map(({ reservations, ...room }) => room)
+
+    return NextResponse.json(sanitizedRooms)
   } catch (error) {
-    console.error('Error details:', error)
+    console.error('Error fetching rooms:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch rooms',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to fetch rooms' },
       { status: 500 }
     )
   }

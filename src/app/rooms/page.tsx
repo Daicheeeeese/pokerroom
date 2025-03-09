@@ -1,45 +1,57 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { prisma } from "@/lib/prisma"
 import RoomList from "@/components/rooms/RoomList"
+import RoomCard from '@/components/rooms/RoomCard'
+import DateSelector from '@/components/DateSelector'
+import { Room, Review } from '@prisma/client'
+import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
+type RoomWithReviews = Room & {
+  reviews: Review[]
+}
+
+type Props = {
+  searchParams?: {
+    date?: string
+  }
+}
+
 export default async function RoomsPage() {
   try {
-    console.log("Fetching rooms...") // デバッグ用ログ
-
     const rooms = await prisma.room.findMany({
       include: {
         reviews: true,
       },
     })
 
-    console.log("Found rooms:", JSON.stringify(rooms, null, 2)) // デバッグ用ログ
-
-    if (!rooms || rooms.length === 0) {
-      console.log("No rooms found") // デバッグ用ログ
-      return (
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">ポーカールーム一覧</h1>
-          <p>現在、利用可能なルームはありません。</p>
-        </div>
-      )
-    }
-
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">ポーカールーム一覧</h1>
-        <RoomList rooms={rooms} />
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold">ポーカールーム一覧</h1>
+          <Link
+            href="/rooms/search"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            日付で検索
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {rooms.map((room) => (
+            <RoomCard key={room.id} room={room} selectedDate={null} />
+          ))}
+        </div>
       </div>
     )
   } catch (error: any) {
-    console.error("Error details:", {
-      name: error?.name,
-      message: error?.message,
-      stack: error?.stack,
-    })
+    console.error("Error details:", error)
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-red-600">エラーが発生しました</h1>
+        <h1 className="text-2xl font-bold mb-8 text-red-600">エラーが発生しました</h1>
         <p className="text-gray-600 mb-4">ルーム情報の取得中にエラーが発生しました。</p>
         {process.env.NODE_ENV === "development" && (
           <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">

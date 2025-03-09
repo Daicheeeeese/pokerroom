@@ -1,10 +1,10 @@
 import { dbsql } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import ReservationForm from "@/components/ReservationForm"
 import { Metadata } from "next"
+import RoomDetailSection from "@/components/rooms/RoomDetailSection"
 
-type Room = {
+export type Room = {
   id: string
   name: string
   description: string
@@ -18,8 +18,7 @@ type Room = {
 }
 
 type Props = {
-  params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -82,34 +81,26 @@ export default async function RoomDetailPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <div className="relative h-96 mb-4">
-            <Image
-              src={room.image}
-              alt={room.name}
-              fill
-              priority
-              className="object-cover rounded-lg"
-            />
-          </div>
-          <h1 className="text-3xl font-bold mb-4">{room.name}</h1>
-          <p className="text-gray-600 mb-4">{room.description}</p>
-          <div className="flex items-center mb-4">
-            <span className="text-yellow-400 mr-1">★</span>
-            <span>{parseFloat(room.average_rating).toFixed(1)}</span>
-            <span className="text-gray-600 ml-1">({room.review_count}件のレビュー)</span>
-          </div>
-          <div className="bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold mb-2">ルーム情報</h2>
-            <p>最大{room.capacity}人</p>
-            <p>¥{room.pricePerHour.toLocaleString()}/時間</p>
-          </div>
+      <div className="mb-8">
+        <div className="relative h-96 mb-4">
+          <Image
+            src={room.image}
+            alt={room.name}
+            fill
+            priority
+            className="object-cover rounded-lg"
+          />
         </div>
-        <div>
-          <ReservationForm room={room} />
+        <h1 className="text-3xl font-bold mb-4">{room.name}</h1>
+        <p className="text-gray-600 mb-4">{room.description}</p>
+        <div className="flex items-center mb-4">
+          <span className="text-yellow-400 mr-1">★</span>
+          <span>{parseFloat(room.average_rating).toFixed(1)}</span>
+          <span className="text-gray-600 ml-1">({room.review_count}件のレビュー)</span>
         </div>
       </div>
+
+      <RoomDetailSection room={room} />
 
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">レビュー</h2>

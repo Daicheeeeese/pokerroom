@@ -6,31 +6,27 @@ import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { useSession } from "next-auth/react"
-
-type Room = {
-  id: string
-  name: string
-  description: string
-  image: string
-  capacity: number
-  pricePerHour: number
-  createdAt: Date
-  updatedAt: Date
-}
+import type { Room } from "@/app/rooms/[id]/page"
 
 type Props = {
   room: Room
+  selectedDate?: Date | null
 }
 
-export default function ReservationForm({ room }: Props) {
+export default function ReservationForm({ room, selectedDate }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [date, setDate] = useState<Date | null>(null)
+  const [date, setDate] = useState(selectedDate ? selectedDate.toISOString().split('T')[0] : '')
   const [startTime, setStartTime] = useState("")
   const [endTime, setEndTime] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
+
+  // selectedDateが変更されたら、dateを更新
+  if (selectedDate && selectedDate.toISOString().split('T')[0] !== date) {
+    setDate(selectedDate.toISOString().split('T')[0])
+  }
 
   const calculateTotalPrice = () => {
     if (!startTime || !endTime) return 0
@@ -67,7 +63,7 @@ export default function ReservationForm({ room }: Props) {
       console.log("予約リクエスト送信開始")
       const requestData = {
         roomId: room.id,
-        date: date.toISOString(),
+        date: date,
         startTime,
         endTime,
         totalPrice: calculateTotalPrice(),
@@ -117,13 +113,12 @@ export default function ReservationForm({ room }: Props) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">日付</label>
-        <DatePicker
-          selected={date}
-          onChange={(date) => setDate(date)}
-          dateFormat="yyyy/MM/dd"
-          minDate={new Date()}
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholderText="日付を選択"
+          required
         />
       </div>
 
