@@ -26,6 +26,7 @@ model Room {
   name          String
   description   String?
   image         String
+  images        RoomImage[]
   capacity      Int
   pricePerHour  Int
   createdAt     DateTime    @default(now())
@@ -96,4 +97,17 @@ model RoomAvailability {
 
   @@unique([roomId, date])
   @@map("room_availabilities")
+}
+
+model RoomImage {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  url       String
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("room_images")
 }
