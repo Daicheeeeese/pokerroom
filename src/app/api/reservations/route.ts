@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { sendReservationConfirmationEmail } from "@/lib/mail"
 
 export const dynamic = 'force-dynamic'
 
@@ -171,10 +172,26 @@ export async function POST(request: Request) {
           startTime: data.startTime,
           endTime: data.endTime,
           totalPrice: data.totalPrice
-        }
+        },
+        include: {
+          room: true,
+          user: true,
+        },
       })
 
       console.log("予約が作成されました:", JSON.stringify(reservation, null, 2))
+
+      // 確認メールの送信
+      await sendReservationConfirmationEmail({
+        userEmail: reservation.user.email!,
+        userName: reservation.user.name!,
+        roomName: reservation.room.name,
+        date: data.date,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        totalPrice: reservation.totalPrice,
+      })
+
       return corsResponse(reservation)
     } catch (dbError) {
       console.error("データベースエラー:", dbError)
