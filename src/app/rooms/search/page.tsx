@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import RoomCard from '@/components/rooms/RoomCard'
 import SearchBar from '@/components/SearchBar'
+import SortSelect from '@/components/rooms/SortSelect'
 import { Room, Review } from '@prisma/client'
 
 type RoomWithReviews = Room & {
@@ -14,6 +15,7 @@ export default function RoomSearchPage() {
   const searchParams = useSearchParams()
   const [rooms, setRooms] = useState<RoomWithReviews[]>([])
   const [loading, setLoading] = useState(true)
+  const [sortBy, setSortBy] = useState('recommended')
 
   // 検索パラメータに基づいてルームを取得
   useEffect(() => {
@@ -47,6 +49,24 @@ export default function RoomSearchPage() {
     fetchRooms()
   }, [searchParams]) // searchParamsが変更されたら再取得
 
+  // ルームの並び替え
+  const sortedRooms = [...rooms].sort((a, b) => {
+    switch (sortBy) {
+      case 'priceAsc':
+        return a.pricePerHour - b.pricePerHour
+      case 'priceDesc':
+        return b.pricePerHour - a.pricePerHour
+      case 'ratingDesc':
+        const aRating = a.reviews.reduce((acc, review) => acc + review.rating, 0) / (a.reviews.length || 1)
+        const bRating = b.reviews.reduce((acc, review) => acc + review.rating, 0) / (b.reviews.length || 1)
+        return bRating - aRating
+      case 'newest':
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      default:
+        return 0
+    }
+  })
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto mb-8">
@@ -59,15 +79,19 @@ export default function RoomSearchPage() {
         </div>
       ) : (
         <>
-          <div className="mb-6">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">
               {rooms.length}件のルームが見つかりました
               {searchParams.get('area') && `（${searchParams.get('area')}）`}
             </h2>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">並び替え:</span>
+              <SortSelect value={sortBy} onChange={setSortBy} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room) => (
+            {sortedRooms.map((room) => (
               <RoomCard
                 key={room.id}
                 room={room}
