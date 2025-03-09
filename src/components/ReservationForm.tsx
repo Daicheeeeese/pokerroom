@@ -30,10 +30,32 @@ export default function ReservationForm({ room, selectedDate }: Props) {
 
   const calculateTotalPrice = () => {
     if (!startTime || !endTime) return 0
-    const [startHour] = startTime.split(":").map(Number)
-    const [endHour] = endTime.split(":").map(Number)
-    const hours = endHour - startHour
-    return hours * room.pricePerHour
+    
+    // 時間を分単位に変換
+    const [startHour, startMinute = 0] = startTime.split(":").map(Number)
+    const [endHour, endMinute = 0] = endTime.split(":").map(Number)
+    const startTotalMinutes = (startHour * 60) + Number(startMinute)
+    const endTotalMinutes = (endHour * 60) + Number(endMinute)
+    
+    // 時間帯別料金がある場合はそれを使用し、ない場合はデフォルトの時間単価を使用
+    let total = 0
+    if (room.hourlyPrices && room.hourlyPrices.length > 0) {
+      // 30分単位で料金を計算
+      for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
+        const hour = Math.floor(minutes / 60)
+        const hourlyPrice = room.hourlyPrices.find(
+          price => price.hour === hour
+        )
+        // 30分あたりの料金を加算
+        total += (hourlyPrice ? hourlyPrice.price : room.pricePerHour) / 2
+      }
+    } else {
+      // デフォルトの時間単価を使用（30分単位）
+      const durationInHours = (endTotalMinutes - startTotalMinutes) / 60
+      total = durationInHours * room.pricePerHour
+    }
+    
+    return Math.floor(total) // 小数点以下を切り捨て
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,9 +71,12 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     }
 
     // 開始時間と終了時間の検証
-    const [startHour] = startTime.split(":").map(Number)
-    const [endHour] = endTime.split(":").map(Number)
-    if (startHour >= endHour) {
+    const [startHour, startMinute = 0] = startTime.split(":").map(Number)
+    const [endHour, endMinute = 0] = endTime.split(":").map(Number)
+    const startTotalMinutes = (startHour * 60) + Number(startMinute)
+    const endTotalMinutes = (endHour * 60) + Number(endMinute)
+    
+    if (startTotalMinutes >= endTotalMinutes) {
       setError("終了時間は開始時間より後にしてください")
       return
     }
@@ -67,6 +92,24 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     })
 
     router.push(`/reservations/confirm?${params.toString()}`)
+  }
+
+  // 30分単位の時間オプションを生成する関数
+  const generateTimeOptions = () => {
+    const options = []
+    for (let hour = 0; hour < 24; hour++) {
+      options.push(
+        <option key={`${hour}:00`} value={`${hour.toString().padStart(2, '0')}:00`}>
+          {`${hour.toString().padStart(2, '0')}:00`}
+        </option>
+      )
+      options.push(
+        <option key={`${hour}:30`} value={`${hour.toString().padStart(2, '0')}:30`}>
+          {`${hour.toString().padStart(2, '0')}:30`}
+        </option>
+      )
+    }
+    return options
   }
 
   return (
@@ -90,11 +133,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
           <option value="">選択してください</option>
-          {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-            <option key={hour} value={`${hour}:00`}>
-              {`${hour}:00`}
-            </option>
-          ))}
+          {generateTimeOptions()}
         </select>
       </div>
 
@@ -106,11 +145,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
           <option value="">選択してください</option>
-          {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-            <option key={hour} value={`${hour}:00`}>
-              {`${hour}:00`}
-            </option>
-          ))}
+          {generateTimeOptions()}
         </select>
       </div>
 
