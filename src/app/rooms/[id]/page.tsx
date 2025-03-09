@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import RoomDetailSection from '@/components/rooms/RoomDetailSection'
 import ReservationForm from '@/components/ReservationForm'
+import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 
 interface Props {
@@ -16,7 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     where: { id },
     include: {
       reviews: true,
-      hourlyPrices: true
+      hourlyPrices: true,
+      images: true
     }
   })
 
@@ -39,7 +41,12 @@ export default async function RoomPage({ params }: Props) {
     where: { id },
     include: {
       reviews: true,
-      hourlyPrices: true
+      hourlyPrices: true,
+      images: {
+        orderBy: {
+          order: 'asc'
+        }
+      }
     }
   })
 
@@ -49,7 +56,8 @@ export default async function RoomPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <ImageGallery mainImage={room.image} images={room.images} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <div className="lg:col-span-2">
           <RoomDetailSection room={room} />
         </div>
