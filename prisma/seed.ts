@@ -33,12 +33,7 @@ async function main() {
       description: "東京駅から徒歩5分、アクセス抜群のポーカールーム。初心者から上級者まで楽しめる空間です。",
       image: "/images/rooms/room-01/main.jpg",
       images: {
-        create: [
-          { url: '/images/rooms/room-01/sub-1.jpg', order: 1 },
-          { url: '/images/rooms/room-01/sub-2.jpg', order: 2 },
-          { url: '/images/rooms/room-01/sub-3.jpg', order: 3 },
-          { url: '/images/rooms/room-01/sub-4.jpg', order: 4 },
-        ]
+        create: []
       },
       capacity: 8,
       pricePerHour: 1000,
@@ -53,10 +48,7 @@ async function main() {
       description: "横浜駅から徒歩5分、アクセス抜群のポーカールーム",
       image: "/images/rooms/room-02/main.jpg",
       images: {
-        create: [
-          { url: '/images/rooms/room-02/sub-1.jpg', order: 1 },
-          { url: '/images/rooms/room-02/sub-2.jpg', order: 2 },
-        ]
+        create: []
       },
       capacity: 6,
       pricePerHour: 1800,
@@ -71,10 +63,7 @@ async function main() {
       description: "大阪梅田の中心地にある本格的なポーカールーム",
       image: "/images/rooms/room-03/main.jpg",
       images: {
-        create: [
-          { url: '/images/rooms/room-03/sub-1.jpg', order: 1 },
-          { url: '/images/rooms/room-03/sub-2.jpg', order: 2 },
-        ]
+        create: []
       },
       capacity: 10,
       pricePerHour: 2200,
@@ -89,10 +78,7 @@ async function main() {
       description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
       image: "/images/rooms/room-04/main.jpg",
       images: {
-        create: [
-          { url: '/images/rooms/room-04/sub-1.jpg', order: 1 },
-          { url: '/images/rooms/room-04/sub-2.jpg', order: 2 },
-        ]
+        create: []
       },
       capacity: 8,
       pricePerHour: 1900,
@@ -107,10 +93,7 @@ async function main() {
       description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
       image: "/images/rooms/room-05/main.jpg",
       images: {
-        create: [
-          { url: '/images/rooms/room-05/sub-1.jpg', order: 1 },
-          { url: '/images/rooms/room-05/sub-2.jpg', order: 2 },
-        ]
+        create: []
       },
       capacity: 12,
       pricePerHour: 1700,
