@@ -56,57 +56,17 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
-    setIsSubmitting(true)
-    setError(null)
+    const totalPrice = calculateTotalPrice()
+    const params = new URLSearchParams({
+      roomId: room.id,
+      roomName: room.name,
+      date,
+      startTime,
+      endTime,
+      totalPrice: totalPrice.toString(),
+    })
 
-    try {
-      console.log("予約リクエスト送信開始")
-      const requestData = {
-        roomId: room.id,
-        date: date,
-        startTime,
-        endTime,
-        totalPrice: calculateTotalPrice(),
-        userId: session.user.id,
-      }
-      console.log("送信データ:", {
-        ...requestData,
-        userId: session.user.id,
-        userEmail: session.user.email
-      })
-
-      const response = await fetch("/api/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-        },
-        credentials: "include",
-        body: JSON.stringify(requestData),
-      })
-
-      const data = await response.json()
-      console.log("予約レスポンス:", data)
-
-      if (!response.ok) {
-        console.error("予約エラーレスポンス:", data)
-        console.error("レスポンスステータス:", response.status)
-        console.error("レスポンスヘッダー:", Object.fromEntries(response.headers.entries()))
-        const errorMessage = data.error || "予約に失敗しました"
-        console.error("エラーメッセージ:", errorMessage)
-        throw new Error(errorMessage)
-      }
-
-      setSuccess("予約が成功しました。")
-      router.refresh()
-    } catch (error) {
-      console.error("予約エラー:", error)
-      const errorMessage = error instanceof Error ? error.message : "予約に失敗しました"
-      setError(errorMessage)
-      toast.error(errorMessage)
-    } finally {
-      setIsSubmitting(false)
-    }
+    router.push(`/reservations/confirm?${params.toString()}`)
   }
 
   return (
@@ -172,13 +132,15 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-      >
-        {isSubmitting ? "予約中..." : "予約する"}
-      </button>
+      <div className="space-y-4">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+        >
+          {isSubmitting ? "予約処理中..." : "予約（まだ請求されません）"}
+        </button>
+      </div>
     </form>
   )
 } 
