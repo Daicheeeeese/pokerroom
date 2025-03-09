@@ -20,6 +20,44 @@ type ReservationEmailData = {
   totalPrice: number
 }
 
+// 管理者向けメール送信
+async function sendAdminNotification({
+  userName,
+  roomName,
+  date,
+  startTime,
+  endTime,
+  totalPrice,
+}: Omit<ReservationEmailData, 'userEmail'>) {
+  const mailOptions = {
+    from: process.env.SMTP_FROM,
+    to: 'pokerroom@gmail.com',
+    subject: '【PokerRoom】新規予約が入りました',
+    html: `
+      <h2>新規予約通知</h2>
+      <p>以下の予約が入りました。</p>
+      
+      <h3>予約内容</h3>
+      <ul>
+        <li>予約者：${userName}</li>
+        <li>ルーム：${roomName}</li>
+        <li>日付：${date}</li>
+        <li>時間：${startTime} 〜 ${endTime}</li>
+        <li>料金：¥${totalPrice.toLocaleString()}</li>
+      </ul>
+      
+      <p>予約の詳細は<a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/reservations">管理画面</a>から確認できます。</p>
+    `,
+  }
+
+  try {
+    await transporter.sendMail(mailOptions)
+  } catch (error) {
+    console.error('管理者向けメール送信エラー:', error)
+    // 管理者向けメールの失敗は予約プロセスを中断しない
+  }
+}
+
 export async function sendReservationConfirmationEmail({
   userEmail,
   userName,
@@ -54,7 +92,18 @@ export async function sendReservationConfirmationEmail({
   }
 
   try {
+    // ユーザー向けメール送信
     await transporter.sendMail(mailOptions)
+    
+    // 管理者向けメール送信
+    await sendAdminNotification({
+      userName,
+      roomName,
+      date,
+      startTime,
+      endTime,
+      totalPrice,
+    })
   } catch (error) {
     console.error('メール送信エラー:', error)
     throw new Error('予約確認メールの送信に失敗しました')
