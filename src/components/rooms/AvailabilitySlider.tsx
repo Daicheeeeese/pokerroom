@@ -2,52 +2,66 @@
 
 import { format, addDays } from "date-fns"
 import { ja } from "date-fns/locale"
-import { type AvailabilityType } from './AvailabilityStatus'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 type DayAvailability = {
   date: Date
-  status: AvailabilityType
+  isAvailable: boolean
 }
 
 type Props = {
   availabilityData: DayAvailability[]
 }
 
-const statusColors = {
-  '○': 'bg-green-100 text-green-800',
-  '△': 'bg-yellow-100 text-yellow-800',
-  '×': 'bg-red-100 text-red-800',
+const statusColors: Record<'true' | 'false', string> = {
+  'true': 'bg-green-100 text-green-800',
+  'false': 'bg-gray-100 text-gray-400'
 }
 
 export default function AvailabilitySlider({ availabilityData }: Props) {
   const sliderRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
-  const [showRightButton, setShowRightButton] = useState(true)
+  const [showRightButton, setShowRightButton] = useState(false)
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (!sliderRef.current) return
+
+      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current
+      setShowLeftButton(scrollLeft > 0)
+      setShowRightButton(scrollLeft < scrollWidth - clientWidth)
+    }
+
+    const slider = sliderRef.current
+    if (slider) {
+      slider.addEventListener('scroll', checkScroll)
+      // 初期チェック
+      checkScroll()
+
+      // リサイズ時にもチェック
+      window.addEventListener('resize', checkScroll)
+
+      return () => {
+        slider.removeEventListener('scroll', checkScroll)
+        window.removeEventListener('resize', checkScroll)
+      }
+    }
+  }, [])
 
   const scroll = (direction: 'left' | 'right') => {
     if (!sliderRef.current) return
 
-    const scrollAmount = 200
-    const newScrollLeft = direction === 'left'
-      ? sliderRef.current.scrollLeft - scrollAmount
-      : sliderRef.current.scrollLeft + scrollAmount
+    const scrollAmount = 200 // スクロール量（ピクセル）
+    const currentScroll = sliderRef.current.scrollLeft
+    const newScroll = direction === 'left'
+      ? currentScroll - scrollAmount
+      : currentScroll + scrollAmount
 
     sliderRef.current.scrollTo({
-      left: newScrollLeft,
+      left: newScroll,
       behavior: 'smooth'
     })
-
-    // スクロールボタンの表示制御
-    setTimeout(() => {
-      if (!sliderRef.current) return
-      setShowLeftButton(sliderRef.current.scrollLeft > 0)
-      setShowRightButton(
-        sliderRef.current.scrollLeft < 
-        sliderRef.current.scrollWidth - sliderRef.current.clientWidth
-      )
-    }, 300)
   }
 
   return (
@@ -68,7 +82,7 @@ export default function AvailabilitySlider({ availabilityData }: Props) {
         className="flex overflow-x-auto scrollbar-hide gap-2 relative"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {availabilityData.map(({ date, status }) => (
+        {availabilityData.map(({ date, isAvailable }) => (
           <div
             key={date.toISOString()}
             className="flex-shrink-0 text-center px-3 py-2"
@@ -79,8 +93,8 @@ export default function AvailabilitySlider({ availabilityData }: Props) {
                 ({format(date, 'E', { locale: ja })})
               </span>
             </div>
-            <div className={`mt-1 px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
-              {status}
+            <div className={`mt-1 px-3 py-1 rounded-full text-sm font-medium ${statusColors[isAvailable ? 'true' : 'false']}`}>
+              {isAvailable ? '○' : '×'}
             </div>
           </div>
         ))}

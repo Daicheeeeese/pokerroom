@@ -2,25 +2,85 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { type Room as PrismaRoom, type Review } from "@prisma/client"
-import { generateTwoWeeksAvailability } from "./AvailabilityCalendar"
+import type { Review } from "@prisma/client"
 import AvailabilitySlider from "./AvailabilitySlider"
+import { useState, useEffect } from "react"
 
-type RoomWithReviews = PrismaRoom & {
+type RoomWithReviews = {
+  id: string
+  name: string
+  description: string
+  image: string
+  pricePerHour: number
+  capacity: number
   reviews: Review[]
 }
 
 type Props = {
   room: RoomWithReviews
-  selectedDate: Date | null
+  selectedDate?: Date | null
 }
 
 export default function RoomCard({ room, selectedDate }: Props) {
+  const [availabilityData, setAvailabilityData] = useState<{ date: Date; isAvailable: boolean }[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        // 今日から2週間分の日付を生成
+        const dates = Array.from({ length: 14 }, (_, i) => {
+          const date = new Date()
+          date.setDate(date.getDate() + i)
+          date.setHours(0, 0, 0, 0)
+          return date
+        })
+
+        // 予約可能状態を取得
+        const response = await fetch(`/api/rooms/${room.id}/availability?dates=${dates.map(d => d.toISOString()).join(',')}`)
+        const data = await response.json()
+
+        // データが配列でない場合のエラーハンドリング
+        if (!Array.isArray(data)) {
+          console.error('Invalid API response format:', data)
+          throw new Error('Invalid API response format')
+        }
+
+        // 日付ごとの予約可能状態をマッピング
+        const availability = dates.map(date => {
+          const dateStr = date.toISOString().split('T')[0]
+          const availabilityData = data.find((a: { date: string; isAvailable: boolean }) => {
+            const apiDateStr = new Date(a.date).toISOString().split('T')[0]
+            return dateStr === apiDateStr
+          })
+          return {
+            date,
+            isAvailable: availabilityData?.isAvailable ?? true
+          }
+        })
+
+        setAvailabilityData(availability)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching availability:', error)
+        // エラー時はすべての日付を利用可能として表示
+        const dates = Array.from({ length: 14 }, (_, i) => {
+          const date = new Date()
+          date.setDate(date.getDate() + i)
+          date.setHours(0, 0, 0, 0)
+          return { date, isAvailable: true }
+        })
+        setAvailabilityData(dates)
+        setIsLoading(false)
+      }
+    }
+
+    fetchAvailability()
+  }, [room.id])
+
   const averageRating = room.reviews.length > 0
     ? room.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / room.reviews.length
     : null
-
-  const availability = generateTwoWeeksAvailability()
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -55,7 +115,11 @@ export default function RoomCard({ room, selectedDate }: Props) {
       </Link>
       <div className="border-t px-4 py-3">
         <p className="text-sm text-gray-600 mb-2">空き状況</p>
-        <AvailabilitySlider availabilityData={availability} />
+        {isLoading ? (
+          <div className="text-center text-sm text-gray-500">読み込み中...</div>
+        ) : (
+          <AvailabilitySlider availabilityData={availabilityData} />
+        )}
       </div>
     </div>
   )
