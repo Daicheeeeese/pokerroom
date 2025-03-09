@@ -15,16 +15,16 @@ export default function RoomSearchPage() {
   const searchParams = useSearchParams()
   const [rooms, setRooms] = useState<RoomWithReviews[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState('recommended')
 
-  // 検索パラメータに基づいてルームを取得
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setLoading(true)
-        const params = new URLSearchParams()
+        setError(null)
         
-        // URLから検索パラメータを取得
+        const params = new URLSearchParams()
         const area = searchParams.get('area')
         const date = searchParams.get('date')
         const guests = searchParams.get('guests')
@@ -33,21 +33,27 @@ export default function RoomSearchPage() {
         if (date) params.append('date', date)
         if (guests) params.append('guests', guests)
 
+        console.log('Fetching rooms with params:', params.toString())
         const response = await fetch(`/api/rooms?${params.toString()}`)
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch rooms')
+          const errorData = await response.json()
+          throw new Error(errorData.message || 'Failed to fetch rooms')
         }
+
         const data = await response.json()
+        console.log('Received rooms:', data)
         setRooms(data)
       } catch (error) {
         console.error('Error fetching rooms:', error)
+        setError(error instanceof Error ? error.message : 'Failed to fetch rooms')
       } finally {
         setLoading(false)
       }
     }
 
     fetchRooms()
-  }, [searchParams]) // searchParamsが変更されたら再取得
+  }, [searchParams])
 
   // ルームの並び替え
   const sortedRooms = [...rooms].sort((a, b) => {
@@ -76,6 +82,10 @@ export default function RoomSearchPage() {
       {loading ? (
         <div className="text-center py-8">
           <p className="text-gray-600">読み込み中...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-8">
+          <p className="text-red-600">{error}</p>
         </div>
       ) : (
         <>
