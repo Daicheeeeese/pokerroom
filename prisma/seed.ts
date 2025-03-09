@@ -12,7 +12,6 @@ async function main() {
   // テストユーザーを作成
   const testUser = await prisma.user.create({
     data: {
-      id: "test-user-id",
       name: "Test User",
       email: "test@example.com",
       password: "test1234",
