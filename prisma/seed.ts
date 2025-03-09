@@ -1,14 +1,29 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 const prisma = new PrismaClient()
+
+async function deleteIfExists(model: string, deleteFunction: () => Promise<any>) {
+  try {
+    await deleteFunction()
+    console.log(`Deleted all records from ${model}`)
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
+      console.log(`Table for ${model} does not exist yet, skipping deletion`)
+    } else {
+      throw error
+    }
+  }
+}
 
 async function main() {
   // 既存のデータを削除（依存関係の順序に従って削除）
-  await prisma.reservation.deleteMany()
-  await prisma.review.deleteMany()
-  await prisma.hourlyPrice.deleteMany()
-  await prisma.roomAvailability.deleteMany()
-  await prisma.room.deleteMany()
-  await prisma.user.deleteMany()
+  await deleteIfExists('Reservation', () => prisma.reservation.deleteMany())
+  await deleteIfExists('Review', () => prisma.review.deleteMany())
+  await deleteIfExists('HourlyPrice', () => prisma.hourlyPrice.deleteMany())
+  await deleteIfExists('RoomAvailability', () => prisma.roomAvailability.deleteMany())
+  await deleteIfExists('Room', () => prisma.room.deleteMany())
+  await deleteIfExists('User', () => prisma.user.deleteMany())
+
+  console.log('Starting to create rooms...')
 
   // ルームデータを作成
   const rooms = [
@@ -74,32 +89,38 @@ async function main() {
     }
   ]
 
-  for (const roomData of rooms) {
-    const room = await prisma.room.create({
-      data: roomData
-    })
-    console.log('Creating hourly prices for room:', room.id)
-    
-    // 時間帯別料金を設定
-    const hourlyPrices = await Promise.all(
-      Array.from({ length: 24 }, (_, hour) => {
-        const price = hour >= 18 ? Math.floor(room.pricePerHour * 1.2) : room.pricePerHour
-        return prisma.hourlyPrice.create({
-          data: {
-            roomId: room.id,
-            hour,
-            price,
-          },
-        })
+  try {
+    for (const roomData of rooms) {
+      const room = await prisma.room.create({
+        data: roomData
       })
-    )
-    console.log(`Created ${hourlyPrices.length} hourly prices`)
+      console.log('Created room:', room.name)
+      
+      // 時間帯別料金を設定
+      const hourlyPrices = await Promise.all(
+        Array.from({ length: 24 }, (_, hour) => {
+          const price = hour >= 18 ? Math.floor(room.pricePerHour * 1.2) : room.pricePerHour
+          return prisma.hourlyPrice.create({
+            data: {
+              roomId: room.id,
+              hour,
+              price,
+            },
+          })
+        })
+      )
+      console.log(`Created ${hourlyPrices.length} hourly prices for ${room.name}`)
+    }
+    console.log('Seed completed successfully')
+  } catch (error) {
+    console.error('Error during seed:', error)
+    throw error
   }
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('Failed to seed database:', e)
     process.exit(1)
   })
   .finally(async () => {
