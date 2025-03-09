@@ -3,12 +3,24 @@ import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 
 export async function GET(request: Request) {
+  console.log('API Route: GET /api/rooms started')
+  console.log('Environment:', process.env.NODE_ENV)
+  console.log('Database URL exists:', !!process.env.DATABASE_URL)
+
   const { searchParams } = new URL(request.url)
   const area = searchParams.get('area')
   const date = searchParams.get('date')
   const guests = searchParams.get('guests')
 
+  console.log('Search params:', { area, date, guests })
+
   try {
+    // まず全件取得を試みる
+    const allRooms = await prisma.room.findMany({
+      select: { id: true }
+    })
+    console.log('Total rooms in database:', allRooms.length)
+
     // 検索条件を構築
     const conditions: Prisma.RoomWhereInput[] = []
 
@@ -30,7 +42,7 @@ export async function GET(request: Request) {
       })
     }
 
-    console.log('Executing query with conditions:', JSON.stringify(conditions))
+    console.log('Search conditions:', JSON.stringify(conditions))
 
     // Prismaクエリ
     const rooms = await prisma.room.findMany({
@@ -46,12 +58,14 @@ export async function GET(request: Request) {
       }
     })
 
-    console.log(`Found ${rooms.length} rooms`)
+    console.log(`Found ${rooms.length} rooms after applying filters`)
 
     // 日付が指定されている場合、予約済みのルームをフィルタリング
     const filteredRooms = date
       ? rooms.filter(room => !room.reservations?.length)
       : rooms
+
+    console.log(`Final room count after date filtering: ${filteredRooms.length}`)
 
     // reservationsフィールドを除外して返す
     const sanitizedRooms = filteredRooms.map(({ reservations, ...room }) => room)
