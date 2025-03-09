@@ -1,12 +1,7 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import { prisma } from "@/lib/prisma"
-import RoomList from "@/components/rooms/RoomList"
 import RoomCard from '@/components/rooms/RoomCard'
-import DateSelector from '@/components/DateSelector'
-import { Room, Review } from '@prisma/client'
 import Link from "next/link"
+import type { Room, Review } from '@prisma/client'
 
 export const dynamic = "force-dynamic"
 
@@ -14,14 +9,9 @@ type RoomWithReviews = Room & {
   reviews: Review[]
 }
 
-type Props = {
-  searchParams?: {
-    date?: string
-  }
-}
-
 export default async function RoomsPage() {
   try {
+    // ルーム一覧を取得（サーバーサイドで直接Prismaを使用）
     const rooms = await prisma.room.findMany({
       include: {
         reviews: true,
@@ -47,7 +37,7 @@ export default async function RoomsPage() {
         </div>
       </div>
     )
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error details:", error)
     return (
       <div className="container mx-auto px-4 py-8">
