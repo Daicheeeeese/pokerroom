@@ -20,6 +20,7 @@ async function main() {
   await deleteIfExists('Review', () => prisma.review.deleteMany())
   await deleteIfExists('HourlyPrice', () => prisma.hourlyPrice.deleteMany())
   await deleteIfExists('RoomAvailability', () => prisma.roomAvailability.deleteMany())
+  await deleteIfExists('RoomImage', () => prisma.roomImage.deleteMany())
   await deleteIfExists('Room', () => prisma.room.deleteMany())
   await deleteIfExists('User', () => prisma.user.deleteMany())
 
@@ -29,20 +30,34 @@ async function main() {
   const rooms = [
     {
       name: "ポーカールーム東京",
-      description: "東京都心の便利な場所にある快適なポーカールーム",
-      image: "/images/rooms/room-sample-01.jpg",
+      description: "東京駅から徒歩5分、アクセス抜群のポーカールーム。初心者から上級者まで楽しめる空間です。",
+      image: "/images/rooms/room-01/main.jpg",
+      images: {
+        create: [
+          { url: '/images/rooms/room-01/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-01/sub-2.jpg', order: 2 },
+          { url: '/images/rooms/room-01/sub-3.jpg', order: 3 },
+          { url: '/images/rooms/room-01/sub-4.jpg', order: 4 },
+        ]
+      },
       capacity: 8,
-      pricePerHour: 2000,
+      pricePerHour: 1000,
+      address: "東京都千代田区丸の内1-1-1",
       prefecture: "東京都",
-      city: "渋谷区",
-      address: "渋谷1-1-1",
-      latitude: 35.6581,
-      longitude: 139.7017
+      city: "千代田区",
+      latitude: 35.681236,
+      longitude: 139.767125,
     },
     {
       name: "ポーカールーム横浜",
       description: "横浜駅から徒歩5分、アクセス抜群のポーカールーム",
-      image: "/images/rooms/room-sample-02.jpg",
+      image: "/images/rooms/room-02/main.jpg",
+      images: {
+        create: [
+          { url: '/images/rooms/room-02/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-02/sub-2.jpg', order: 2 },
+        ]
+      },
       capacity: 6,
       pricePerHour: 1800,
       prefecture: "神奈川県",
@@ -54,7 +69,13 @@ async function main() {
     {
       name: "ポーカールーム大阪",
       description: "大阪梅田の中心地にある本格的なポーカールーム",
-      image: "/images/rooms/room-sample-03.jpg",
+      image: "/images/rooms/room-03/main.jpg",
+      images: {
+        create: [
+          { url: '/images/rooms/room-03/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-03/sub-2.jpg', order: 2 },
+        ]
+      },
       capacity: 10,
       pricePerHour: 2200,
       prefecture: "大阪府",
@@ -66,7 +87,13 @@ async function main() {
     {
       name: "ポーカールーム名古屋",
       description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
-      image: "/images/rooms/room-sample-04.jpg",
+      image: "/images/rooms/room-04/main.jpg",
+      images: {
+        create: [
+          { url: '/images/rooms/room-04/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-04/sub-2.jpg', order: 2 },
+        ]
+      },
       capacity: 8,
       pricePerHour: 1900,
       prefecture: "愛知県",
@@ -78,7 +105,13 @@ async function main() {
     {
       name: "ポーカールーム福岡",
       description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
-      image: "/images/rooms/room-sample-05.jpg",
+      image: "/images/rooms/room-05/main.jpg",
+      images: {
+        create: [
+          { url: '/images/rooms/room-05/sub-1.jpg', order: 1 },
+          { url: '/images/rooms/room-05/sub-2.jpg', order: 2 },
+        ]
+      },
       capacity: 12,
       pricePerHour: 1700,
       prefecture: "福岡県",
