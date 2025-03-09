@@ -5,15 +5,19 @@ import Link from "next/link"
 import type { Review } from "@prisma/client"
 import AvailabilitySlider from "./AvailabilitySlider"
 import { useState, useEffect } from "react"
+import { MapPinIcon } from "@heroicons/react/24/outline"
 
 type RoomWithReviews = {
   id: string
   name: string
-  description: string
+  description: string | null
   image: string
   pricePerHour: number
   capacity: number
   reviews: Review[]
+  address?: string | null
+  prefecture?: string | null
+  city?: string | null
 }
 
 type Props = {
@@ -96,6 +100,16 @@ export default function RoomCard({ room, selectedDate }: Props) {
         </div>
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
+          {(room.prefecture || room.city || room.address) && (
+            <div className="flex items-start gap-1 mb-2 text-gray-600">
+              <MapPinIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm">
+                {[room.prefecture, room.city, room.address]
+                  .filter(Boolean)
+                  .join(' ')}
+              </p>
+            </div>
+          )}
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">

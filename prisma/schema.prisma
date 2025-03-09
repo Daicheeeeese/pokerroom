@@ -34,11 +34,11 @@ model Room {
   reservations  Reservation[]
   hourlyPrices  HourlyPrice[]
   availabilities RoomAvailability[]
-  address       String?     
-  prefecture    String?     
-  city          String?     
-  latitude      Float?      
-  longitude     Float?      
+  address       String?
+  prefecture    String?
+  city          String?
+  latitude      Float?
+  longitude     Float?
 
   @@map("rooms")
 }
