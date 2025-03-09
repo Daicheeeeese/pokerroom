@@ -31,7 +31,7 @@ async function sendAdminNotification({
 }: Omit<ReservationEmailData, 'userEmail'>) {
   const mailOptions = {
     from: process.env.SMTP_FROM,
-    to: 'pokerroom@gmail.com',
+    to: 'pokerroom.reservation@gmail.com',
     subject: '【PokerRoom】新規予約が入りました',
     html: `
       <h2>新規予約通知</h2>
