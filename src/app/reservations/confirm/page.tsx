@@ -50,7 +50,7 @@ export default function ReservationConfirmPage() {
         throw new Error(data.error || "予約に失敗しました")
       }
 
-      toast.success("予約が完了しました")
+      toast.success("予約が完了しました。予約メールが届いているか、ご確認ください。")
       router.push("/reservations")
     } catch (error) {
       console.error("予約エラー:", error)
