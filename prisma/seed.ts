@@ -30,7 +30,7 @@ async function main() {
     {
       name: "ポーカールーム東京",
       description: "東京都心の便利な場所にある快適なポーカールーム",
-      image: "/images/room1.jpg",
+      image: "/images/rooms/poker-room-1.jpg",
       capacity: 8,
       pricePerHour: 2000,
       prefecture: "東京都",
@@ -42,7 +42,7 @@ async function main() {
     {
       name: "ポーカールーム横浜",
       description: "横浜駅から徒歩5分、アクセス抜群のポーカールーム",
-      image: "/images/room2.jpg",
+      image: "/images/rooms/poker-room-2.jpg",
       capacity: 6,
       pricePerHour: 1800,
       prefecture: "神奈川県",
@@ -54,7 +54,7 @@ async function main() {
     {
       name: "ポーカールーム大阪",
       description: "大阪梅田の中心地にある本格的なポーカールーム",
-      image: "/images/room3.jpg",
+      image: "/images/rooms/poker-room-3.jpg",
       capacity: 10,
       pricePerHour: 2200,
       prefecture: "大阪府",
@@ -66,7 +66,7 @@ async function main() {
     {
       name: "ポーカールーム名古屋",
       description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
-      image: "/images/room4.jpg",
+      image: "/images/rooms/poker-room-4.jpg",
       capacity: 8,
       pricePerHour: 1900,
       prefecture: "愛知県",
@@ -78,7 +78,7 @@ async function main() {
     {
       name: "ポーカールーム福岡",
       description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
-      image: "/images/room5.jpg",
+      image: "/images/rooms/poker-room-5.jpg",
       capacity: 12,
       pricePerHour: 1700,
       prefecture: "福岡県",
