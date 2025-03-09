@@ -1,117 +1,100 @@
 import { PrismaClient } from '@prisma/client'
-
 const prisma = new PrismaClient()
 
 async function main() {
-  // 既存のデータを削除
+  // 既存のデータを削除（依存関係の順序に従って削除）
   await prisma.reservation.deleteMany()
   await prisma.review.deleteMany()
+  await prisma.hourlyPrice.deleteMany()
+  await prisma.roomAvailability.deleteMany()
   await prisma.room.deleteMany()
   await prisma.user.deleteMany()
 
-  // テストユーザーを作成
-  const testUser = await prisma.user.create({
-    data: {
-      id: "test-user-1",
-      name: "Test User",
-      email: "test@example.com",
-      password: "test1234",
-    },
-  })
-
-  // テストデータを追加
-  const room1 = await prisma.room.create({
-    data: {
-      name: "渋谷ポーカールーム",
-      description: "渋谷駅から徒歩5分の好立地。トーナメントやキャッシュゲームに対応した本格的なポーカールームです。",
-      image: "/images/rooms/room-sample-01.jpg",
+  // ルームデータを作成
+  const rooms = [
+    {
+      name: "ポーカールーム東京",
+      description: "東京都心の便利な場所にある快適なポーカールーム",
+      image: "/images/room1.jpg",
       capacity: 8,
-      pricePerHour: 3000,
+      pricePerHour: 2000,
+      prefecture: "東京都",
+      city: "渋谷区",
+      address: "渋谷1-1-1",
+      latitude: 35.6581,
+      longitude: 139.7017
     },
-  })
-
-  const room2 = await prisma.room.create({
-    data: {
-      name: "新宿ポーカースペース",
-      description: "新宿駅東口から徒歩3分。24時間営業の本格ポーカールーム。",
-      image: "/images/rooms/room-sample-02.jpg",
-      capacity: 12,
-      pricePerHour: 5000,
+    {
+      name: "ポーカールーム横浜",
+      description: "横浜駅から徒歩5分、アクセス抜群のポーカールーム",
+      image: "/images/room2.jpg",
+      capacity: 6,
+      pricePerHour: 1800,
+      prefecture: "神奈川県",
+      city: "横浜市",
+      address: "西区みなとみらい2-2-2",
+      latitude: 35.4628,
+      longitude: 139.6222
     },
-  })
-
-  const room3 = await prisma.room.create({
-    data: {
-      name: "池袋ポーカーハウス",
-      description: "池袋駅西口から徒歩7分。初心者から上級者まで楽しめる、アットホームな雰囲気のポーカールーム。",
-      image: "/images/rooms/room-sample-01.jpg",
+    {
+      name: "ポーカールーム大阪",
+      description: "大阪梅田の中心地にある本格的なポーカールーム",
+      image: "/images/room3.jpg",
       capacity: 10,
-      pricePerHour: 4000,
+      pricePerHour: 2200,
+      prefecture: "大阪府",
+      city: "大阪市",
+      address: "北区大深町3-3-3",
+      latitude: 34.7024,
+      longitude: 135.4959
     },
-  })
-
-  const room4 = await prisma.room.create({
-    data: {
-      name: "六本木ポーカークラブ",
-      description: "六本木駅直結。高級感あふれる内装で、上質なポーカー体験を提供。VIPルームも完備。",
-      image: "/images/rooms/room-sample-02.jpg",
-      capacity: 16,
-      pricePerHour: 8000,
+    {
+      name: "ポーカールーム名古屋",
+      description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
+      image: "/images/room4.jpg",
+      capacity: 8,
+      pricePerHour: 1900,
+      prefecture: "愛知県",
+      city: "名古屋市",
+      address: "中村区名駅4-4-4",
+      latitude: 35.1709,
+      longitude: 136.8815
     },
-  })
+    {
+      name: "ポーカールーム福岡",
+      description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
+      image: "/images/room5.jpg",
+      capacity: 12,
+      pricePerHour: 1700,
+      prefecture: "福岡県",
+      city: "福岡市",
+      address: "博多区博多駅5-5-5",
+      latitude: 33.5902,
+      longitude: 130.4017
+    }
+  ]
 
-  const room5 = await prisma.room.create({
-    data: {
-      name: "秋葉原ゲーミングスペース",
-      description: "秋葉原駅から徒歩2分。eスポーツ施設を併設した新しいスタイルのポーカールーム。",
-      image: "/images/rooms/room-sample-01.jpg",
-      capacity: 14,
-      pricePerHour: 4500,
-    },
-  })
-
-  // レビューのデータを作成
-  await prisma.review.createMany({
-    data: [
-      {
-        rating: 5,
-        comment: "とても清潔で快適な空間でした。",
-        roomId: room1.id,
-      },
-      {
-        rating: 4,
-        comment: "スタッフの対応が丁寧でした。",
-        roomId: room1.id,
-      },
-      {
-        rating: 5,
-        comment: "設備が充実していて満足です。",
-        roomId: room2.id,
-      },
-      {
-        rating: 5,
-        comment: "高級感があり、とても良い雰囲気でした。",
-        roomId: room4.id,
-      },
-      {
-        rating: 4,
-        comment: "初心者でも安心して遊べる環境です。",
-        roomId: room3.id,
-      },
-      {
-        rating: 5,
-        comment: "最新の設備が整っていて素晴らしかったです。",
-        roomId: room5.id,
-      },
-      {
-        rating: 4,
-        comment: "アクセスが良く、気軽に利用できます。",
-        roomId: room3.id,
-      },
-    ],
-  })
-
-  console.log("シードデータを作成しました")
+  for (const roomData of rooms) {
+    const room = await prisma.room.create({
+      data: roomData
+    })
+    console.log('Creating hourly prices for room:', room.id)
+    
+    // 時間帯別料金を設定
+    const hourlyPrices = await Promise.all(
+      Array.from({ length: 24 }, (_, hour) => {
+        const price = hour >= 18 ? Math.floor(room.pricePerHour * 1.2) : room.pricePerHour
+        return prisma.hourlyPrice.create({
+          data: {
+            roomId: room.id,
+            hour,
+            price,
+          },
+        })
+      })
+    )
+    console.log(`Created ${hourlyPrices.length} hourly prices`)
+  }
 }
 
 main()
