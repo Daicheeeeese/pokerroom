@@ -18,6 +18,7 @@ const nextConfig = {
     unoptimized: true,
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
+    domains: ['images.unsplash.com'],
   },
   // パフォーマンスとセキュリティの設定
   poweredByHeader: false,
@@ -55,9 +56,6 @@ const nextConfig = {
     fetches: {
       fullUrl: true,
     },
-  },
-  experimental: {
-    serverActions: true,
   },
 };
 
