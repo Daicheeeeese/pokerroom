@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function deleteIfExists(model: string, deleteFunction: () => Promise<any>) {
@@ -29,21 +29,13 @@ function generateDates() {
 async function main() {
   try {
     // 既存のデータを削除
-    console.log("Deleted all records from Reservation")
     await prisma.reservation.deleteMany()
-    console.log("Deleted all records from Review")
     await prisma.review.deleteMany()
-    console.log("Deleted all records from HourlyPrice")
     await prisma.hourlyPrice.deleteMany()
-    console.log("Deleted all records from RoomAvailability")
     await prisma.roomAvailability.deleteMany()
-    console.log("Deleted all records from TimeSlot")
     await prisma.timeSlot.deleteMany()
-    console.log("Deleted all records from RoomImage")
     await prisma.roomImage.deleteMany()
-    console.log("Deleted all records from Room")
     await prisma.room.deleteMany()
-    console.log("Deleted all records from User")
     await prisma.user.deleteMany()
 
     console.log("Starting to create rooms...")
@@ -122,7 +114,14 @@ async function main() {
     for (const roomData of rooms) {
       // ルームの作成
       const room = await prisma.room.create({
-        data: roomData
+        data: {
+          name: roomData.name,
+          description: roomData.description,
+          address: roomData.address,
+          latitude: roomData.latitude,
+          longitude: roomData.longitude,
+          image: roomData.image
+        }
       })
       console.log(`Created room: ${room.name}`)
 
