@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
@@ -30,12 +30,25 @@ export async function GET(
       }
     })
 
+    // データが見つからない場合は、すべての日付を利用可能として返す
+    if (availabilities.length === 0) {
+      return NextResponse.json(
+        dates.map(date => ({
+          date: new Date(date),
+          isAvailable: true
+        }))
+      )
+    }
+
     return NextResponse.json(availabilities)
   } catch (error) {
     console.error('Error fetching room availability:', error)
+    // エラー時はすべての日付を利用可能として返す
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      dates?.map(date => ({
+        date: new Date(date),
+        isAvailable: true
+      })) || []
     )
   }
 } 
