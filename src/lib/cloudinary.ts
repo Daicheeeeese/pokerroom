@@ -31,9 +31,6 @@ const CLOUDINARY_IMAGE_MAP = {
 } as const
 
 export const generateImageUrl = (roomNumber: number, imageType: 'main' | 'sub', subNumber?: number) => {
-  const baseUrl = 'https://res.cloudinary.com/' + process.env.CLOUDINARY_CLOUD_NAME + '/image/upload'
-  const imagePath = subNumber 
-    ? `/rooms/room-${String(roomNumber).padStart(2, '0')}/sub-${subNumber}.jpg`
-    : `/rooms/room-${String(roomNumber).padStart(2, '0')}/main.jpg`
-  return baseUrl + imagePath
+  const baseUrl = 'https://res.cloudinary.com/dxxeypyws/image/upload'
+  return `${baseUrl}/v1741614032/main_ezdalc.jpg`
 } 
