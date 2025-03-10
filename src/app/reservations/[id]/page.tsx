@@ -11,15 +11,20 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  const reservations = await prisma.reservation.findMany({
-    select: {
-      id: true,
-    },
-  })
+  try {
+    const reservations = await prisma.reservation.findMany({
+      select: {
+        id: true,
+      },
+    })
 
-  return reservations.map((reservation) => ({
-    id: reservation.id,
-  }))
+    return reservations.map((reservation) => ({
+      id: reservation.id,
+    }))
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error)
+    return []
+  }
 }
 
 export default async function ReservationDetailPage({ params }: Props) {
