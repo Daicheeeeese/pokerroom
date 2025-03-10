@@ -21,7 +21,7 @@ export default function RoomDetailSection({ room }: Props) {
           <div className="bg-gray-50 p-4 rounded-lg">
             <h2 className="text-xl font-semibold mb-2">料金</h2>
             <p className="text-3xl font-bold text-blue-600">
-              ¥{room.pricePerHour.toLocaleString()}~<span className="text-base font-normal text-gray-600">/時間</span>
+              ¥{(room.pricePerHour ?? 0).toLocaleString()}~<span className="text-base font-normal text-gray-600">/時間</span>
             </p>
             <p className="text-sm text-gray-600 mt-1">最大{room.capacity}人まで利用可能</p>
           </div>

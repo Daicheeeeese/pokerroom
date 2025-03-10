@@ -113,7 +113,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">
-              ¥{room.pricePerHour.toLocaleString()}~/時間
+              ¥{(room.pricePerHour ?? 0).toLocaleString()}~/時間
             </p>
             {averageRating && (
               <div className="flex items-center">
