@@ -21,19 +21,16 @@ export const uploadImage = async (imageUrl: string, folder: string = 'rooms') =>
   }
 }
 
-// 実際のCloudinaryのURLに基づいてマッピング
-const CLOUDINARY_IMAGE_MAP = {
-  'room-01': 'v1741608435/main_pn4byl',
-  'room-02': 'v1741608435/main_pn4byl', // 実際のURLに置き換えてください
-  'room-03': 'v1741608435/main_pn4byl', // 実際のURLに置き換えてください
-  'room-04': 'v1741608435/main_pn4byl', // 実際のURLに置き換えてください
-  'room-05': 'v1741608435/main_pn4byl', // 実際のURLに置き換えてください
-} as const
-
-export const generateImageUrl = (imageUrl: string | null | undefined) => {
-  if (!imageUrl) {
-    // デフォルトの画像URLを返す
-    return 'https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg'
+export const generateImageUrl = (roomNumber: number, imageType: 'main' | 'sub', subNumber?: number) => {
+  const baseUrl = 'https://res.cloudinary.com/dxxeypyws/image/upload'
+  const roomPath = `rooms/room-${String(roomNumber).padStart(2, '0')}`
+  
+  if (imageType === 'main') {
+    return `${baseUrl}/${roomPath}/main.jpg`
+  } else if (imageType === 'sub' && subNumber) {
+    return `${baseUrl}/${roomPath}/sub-${subNumber}.jpg`
   }
-  return imageUrl
+  
+  // デフォルトの画像を返す
+  return `${baseUrl}/v1741614032/main_ezdalc.jpg`
 } 

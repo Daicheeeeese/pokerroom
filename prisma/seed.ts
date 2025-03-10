@@ -53,7 +53,7 @@ async function main() {
         address: "東京都渋谷区渋谷1-1-1",
         latitude: 35.658034,
         longitude: 139.701636,
-        image: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+        image: generateImageUrl(1, 'main'),
         capacity: 10,
         pricePerHour: 2000,
         prefecture: "東京都",
@@ -65,7 +65,7 @@ async function main() {
         address: "神奈川県横浜市西区みなとみらい2-2-2",
         latitude: 35.4628,
         longitude: 139.6222,
-        image: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+        image: generateImageUrl(2, 'main'),
         capacity: 8,
         pricePerHour: 1800,
         prefecture: "神奈川県",
@@ -77,7 +77,7 @@ async function main() {
         address: "大阪府大阪市北区大深町3-3-3",
         latitude: 34.7024,
         longitude: 135.4959,
-        image: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+        image: generateImageUrl(3, 'main'),
         capacity: 12,
         pricePerHour: 1900,
         prefecture: "大阪府",
@@ -86,7 +86,7 @@ async function main() {
       {
         name: "ポーカールーム名古屋",
         description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
-        image: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+        image: generateImageUrl(4, 'main'),
         capacity: 8,
         pricePerHour: 1900,
         prefecture: "愛知県",
@@ -98,7 +98,7 @@ async function main() {
       {
         name: "ポーカールーム福岡",
         description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
-        image: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+        image: generateImageUrl(5, 'main'),
         capacity: 12,
         pricePerHour: 1700,
         prefecture: "福岡県",
@@ -131,7 +131,7 @@ async function main() {
       await prisma.roomImage.createMany({
         data: [1, 2, 3, 4].map(num => ({
           roomId: room.id,
-          url: "https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg",
+          url: generateImageUrl(Number(room.name.match(/\d+/)?.[0] || 1), 'sub', num),
           order: num
         }))
       })
