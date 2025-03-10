@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { generateImageUrl } from '@/lib/cloudinary'
 
 // このルートを動的に設定
 export const dynamic = 'force-dynamic'
@@ -47,7 +48,13 @@ export async function GET(request: Request) {
       }
     })
 
-    console.log('Found rooms:', rooms.map(room => ({
+    // Cloudinaryの画像URLに変換
+    const roomsWithCloudinaryUrls = rooms.map((room, index) => ({
+      ...room,
+      image: generateImageUrl(index + 1, 'main')
+    }))
+
+    console.log('Found rooms:', roomsWithCloudinaryUrls.map(room => ({
       id: room.id,
       name: room.name,
       pricePerHour: room.pricePerHour,
@@ -56,7 +63,7 @@ export async function GET(request: Request) {
 
     // 日付が指定されている場合、予約済みのルームをフィルタリング
     const filteredRooms = date
-      ? await Promise.all(rooms.map(async (room) => {
+      ? await Promise.all(roomsWithCloudinaryUrls.map(async (room) => {
           console.log(`Checking reservations for room ${room.id}`)
           const reservations = await prisma.reservation.findMany({
             where: {
@@ -67,7 +74,7 @@ export async function GET(request: Request) {
           console.log(`Room ${room.id} has ${reservations.length} reservations`)
           return { ...room, hasReservation: reservations.length > 0 }
         }))
-      : rooms.map(room => ({ ...room, hasReservation: false }))
+      : roomsWithCloudinaryUrls.map(room => ({ ...room, hasReservation: false }))
 
     console.log('Filtered rooms:', filteredRooms.map(room => ({
       id: room.id,
@@ -88,7 +95,8 @@ export async function GET(request: Request) {
     const response = availableRooms.map(({ hasReservation, ...room }) => room)
     console.log('Final response:', response.map(room => ({
       id: room.id,
-      name: room.name
+      name: room.name,
+      image: room.image
     })))
     
     return NextResponse.json(response)
