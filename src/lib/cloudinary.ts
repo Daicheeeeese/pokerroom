@@ -30,7 +30,10 @@ const CLOUDINARY_IMAGE_MAP = {
   'room-05': 'v1741608435/main_pn4byl', // 実際のURLに置き換えてください
 } as const
 
-export const generateImageUrl = (roomNumber: number, imageType: 'main' | 'sub', subNumber?: number) => {
-  const baseUrl = 'https://res.cloudinary.com/dxxeypyws/image/upload'
-  return `${baseUrl}/v1741614032/main_ezdalc.jpg`
+export const generateImageUrl = (imageUrl: string | null | undefined) => {
+  if (!imageUrl) {
+    // デフォルトの画像URLを返す
+    return 'https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg'
+  }
+  return imageUrl
 } 
