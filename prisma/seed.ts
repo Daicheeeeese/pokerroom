@@ -14,12 +14,25 @@ async function deleteIfExists(model: string, deleteFunction: () => Promise<any>)
   }
 }
 
+// 今日から14日分の日付を生成する関数
+function generateDates() {
+  const dates = []
+  for (let i = 0; i < 14; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() + i)
+    date.setHours(0, 0, 0, 0)
+    dates.push(date)
+  }
+  return dates
+}
+
 async function main() {
   // 既存のデータを削除（依存関係の順序に従って削除）
   await deleteIfExists('Reservation', () => prisma.reservation.deleteMany())
   await deleteIfExists('Review', () => prisma.review.deleteMany())
   await deleteIfExists('HourlyPrice', () => prisma.hourlyPrice.deleteMany())
   await deleteIfExists('RoomAvailability', () => prisma.roomAvailability.deleteMany())
+  await deleteIfExists('TimeSlot', () => prisma.timeSlot.deleteMany())
   await deleteIfExists('RoomImage', () => prisma.roomImage.deleteMany())
   await deleteIfExists('Room', () => prisma.room.deleteMany())
   await deleteIfExists('User', () => prisma.user.deleteMany())
@@ -131,6 +144,8 @@ async function main() {
   ]
 
   try {
+    const dates = generateDates()
+    
     for (const roomData of rooms) {
       const room = await prisma.room.create({
         data: roomData
@@ -151,6 +166,35 @@ async function main() {
         })
       )
       console.log(`Created ${hourlyPrices.length} hourly prices for ${room.name}`)
+
+      // 各日付の予約状況を設定
+      for (const date of dates) {
+        // 日付ごとの予約状況を作成
+        const availability = await prisma.roomAvailability.create({
+          data: {
+            roomId: room.id,
+            date,
+            isAvailable: true
+          }
+        })
+        console.log(`Created availability for ${room.name} on ${date.toISOString().split('T')[0]}`)
+
+        // 30分ごとのタイムスロットを作成
+        for (let hour = 0; hour < 24; hour++) {
+          for (let minute of [0, 30]) {
+            const timeSlot = await prisma.timeSlot.create({
+              data: {
+                roomId: room.id,
+                date,
+                hour,
+                minute,
+                isAvailable: true
+              }
+            })
+          }
+        }
+        console.log(`Created time slots for ${room.name} on ${date.toISOString().split('T')[0]}`)
+      }
     }
     console.log('Seed completed successfully')
   } catch (error) {

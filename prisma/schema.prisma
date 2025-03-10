@@ -35,6 +35,7 @@ model Room {
   reservations  Reservation[]
   hourlyPrices  HourlyPrice[]
   availabilities RoomAvailability[]
+  timeSlots     TimeSlot[]
   address       String?
   prefecture    String?
   city          String?
@@ -110,4 +111,19 @@ model RoomImage {
   updatedAt DateTime @updatedAt
 
   @@map("room_images")
+}
+
+model TimeSlot {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id])
+  date        DateTime
+  hour        Int
+  minute      Int      // 0 or 30
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([roomId, date, hour, minute])
+  @@map("time_slots")
 }

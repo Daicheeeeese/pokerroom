@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import RoomDetailSection from '@/components/rooms/RoomDetailSection'
-import ReservationForm from '@/components/ReservationForm'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 
@@ -57,13 +56,11 @@ export default async function RoomPage({ params }: Props) {
   return (
     <div className="container mx-auto px-4 py-8">
       <ImageGallery mainImage={room.image} images={room.images} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <div className="lg:col-span-2">
-          <RoomDetailSection room={room} />
-        </div>
-        <div className="lg:col-span-1">
-          <ReservationForm room={room} />
-        </div>
+      <div className="mt-6 mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">{room.name}</h1>
+      </div>
+      <div className="w-full">
+        <RoomDetailSection room={room} />
       </div>
     </div>
   )

@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json()
+
+    console.log("新規登録リクエスト:", {
+      name,
+      email,
+      passwordLength: password?.length
+    })
 
     // バリデーション
     if (!name || !email || !password) {
@@ -49,13 +56,14 @@ export async function POST(request: Request) {
     // ユーザーの作成
     const user = await prisma.user.create({
       data: {
+        id: uuidv4(),
         name,
         email,
         password: hashedPassword,
       },
     })
 
-    console.log("新規ユーザー登録:", {
+    console.log("新規ユーザー登録成功:", {
       id: user.id,
       email: user.email,
       name: user.name,
@@ -67,6 +75,19 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     console.error("ユーザー登録エラー:", error)
+    
+    // より詳細なエラー情報を返す
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { 
+          error: "ユーザー登録に失敗しました",
+          details: error.message,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json(
       { error: "ユーザー登録に失敗しました" },
       { status: 500 }
