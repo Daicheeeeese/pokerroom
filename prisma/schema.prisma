@@ -29,6 +29,10 @@ model Room {
   latitude        Float?
   longitude       Float?
   image           String?
+  pricePerHour    Int
+  capacity        Int
+  prefecture      String?
+  city            String?
   images          RoomImage[]
   hourlyPrices    HourlyPrice[]
   availability    RoomAvailability[]
