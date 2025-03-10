@@ -38,15 +38,7 @@ export async function GET(request: Request) {
     const rooms = await prisma.room.findMany({
       where,
       include: {
-        reviews: true,
-        hourlyPrices: true,
-        ...(date ? {
-          reservations: {
-            where: {
-              date: new Date(date)
-            }
-          }
-        } : {})
+        reviews: true
       }
     })
 
@@ -54,15 +46,25 @@ export async function GET(request: Request) {
 
     // 日付が指定されている場合、予約済みのルームをフィルタリング
     const filteredRooms = date
-      ? rooms.filter(room => !room.reservations?.length)
-      : rooms
+      ? await Promise.all(rooms.map(async (room) => {
+          const reservations = await prisma.reservation.findMany({
+            where: {
+              roomId: room.id,
+              date: new Date(date)
+            }
+          })
+          return { ...room, hasReservation: reservations.length > 0 }
+        }))
+      : rooms.map(room => ({ ...room, hasReservation: false }))
 
     console.log(`Final room count: ${filteredRooms.length}`)
 
-    // reservationsフィールドを除外して返す
-    const sanitizedRooms = filteredRooms.map(({ reservations, ...room }) => room)
+    // 予約済みのルームをフィルタリング
+    const availableRooms = date
+      ? filteredRooms.filter(room => !room.hasReservation)
+      : filteredRooms
 
-    return NextResponse.json(sanitizedRooms)
+    return NextResponse.json(availableRooms.map(({ hasReservation, ...room }) => room))
   } catch (error) {
     console.error('Error in GET /api/rooms:', error)
     
