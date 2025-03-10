@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   console.log('API Route: GET /api/rooms started')
   console.log('Environment:', process.env.NODE_ENV)
-  console.log('Database URL exists:', !!process.env.DATABASE_URL)
+  console.log('Database URL:', process.env.DATABASE_URL?.slice(0, 30) + '...')
 
   try {
     const { searchParams } = new URL(request.url)
@@ -37,6 +37,15 @@ export async function GET(request: Request) {
 
     console.log('Search conditions:', JSON.stringify(where))
 
+    // データベース接続テスト
+    try {
+      await prisma.$connect()
+      console.log('Database connection successful')
+    } catch (error) {
+      console.error('Database connection failed:', error)
+      throw error
+    }
+
     // Prismaクエリ
     console.log('Executing Prisma query with conditions:', JSON.stringify(where, null, 2))
     
@@ -47,6 +56,7 @@ export async function GET(request: Request) {
       }
     })
 
+    console.log('Found rooms count:', rooms.length)
     console.log('Found rooms:', rooms.map(room => ({
       id: room.id,
       name: room.name,
@@ -69,6 +79,7 @@ export async function GET(request: Request) {
         }))
       : rooms.map(room => ({ ...room, hasReservation: false }))
 
+    console.log('Filtered rooms count:', filteredRooms.length)
     console.log('Filtered rooms:', filteredRooms.map(room => ({
       id: room.id,
       name: room.name,
@@ -80,12 +91,14 @@ export async function GET(request: Request) {
       ? filteredRooms.filter(room => !room.hasReservation)
       : filteredRooms
 
+    console.log('Available rooms count:', availableRooms.length)
     console.log('Available rooms:', availableRooms.map(room => ({
       id: room.id,
       name: room.name
     })))
     
     const response = availableRooms.map(({ hasReservation, ...room }) => room)
+    console.log('Final response count:', response.length)
     console.log('Final response:', response.map(room => ({
       id: room.id,
       name: room.name,
@@ -112,5 +125,7 @@ export async function GET(request: Request) {
       { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 } 
