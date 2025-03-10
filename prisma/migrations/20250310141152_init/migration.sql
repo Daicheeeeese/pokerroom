@@ -17,16 +17,16 @@ CREATE TABLE "rooms" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "image" TEXT NOT NULL,
-    "capacity" INTEGER NOT NULL,
-    "pricePerHour" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "address" TEXT,
-    "prefecture" TEXT,
-    "city" TEXT,
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
+    "image" TEXT,
+    "pricePerHour" INTEGER NOT NULL,
+    "capacity" INTEGER NOT NULL,
+    "prefecture" TEXT,
+    "city" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "rooms_pkey" PRIMARY KEY ("id")
 );
@@ -83,6 +83,33 @@ CREATE TABLE "room_availabilities" (
     CONSTRAINT "room_availabilities_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "room_images" (
+    "id" TEXT NOT NULL,
+    "roomId" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "caption" TEXT,
+    "order" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "room_images_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "time_slots" (
+    "id" TEXT NOT NULL,
+    "roomId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "hour" INTEGER NOT NULL,
+    "minute" INTEGER NOT NULL,
+    "isAvailable" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "time_slots_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -91,6 +118,9 @@ CREATE UNIQUE INDEX "hourly_prices_roomId_hour_key" ON "hourly_prices"("roomId",
 
 -- CreateIndex
 CREATE UNIQUE INDEX "room_availabilities_roomId_date_key" ON "room_availabilities"("roomId", "date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "time_slots_roomId_date_hour_minute_key" ON "time_slots"("roomId", "date", "hour", "minute");
 
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -106,3 +136,9 @@ ALTER TABLE "hourly_prices" ADD CONSTRAINT "hourly_prices_roomId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "room_availabilities" ADD CONSTRAINT "room_availabilities_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "room_images" ADD CONSTRAINT "room_images_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "time_slots" ADD CONSTRAINT "time_slots_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
