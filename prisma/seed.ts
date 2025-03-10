@@ -121,8 +121,10 @@ async function main() {
           latitude: roomData.latitude,
           longitude: roomData.longitude,
           image: roomData.image,
-          pricePerHour: 2000, // 基本料金を追加
-          capacity: 8 // デフォルトの定員を追加
+          pricePerHour: 'pricePerHour' in roomData ? roomData.pricePerHour : 2000,
+          capacity: 'capacity' in roomData ? roomData.capacity : 8,
+          prefecture: 'prefecture' in roomData ? roomData.prefecture : null,
+          city: 'city' in roomData ? roomData.city : null
         }
       })
       console.log(`Created room: ${room.name}`)
