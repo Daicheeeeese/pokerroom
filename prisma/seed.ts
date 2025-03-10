@@ -120,7 +120,9 @@ async function main() {
           address: roomData.address,
           latitude: roomData.latitude,
           longitude: roomData.longitude,
-          image: roomData.image
+          image: roomData.image,
+          pricePerHour: 2000, // 基本料金を追加
+          capacity: 8 // デフォルトの定員を追加
         }
       })
       console.log(`Created room: ${room.name}`)
