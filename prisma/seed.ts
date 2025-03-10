@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function deleteIfExists(model: string, deleteFunction: () => Promise<any>) {
@@ -109,7 +109,7 @@ async function main() {
         latitude: 33.5902,
         longitude: 130.4017
       }
-    ]
+    ] as const
 
     for (const roomData of rooms) {
       // ルームの作成
@@ -125,15 +125,17 @@ async function main() {
       })
       console.log(`Created room: ${room.name}`)
 
-      // サブ画像の追加
-      await prisma.roomImage.createMany({
-        data: [
-          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-1.jpg'), order: 1 },
-          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-2.jpg'), order: 2 },
-          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-3.jpg'), order: 3 },
-          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-4.jpg'), order: 4 }
-        ]
-      })
+      if (room.image) {
+        // サブ画像の追加
+        await prisma.roomImage.createMany({
+          data: [
+            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-1.jpg'), order: 1 },
+            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-2.jpg'), order: 2 },
+            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-3.jpg'), order: 3 },
+            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-4.jpg'), order: 4 }
+          ]
+        })
+      }
 
       // 時間ごとの料金設定
       const hourlyPrices = []
@@ -181,7 +183,11 @@ async function main() {
       }
     }
   } catch (error) {
-    console.error("Error during seed:", error)
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error("Prisma error:", error.message)
+    } else {
+      console.error("Error during seed:", error)
+    }
     throw error
   }
 }
