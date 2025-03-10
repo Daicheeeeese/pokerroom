@@ -47,8 +47,12 @@ export async function GET(request: Request) {
       }
     })
 
-    console.log('Raw rooms data:', JSON.stringify(rooms, null, 2))
-    console.log(`Found ${rooms.length} rooms`)
+    console.log('Found rooms:', rooms.map(room => ({
+      id: room.id,
+      name: room.name,
+      pricePerHour: room.pricePerHour,
+      image: room.image
+    })))
 
     // 日付が指定されている場合、予約済みのルームをフィルタリング
     const filteredRooms = date
@@ -65,18 +69,27 @@ export async function GET(request: Request) {
         }))
       : rooms.map(room => ({ ...room, hasReservation: false }))
 
-    console.log('Filtered rooms:', JSON.stringify(filteredRooms, null, 2))
-    console.log(`Final room count: ${filteredRooms.length}`)
+    console.log('Filtered rooms:', filteredRooms.map(room => ({
+      id: room.id,
+      name: room.name,
+      hasReservation: room.hasReservation
+    })))
 
     // 予約済みのルームをフィルタリング
     const availableRooms = date
       ? filteredRooms.filter(room => !room.hasReservation)
       : filteredRooms
 
-    console.log('Available rooms:', JSON.stringify(availableRooms, null, 2))
+    console.log('Available rooms:', availableRooms.map(room => ({
+      id: room.id,
+      name: room.name
+    })))
     
     const response = availableRooms.map(({ hasReservation, ...room }) => room)
-    console.log('Final response:', JSON.stringify(response, null, 2))
+    console.log('Final response:', response.map(room => ({
+      id: room.id,
+      name: room.name
+    })))
     
     return NextResponse.json(response)
   } catch (error) {
