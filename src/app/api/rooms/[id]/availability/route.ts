@@ -10,11 +10,27 @@ export async function GET(
 ) {
   try {
     const { searchParams } = new URL(request.url)
-    const dates = searchParams.get('dates')?.split(',')
-
-    if (!dates) {
+    const datesParam = searchParams.get('dates')
+    
+    if (!datesParam) {
       return NextResponse.json(
         { error: 'Dates parameter is required' },
+        { status: 400 }
+      )
+    }
+
+    const dates = datesParam.split(',').map(date => {
+      try {
+        return new Date(date)
+      } catch (error) {
+        console.error(`Invalid date format: ${date}`)
+        return null
+      }
+    }).filter((date): date is Date => date !== null)
+
+    if (dates.length === 0) {
+      return NextResponse.json(
+        { error: 'No valid dates provided' },
         { status: 400 }
       )
     }
@@ -24,7 +40,7 @@ export async function GET(
       where: {
         roomId: params.id,
         date: {
-          in: dates.map(date => new Date(date))
+          in: dates
         }
       },
       select: {
@@ -37,21 +53,23 @@ export async function GET(
     if (availabilities.length === 0) {
       return NextResponse.json(
         dates.map(date => ({
-          date: new Date(date),
+          date: date.toISOString(),
           isAvailable: true
         }))
       )
     }
 
-    return NextResponse.json(availabilities)
+    return NextResponse.json(
+      availabilities.map(a => ({
+        ...a,
+        date: a.date.toISOString()
+      }))
+    )
   } catch (error) {
     console.error('Error fetching room availability:', error)
-    // エラー時はすべての日付を利用可能として返す
     return NextResponse.json(
-      dates?.map(date => ({
-        date: new Date(date),
-        isAvailable: true
-      })) || []
+      { error: 'Internal server error' },
+      { status: 500 }
     )
   }
 } 
