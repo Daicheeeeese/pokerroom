@@ -1,4 +1,6 @@
 import { PrismaClient, Prisma } from '@prisma/client'
+import { generateImageUrl } from '../src/lib/cloudinary'
+
 const prisma = new PrismaClient()
 
 async function deleteIfExists(model: string, deleteFunction: () => Promise<any>) {
@@ -51,7 +53,11 @@ async function main() {
         address: "東京都渋谷区渋谷1-1-1",
         latitude: 35.658034,
         longitude: 139.701636,
-        image: "/images/rooms/room-01/main.jpg"
+        image: generateImageUrl(1, 'main'),
+        capacity: 10,
+        pricePerHour: 2000,
+        prefecture: "東京都",
+        city: "渋谷区"
       },
       {
         name: "ポーカールーム横浜",
@@ -59,7 +65,11 @@ async function main() {
         address: "神奈川県横浜市西区みなとみらい2-2-2",
         latitude: 35.4628,
         longitude: 139.6222,
-        image: "/images/rooms/room-02/main.jpg"
+        image: generateImageUrl(2, 'main'),
+        capacity: 8,
+        pricePerHour: 1800,
+        prefecture: "神奈川県",
+        city: "横浜市"
       },
       {
         name: "ポーカールーム大阪",
@@ -67,20 +77,16 @@ async function main() {
         address: "大阪府大阪市北区大深町3-3-3",
         latitude: 34.7024,
         longitude: 135.4959,
-        image: "/images/rooms/room-03/main.jpg"
+        image: generateImageUrl(3, 'main'),
+        capacity: 12,
+        pricePerHour: 1900,
+        prefecture: "大阪府",
+        city: "大阪市"
       },
       {
         name: "ポーカールーム名古屋",
         description: "名古屋駅直結、初心者から上級者まで楽しめる空間",
-        image: "/images/rooms/room-04/main.jpg",
-        images: {
-          create: [
-            { url: '/images/rooms/room-04/sub-1.jpg', order: 1 },
-            { url: '/images/rooms/room-04/sub-2.jpg', order: 2 },
-            { url: '/images/rooms/room-04/sub-3.jpg', order: 3 },
-            { url: '/images/rooms/room-04/sub-4.jpg', order: 4 }
-          ]
-        },
+        image: generateImageUrl(4, 'main'),
         capacity: 8,
         pricePerHour: 1900,
         prefecture: "愛知県",
@@ -92,15 +98,7 @@ async function main() {
       {
         name: "ポーカールーム福岡",
         description: "博多駅から徒歩圏内、九州最大級のポーカールーム",
-        image: "/images/rooms/room-05/main.jpg",
-        images: {
-          create: [
-            { url: '/images/rooms/room-05/sub-1.jpg', order: 1 },
-            { url: '/images/rooms/room-05/sub-2.jpg', order: 2 },
-            { url: '/images/rooms/room-05/sub-3.jpg', order: 3 },
-            { url: '/images/rooms/room-05/sub-4.jpg', order: 4 }
-          ]
-        },
+        image: generateImageUrl(5, 'main'),
         capacity: 12,
         pricePerHour: 1700,
         prefecture: "福岡県",
@@ -121,25 +119,22 @@ async function main() {
           latitude: roomData.latitude,
           longitude: roomData.longitude,
           image: roomData.image,
-          pricePerHour: 'pricePerHour' in roomData ? roomData.pricePerHour : 2000,
-          capacity: 'capacity' in roomData ? roomData.capacity : 8,
-          prefecture: 'prefecture' in roomData ? roomData.prefecture : null,
-          city: 'city' in roomData ? roomData.city : null
+          pricePerHour: roomData.pricePerHour,
+          capacity: roomData.capacity,
+          prefecture: roomData.prefecture,
+          city: roomData.city
         }
       })
       console.log(`Created room: ${room.name}`)
 
-      if (room.image) {
-        // サブ画像の追加
-        await prisma.roomImage.createMany({
-          data: [
-            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-1.jpg'), order: 1 },
-            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-2.jpg'), order: 2 },
-            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-3.jpg'), order: 3 },
-            { roomId: room.id, url: room.image.replace('main.jpg', 'sub-4.jpg'), order: 4 }
-          ]
-        })
-      }
+      // サブ画像の追加
+      await prisma.roomImage.createMany({
+        data: [1, 2, 3, 4].map(num => ({
+          roomId: room.id,
+          url: generateImageUrl(Number(room.id), 'sub', num),
+          order: num
+        }))
+      })
 
       // 時間ごとの料金設定
       const hourlyPrices = []
