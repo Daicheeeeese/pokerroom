@@ -59,47 +59,23 @@ async function main() {
         address: "東京都渋谷区渋谷1-1-1",
         latitude: 35.658034,
         longitude: 139.701636,
-        image: "/images/rooms/room-01/main.jpg",
+        image: "/images/rooms/room-01/main.jpg"
       },
       {
         name: "ポーカールーム横浜",
         description: "横浜駅から徒歩5分、アクセス抜群のポーカールーム",
-        image: "/images/rooms/room-02/main.jpg",
-        images: {
-          create: [
-            { url: '/images/rooms/room-02/sub-1.jpg', order: 1 },
-            { url: '/images/rooms/room-02/sub-2.jpg', order: 2 },
-            { url: '/images/rooms/room-02/sub-3.jpg', order: 3 },
-            { url: '/images/rooms/room-02/sub-4.jpg', order: 4 }
-          ]
-        },
-        capacity: 6,
-        pricePerHour: 1800,
-        prefecture: "神奈川県",
-        city: "横浜市",
-        address: "西区みなとみらい2-2-2",
+        address: "神奈川県横浜市西区みなとみらい2-2-2",
         latitude: 35.4628,
-        longitude: 139.6222
+        longitude: 139.6222,
+        image: "/images/rooms/room-02/main.jpg"
       },
       {
         name: "ポーカールーム大阪",
         description: "大阪梅田の中心地にある本格的なポーカールーム",
-        image: "/images/rooms/room-03/main.jpg",
-        images: {
-          create: [
-            { url: '/images/rooms/room-03/sub-1.jpg', order: 1 },
-            { url: '/images/rooms/room-03/sub-2.jpg', order: 2 },
-            { url: '/images/rooms/room-03/sub-3.jpg', order: 3 },
-            { url: '/images/rooms/room-03/sub-4.jpg', order: 4 }
-          ]
-        },
-        capacity: 10,
-        pricePerHour: 2200,
-        prefecture: "大阪府",
-        city: "大阪市",
-        address: "北区大深町3-3-3",
+        address: "大阪府大阪市北区大深町3-3-3",
         latitude: 34.7024,
-        longitude: 135.4959
+        longitude: 135.4959,
+        image: "/images/rooms/room-03/main.jpg"
       },
       {
         name: "ポーカールーム名古屋",
@@ -146,11 +122,19 @@ async function main() {
     for (const roomData of rooms) {
       // ルームの作成
       const room = await prisma.room.create({
-        data: {
-          ...roomData,
-        },
+        data: roomData
       })
       console.log(`Created room: ${room.name}`)
+
+      // サブ画像の追加
+      await prisma.roomImage.createMany({
+        data: [
+          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-1.jpg'), order: 1 },
+          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-2.jpg'), order: 2 },
+          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-3.jpg'), order: 3 },
+          { roomId: room.id, url: room.image.replace('main.jpg', 'sub-4.jpg'), order: 4 }
+        ]
+      })
 
       // 時間ごとの料金設定
       const hourlyPrices = []
