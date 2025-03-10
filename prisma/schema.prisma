@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
+  id            String        @id @default(cuid())
   name          String?
   email         String        @unique
   password      String
@@ -22,25 +22,21 @@ model User {
 }
 
 model Room {
-  id            String      @id @default(cuid())
-  name          String
-  description   String?
-  image         String
-  images        RoomImage[]
-  capacity      Int
-  pricePerHour  Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  reviews       Review[]
-  reservations  Reservation[]
-  hourlyPrices  HourlyPrice[]
-  availabilities RoomAvailability[]
-  timeSlots     TimeSlot[]
-  address       String?
-  prefecture    String?
-  city          String?
-  latitude      Float?
-  longitude     Float?
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  address         String?
+  latitude        Float?
+  longitude       Float?
+  image           String?
+  images          RoomImage[]
+  hourlyPrices    HourlyPrice[]
+  availability    RoomAvailability[]
+  timeSlots       TimeSlot[]
+  reservations    Reservation[]
+  reviews         Review[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@map("rooms")
 }
@@ -119,7 +115,7 @@ model TimeSlot {
   room        Room     @relation(fields: [roomId], references: [id])
   date        DateTime
   hour        Int
-  minute      Int      // 0 or 30
+  minute      Int
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
