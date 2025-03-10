@@ -1,5 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary'
 import path from 'path'
+import dotenv from 'dotenv'
+
+// 環境変数の読み込み
+dotenv.config()
 
 // Cloudinaryの設定
 cloudinary.config({

@@ -29,6 +29,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "leaflet": "^1.9.4",
     "next": "^14.1.0",
     "next-auth": "^4.24.5",
