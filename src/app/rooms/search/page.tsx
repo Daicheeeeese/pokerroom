@@ -5,10 +5,11 @@ import { useSearchParams } from 'next/navigation'
 import RoomCard from '@/components/rooms/RoomCard'
 import SearchBar from '@/components/SearchBar'
 import SortSelect from '@/components/rooms/SortSelect'
-import { Room, Review } from '@prisma/client'
+import { Room, Review, Tag } from '@prisma/client'
 
 type RoomWithReviews = Room & {
   reviews: Review[]
+  tags: Tag[]
 }
 
 export default function RoomSearchPage() {
@@ -91,7 +92,7 @@ export default function RoomSearchPage() {
         <>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">
-              {rooms.length}件のルームが見つかりました
+              {rooms.length}件のポーカールームが見つかりました
               {searchParams.get('area') && `（${searchParams.get('area')}）`}
             </h2>
             <div className="flex items-center gap-2">
