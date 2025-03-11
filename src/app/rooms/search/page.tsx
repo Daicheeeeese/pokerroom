@@ -92,7 +92,7 @@ export default function RoomSearchPage() {
         <>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">
-              {rooms.length}件のポーカールームが見つかりました
+              {rooms.length}件のプライベートルームが見つかりました
               {searchParams.get('area') && `（${searchParams.get('area')}）`}
             </h2>
             <div className="flex items-center gap-2">
