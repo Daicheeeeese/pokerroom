@@ -68,9 +68,10 @@ export default function SearchBar() {
 
       {/* 展開時の検索フォーム */}
       <div className={`
-        fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-2xl
+        fixed md:top-4 left-1/2 -translate-x-1/2 w-full max-w-2xl
         bg-white rounded-3xl shadow-lg z-40
         ${isExpanded ? 'block' : 'hidden'}
+        ${isExpanded ? 'top-1/2 -translate-y-1/2 md:translate-y-0' : ''}
       `}>
         <div className="p-4">
           {/* エリア検索 */}
