@@ -6,7 +6,6 @@ import type { Review, Tag } from "@prisma/client"
 import AvailabilitySlider from "./AvailabilitySlider"
 import { useState, useEffect } from "react"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import { RoomTags } from './RoomTags'
 
 type RoomWithReviewsAndTags = {
   id: string
@@ -105,9 +104,6 @@ export default function RoomCard({ room, selectedDate }: Props) {
         </div>
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
-          <div className="mb-2">
-            <RoomTags tags={room.tags} />
-          </div>
           {(room.prefecture || room.city || room.address) && (
             <div className="flex items-start gap-1 mb-2 text-gray-600">
               <MapPinIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />

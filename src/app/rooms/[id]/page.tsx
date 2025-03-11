@@ -59,21 +59,16 @@ export default async function RoomPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ImageGallery mainImage={room.image} images={room.images} />
+      <ImageGallery mainImage={room.image || ''} images={room.images} />
       <div className="mt-6 mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{room.name}</h1>
+        <p className="mt-4 text-gray-500">{room.description || ''}</p>
+        <div className="mt-4">
+          <RoomTags tags={room.tags} />
+        </div>
       </div>
       <div className="w-full">
         <RoomDetailSection room={room} />
-      </div>
-      <div className="lg:col-start-1 lg:col-span-2">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          {room.name}
-        </h1>
-        <div className="mt-2">
-          <RoomTags tags={room.tags} />
-        </div>
-        <p className="mt-4 text-gray-500">{room.description}</p>
       </div>
     </div>
   )
