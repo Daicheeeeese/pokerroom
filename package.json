@@ -6,11 +6,7 @@
     "dev": "next dev -p 3010",
     "build": "npx prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@auth/core": "0.34.2",
@@ -58,7 +54,6 @@
     "postcss": "^8",
     "rimraf": "^5.0.5",
     "tailwindcss": "^3.4.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "engines": {
