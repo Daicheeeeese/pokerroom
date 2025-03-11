@@ -31,6 +31,9 @@ export default function RoomCard({ room, selectedDate }: Props) {
   const [availabilityData, setAvailabilityData] = useState<{ date: Date; isAvailable: boolean }[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // tagsのデフォルト値を設定
+  const tags = room.tags || []
+
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
@@ -102,6 +105,9 @@ export default function RoomCard({ room, selectedDate }: Props) {
         </div>
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
+          <div className="mb-2">
+            <RoomTags tags={room.tags} />
+          </div>
           {(room.prefecture || room.city || room.address) && (
             <div className="flex items-start gap-1 mb-2 text-gray-600">
               <MapPinIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />
@@ -113,9 +119,6 @@ export default function RoomCard({ room, selectedDate }: Props) {
             </div>
           )}
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
-          <div className="mt-2">
-            <RoomTags tags={room.tags} />
-          </div>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">
               ¥{(room.pricePerHour ?? 0).toLocaleString()}~/時間

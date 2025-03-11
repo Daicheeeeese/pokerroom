@@ -4,7 +4,9 @@ interface RoomTagsProps {
   tags: Tag[]
 }
 
-export const RoomTags = ({ tags }: RoomTagsProps) => {
+export const RoomTags = ({ tags = [] }: RoomTagsProps) => {
+  if (!tags || tags.length === 0) return null
+
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map((tag) => (

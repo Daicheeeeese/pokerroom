@@ -3,11 +3,18 @@
 import { useState } from 'react'
 import RoomAvailabilitySection from './RoomAvailabilitySection'
 import ReservationForm from '../ReservationForm'
-import type { Room } from '@/app/rooms/[id]/page'
+import type { Room, Review, HourlyPrice, RoomImage, Tag } from '@prisma/client'
 import { MapPinIcon } from "@heroicons/react/24/outline"
 
-type Props = {
-  room: Room
+type RoomWithDetails = Room & {
+  reviews: Review[]
+  hourlyPrices: HourlyPrice[]
+  images: RoomImage[]
+  tags: Tag[]
+}
+
+interface Props {
+  room: RoomWithDetails
 }
 
 export default function RoomDetailSection({ room }: Props) {

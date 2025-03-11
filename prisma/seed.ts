@@ -20,6 +20,7 @@ async function deleteIfExists(model: string, deleteFunction: () => Promise<any>)
 async function main() {
   try {
     // 既存のデータを削除
+    console.log("Deleting existing data...")
     await prisma.reservation.deleteMany()
     await prisma.review.deleteMany()
     await prisma.hourlyPrice.deleteMany()
@@ -27,38 +28,26 @@ async function main() {
     await prisma.timeSlot.deleteMany()
     await prisma.roomImage.deleteMany()
     await prisma.room.deleteMany()
+    await prisma.tag.deleteMany()
     await prisma.user.deleteMany()
 
-    console.log("Starting to create rooms...")
+    console.log("Starting to create tags...")
+    // タグの作成を修正
+    const createdTags = await prisma.tag.createMany({
+      data: [
+        { name: '飲食持ち込み可' },
+        { name: 'ディーラー可' },
+        { name: '喫煙可' },
+        { name: 'RFID' },
+        { name: 'Wi-Fi完備' },
+      ],
+    })
 
-    // タグの作成
-    const tags = await Promise.all([
-      prisma.tag.create({
-        data: {
-          name: '飲食持ち込み可',
-        },
-      }),
-      prisma.tag.create({
-        data: {
-          name: 'ディーラー可',
-        },
-      }),
-      prisma.tag.create({
-        data: {
-          name: '喫煙可',
-        },
-      }),
-      prisma.tag.create({
-        data: {
-          name: 'RFID',
-        },
-      }),
-      prisma.tag.create({
-        data: {
-          name: 'Wi-Fi完備',
-        },
-      }),
-    ])
+    // 作成したタグを取得
+    const tags = await prisma.tag.findMany()
+    console.log("Created tags:", tags)
+
+    console.log("Starting to create rooms...")
 
     // ルームの作成
     const rooms = await Promise.all([

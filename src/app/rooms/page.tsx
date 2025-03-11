@@ -22,6 +22,8 @@ export default async function RoomsPage() {
       },
     })
 
+    console.log('Fetched rooms:', JSON.stringify(rooms, null, 2))
+
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
