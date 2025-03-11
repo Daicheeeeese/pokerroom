@@ -12,7 +12,7 @@ type RoomWithReviewsAndTags = {
   id: string
   name: string
   description: string | null
-  image: string
+  image: string | null
   pricePerHour: number
   capacity: number
   reviews: Review[]
@@ -93,7 +93,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
         <div className="relative h-48">
           <Image
-            src={room.image}
+            src={room.image || '/placeholder.png'}
             alt={room.name}
             fill
             priority
