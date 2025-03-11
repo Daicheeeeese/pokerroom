@@ -59,16 +59,31 @@ export default async function RoomPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ImageGallery mainImage={room.image || ''} images={room.images} />
-      <div className="mt-6 mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{room.name}</h1>
-        <p className="mt-4 text-gray-500">{room.description || ''}</p>
-        <div className="mt-4">
-          <RoomTags tags={room.tags} />
+      <div className="max-w-7xl mx-auto">
+        <ImageGallery mainImage={room.image || ''} images={room.images} />
+        <div className="mt-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
+              <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-blue-600">¥{room.pricePerHour.toLocaleString()}</span>
+              <span className="text-gray-500">/時間</span>
+            </div>
+          </div>
+          <div className="mt-4">
+            <RoomTags tags={room.tags} />
+          </div>
         </div>
-      </div>
-      <div className="w-full">
-        <RoomDetailSection room={room} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <RoomDetailSection room={room} />
+          </div>
+          <div className="lg:col-span-1">
+            {/* 予約フォームやその他の情報をここに配置 */}
+          </div>
+        </div>
       </div>
     </div>
   )
