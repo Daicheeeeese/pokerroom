@@ -132,7 +132,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
         </div>
       </Link>
       <div className="border-t px-4 py-3">
-        <p className="text-sm text-gray-600 mb-2">空き状況</p>
+        <p className="text-sm text-gray-600 mb-2">空き枠</p>
         {isLoading ? (
           <div className="text-center text-sm text-gray-500">読み込み中...</div>
         ) : (
