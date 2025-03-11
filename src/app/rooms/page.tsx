@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma"
 import RoomCard from '@/components/rooms/RoomCard'
 import Link from "next/link"
 import type { Room, Review } from '@prisma/client'
+import Image from "next/image"
+import { RoomTags } from '@/components/rooms/RoomTags'
 
 export const dynamic = "force-dynamic"
 

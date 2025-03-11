@@ -2,12 +2,13 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import type { Review } from "@prisma/client"
+import type { Review, Tag } from "@prisma/client"
 import AvailabilitySlider from "./AvailabilitySlider"
 import { useState, useEffect } from "react"
 import { MapPinIcon } from "@heroicons/react/24/outline"
+import { RoomTags } from './RoomTags'
 
-type RoomWithReviews = {
+type RoomWithReviewsAndTags = {
   id: string
   name: string
   description: string | null
@@ -18,10 +19,11 @@ type RoomWithReviews = {
   address?: string | null
   prefecture?: string | null
   city?: string | null
+  tags: Tag[]
 }
 
 type Props = {
-  room: RoomWithReviews
+  room: RoomWithReviewsAndTags
   selectedDate?: Date | null
 }
 
@@ -111,6 +113,9 @@ export default function RoomCard({ room, selectedDate }: Props) {
             </div>
           )}
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
+          <div className="mt-2">
+            <RoomTags tags={room.tags} />
+          </div>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">
               ¥{(room.pricePerHour ?? 0).toLocaleString()}~/時間

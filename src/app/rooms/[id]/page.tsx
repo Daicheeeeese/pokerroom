@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import RoomDetailSection from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
+import { RoomTags } from '@/components/rooms/RoomTags'
 
 interface Props {
   params: {
@@ -37,7 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RoomPage({ params }: Props) {
   const { id } = params
   const room = await prisma.room.findUnique({
-    where: { id },
+    where: {
+      id: params.id,
+    },
     include: {
       reviews: true,
       hourlyPrices: true,
@@ -45,7 +48,8 @@ export default async function RoomPage({ params }: Props) {
         orderBy: {
           order: 'asc'
         }
-      }
+      },
+      tags: true,
     }
   })
 
@@ -61,6 +65,15 @@ export default async function RoomPage({ params }: Props) {
       </div>
       <div className="w-full">
         <RoomDetailSection room={room} />
+      </div>
+      <div className="lg:col-start-1 lg:col-span-2">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          {room.name}
+        </h1>
+        <div className="mt-2">
+          <RoomTags tags={room.tags} />
+        </div>
+        <p className="mt-4 text-gray-500">{room.description}</p>
       </div>
     </div>
   )
