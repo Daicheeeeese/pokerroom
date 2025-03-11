@@ -1,8 +1,12 @@
 const { PrismaClient } = require('@prisma/client');
-const { generateImageUrl } = require('../src/lib/cloudinary');
 const { addDays, setHours, setMinutes } = require('date-fns');
 
 const prisma = new PrismaClient();
+
+// Cloudinary URLを直接生成する関数
+function generateImageUrl(roomNumber, type) {
+  return `https://res.cloudinary.com/dxxeypyws/image/upload/v1741614032/main_ezdalc.jpg`;
+}
 
 async function main() {
   try {
