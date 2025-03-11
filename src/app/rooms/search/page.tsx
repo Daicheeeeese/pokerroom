@@ -76,13 +76,13 @@ export default function RoomSearchPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto mb-8">
+      <div className="max-w-3xl mx-auto mb-8 mt-16">
         <SearchBar />
       </div>
 
       {loading ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">読み込み中...</p>
+          <p className="text-gray-600">読み込み中です...</p>
         </div>
       ) : error ? (
         <div className="text-center py-8">

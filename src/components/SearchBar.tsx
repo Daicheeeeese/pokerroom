@@ -49,13 +49,13 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="relative z-50">
+    <div className="relative z-40">
       {/* 非展開時の検索バー */}
       <div
         onClick={() => setIsExpanded(true)}
         className={`
           bg-white rounded-full shadow-md flex items-center justify-between
-          border border-gray-200 cursor-pointer transition-all relative z-50
+          border border-gray-200 cursor-pointer transition-all relative z-40
           ${isExpanded ? 'hidden' : 'block'}
         `}
       >
@@ -69,7 +69,7 @@ export default function SearchBar() {
       {/* 展開時の検索フォーム */}
       <div className={`
         fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-2xl
-        bg-white rounded-3xl shadow-lg z-50
+        bg-white rounded-3xl shadow-lg z-40
         ${isExpanded ? 'block' : 'hidden'}
       `}>
         <div className="p-4">
@@ -171,7 +171,7 @@ export default function SearchBar() {
       {/* オーバーレイ */}
       {isExpanded && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
           onClick={() => {
             setIsExpanded(false)
             setSearchParams({
