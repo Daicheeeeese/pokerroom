@@ -90,8 +90,8 @@ export default function RoomSearchPage() {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+            <h2 className="text-xl font-semibold mb-2 md:mb-0">
               {rooms.length}件のプライベートルームが見つかりました
               {searchParams.get('area') && `（${searchParams.get('area')}）`}
             </h2>
