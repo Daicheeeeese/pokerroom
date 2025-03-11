@@ -55,7 +55,9 @@ export default function ReservationConfirmPage() {
         throw new Error(data.error)
       }
 
-      toast.success("予約を受け付けました。確認メールをお送りしましたので、ご確認ください。")
+      toast.success("予約を受け付けました。確認メールをお送りしましたので、ご確認ください。", {
+        duration: 4500,
+      })
       router.push("/reservations")
     } catch (error) {
       console.error("予約エラー:", error)
