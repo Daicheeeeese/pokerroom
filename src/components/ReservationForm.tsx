@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
@@ -23,10 +23,12 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
 
-  // selectedDateが変更されたら、dateを更新
-  if (selectedDate && selectedDate.toISOString().split('T')[0] !== date) {
-    setDate(selectedDate.toISOString().split('T')[0])
-  }
+  useEffect(() => {
+    if (selectedDate) {
+      const adjustedDate = new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000));
+      setDate(adjustedDate.toISOString().split('T')[0]);
+    }
+  }, [selectedDate]);
 
   const calculateTotalPrice = () => {
     if (!startTime || !endTime) return 0

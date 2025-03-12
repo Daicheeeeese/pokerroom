@@ -94,11 +94,11 @@ export default function RoomAvailabilitySection({ room, onDateSelect, selectedDa
   }
 
   if (isLoading) {
-    return <div className="bg-gray-25 p-4 rounded-lg">読み込み中...</div>
+    return <div className="bg-gray-50 p-4 rounded-lg">読み込み中...</div>
   }
 
   return (
-    <div className="bg-gray-25 p-4 rounded-lg">
+    <div className="bg-gray-50 p-4 rounded-lg">
       <AvailabilityCalendar 
         availabilityData={availabilityData}
         onDateClick={handleDateSelect}
