@@ -1,5 +1,8 @@
 -- DropTable
-DROP TABLE IF EXISTS "hourly_prices";
+DROP TABLE IF EXISTS "hourly_prices" CASCADE;
+DROP TABLE IF EXISTS "hourly_prices_weekday" CASCADE;
+DROP TABLE IF EXISTS "hourly_prices_holiday" CASCADE;
+DROP TABLE IF EXISTS "Holiday" CASCADE;
 
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -11,7 +14,7 @@ CREATE TABLE "hourly_prices_weekday" (
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "hourly_prices_weekday_pkey" PRIMARY KEY ("id")
 );
@@ -23,7 +26,7 @@ CREATE TABLE "hourly_prices_holiday" (
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "hourly_prices_holiday_pkey" PRIMARY KEY ("id")
 );
@@ -34,7 +37,7 @@ CREATE TABLE "Holiday" (
     "date" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Holiday_pkey" PRIMARY KEY ("id")
 );
