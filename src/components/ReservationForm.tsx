@@ -175,6 +175,11 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         >
           {isSubmitting ? "予約処理中..." : "予約（まだ請求されません）"}
         </button>
+        {!session?.user?.id && (
+          <div className="text-center text-sm text-gray-600">
+            予約するには<a href="/login" className="text-blue-600 hover:text-blue-800 font-medium">ログイン</a>が必要です
+          </div>
+        )}
       </div>
     </form>
   )
