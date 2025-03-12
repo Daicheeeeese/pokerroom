@@ -76,7 +76,7 @@ export default function RoomSearchPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto mb-8 mt-16">
+      <div className="max-w-3xl mx-auto mb-8 mt-8">
         <SearchBar />
       </div>
 
