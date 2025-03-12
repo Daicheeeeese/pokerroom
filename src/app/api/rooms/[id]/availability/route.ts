@@ -69,8 +69,23 @@ export async function GET(
       found: availabilities.length,
       records: availabilities.map(a => ({
         date: a.date.toISOString(),
-        isBooked: a.isBooked
+        isBooked: a.isBooked,
+        dateOnly: a.date.toISOString().split('T')[0]
       }))
+    })
+
+    // Prismaのクエリパラメータをログに出力
+    console.log('Prisma query parameters:', {
+      where: {
+        roomId: params.id,
+        date: {
+          in: dates.map(d => d.toISOString())
+        }
+      },
+      select: {
+        date: true,
+        isBooked: true
+      }
     })
 
     // データが見つからない場合は、すべての日付を利用可能として返す
