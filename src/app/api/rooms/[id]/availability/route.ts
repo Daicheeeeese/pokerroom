@@ -59,10 +59,19 @@ export async function GET(
       )
     }
 
+    // 予約可能状態をマップ
+    const availabilityMap = new Map(
+      availabilities.map(a => [
+        a.date.toISOString().split('T')[0],
+        a.isAvailable
+      ])
+    )
+
+    // すべての日付に対して予約可能状態を返す
     return NextResponse.json(
-      availabilities.map(a => ({
-        ...a,
-        date: a.date.toISOString()
+      dates.map(date => ({
+        date: date.toISOString(),
+        isAvailable: availabilityMap.get(date.toISOString().split('T')[0]) ?? true
       }))
     )
   } catch (error) {
