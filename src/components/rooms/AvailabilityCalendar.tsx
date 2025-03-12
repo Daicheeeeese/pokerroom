@@ -21,7 +21,7 @@ export default function AvailabilityCalendar({ availabilityData, onDateClick, se
   return (
     <div>
       <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2">予約状況</h3>
+        <h3 className="text-lg font-semibold mb-2">空き状況</h3>
         <div className="flex gap-4">
           <div className="flex items-center text-sm">
             <span className="inline-block w-6 h-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center mr-1">
