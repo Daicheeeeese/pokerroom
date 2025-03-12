@@ -19,7 +19,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       reviews: true,
       hourlyPrices: true,
       hourlyPricesHoliday: true,
-      images: true
+      images: {
+        orderBy: {
+          order: 'asc'
+        }
+      },
+      tags: true
     }
   })
 

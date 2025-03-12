@@ -37,6 +37,7 @@ export default function RoomDetailSection({ room }: Props) {
             <p className="text-3xl font-bold text-blue-600">
               ¥{(room.pricePerHour ?? 0).toLocaleString()}<span className="text-base font-normal text-gray-600">~/時間</span>
             </p>
+            <p className="text-sm text-gray-500 mt-1">※休日・時間帯により料金が変動します</p>
           </div>
         </div>
 

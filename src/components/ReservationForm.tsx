@@ -46,24 +46,20 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     const selectedDate = new Date(date)
     const isHoliday = selectedDate.getDay() === 0 || selectedDate.getDay() === 6 // 土日を休日とする
     
-    // 時間帯別料金がある場合はそれを使用し、ない場合はデフォルトの時間単価を使用
-    let total = 0
+    // 時間帯別料金を取得
     const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPrices
     
-    if (hourlyPrices && hourlyPrices.length > 0) {
-      // 30分単位で料金を計算
-      for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
-        const hour = Math.floor(minutes / 60)
-        const hourlyPrice = hourlyPrices.find(
-          price => price.hour === hour
-        )
-        // 30分あたりの料金を加算
-        total += (hourlyPrice ? hourlyPrice.price : room.pricePerHour) / 2
-      }
-    } else {
-      // デフォルトの時間単価を使用（30分単位）
-      const durationInHours = (endTotalMinutes - startTotalMinutes) / 60
-      total = durationInHours * room.pricePerHour
+    let total = 0
+    // 30分単位で料金を計算
+    for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
+      const hour = Math.floor(minutes / 60)
+      const hourlyPrice = hourlyPrices.find(price => price.hour === hour)
+      
+      // 該当時間の料金が設定されていない場合はデフォルトの時間単価を使用
+      const priceForThisSlot = hourlyPrice?.price ?? room.pricePerHour
+      
+      // 30分あたりの料金を加算
+      total += priceForThisSlot / 2
     }
     
     return Math.floor(total) // 小数点以下を切り捨て
