@@ -21,11 +21,11 @@ async function main() {
       console.log("Creating tags...");
       await prisma.tag.createMany({
         data: [
-          { name: '飲食持ち込み可' },
-          { name: 'ディーラー可' },
-          { name: '喫煙可' },
-          { name: 'RFID' },
-          { name: 'Wi-Fi完備' },
+          { id: 'food-allowed', name: '飲食持ち込み可', updatedAt: new Date() },
+          { id: 'dealer-available', name: 'ディーラー可', updatedAt: new Date() },
+          { id: 'smoking-allowed', name: '喫煙可', updatedAt: new Date() },
+          { id: 'rfid', name: 'RFID', updatedAt: new Date() },
+          { id: 'wifi', name: 'Wi-Fi完備', updatedAt: new Date() },
         ],
       });
       tags = await prisma.tag.findMany();
@@ -43,6 +43,7 @@ async function main() {
       const rooms = await Promise.all([
         prisma.room.create({
           data: {
+            id: 'room-tokyo',
             name: 'ポーカールーム東京',
             description: '東京の中心地にある本格的なポーカールーム',
             pricePerHour: 1000,
@@ -54,12 +55,20 @@ async function main() {
             latitude: 35.658034,
             longitude: 139.701636,
             tags: {
-              connect: tags.map(tag => ({ id: tag.id })),
+              connectOrCreate: tags.map(tag => ({
+                where: { id: tag.id },
+                create: {
+                  id: tag.id,
+                  name: tag.name,
+                  updatedAt: new Date()
+                }
+              }))
             },
           },
         }),
         prisma.room.create({
           data: {
+            id: 'room-yokohama',
             name: 'ポーカールーム横浜',
             description: '横浜の海が見える開放的なポーカールーム',
             pricePerHour: 900,
@@ -77,6 +86,7 @@ async function main() {
         }),
         prisma.room.create({
           data: {
+            id: 'room-osaka',
             name: 'ポーカールーム大阪',
             description: '大阪の繁華街にある活気のあるポーカールーム',
             pricePerHour: 950,
@@ -94,6 +104,7 @@ async function main() {
         }),
         prisma.room.create({
           data: {
+            id: 'room-nagoya',
             name: 'ポーカールーム名古屋',
             description: '名古屋駅から徒歩5分の好立地なポーカールーム',
             pricePerHour: 850,
@@ -111,6 +122,7 @@ async function main() {
         }),
         prisma.room.create({
           data: {
+            id: 'room-fukuoka',
             name: 'ポーカールーム福岡',
             description: '福岡の中心地にある快適なポーカールーム',
             pricePerHour: 800,

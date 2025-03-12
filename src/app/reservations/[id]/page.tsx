@@ -10,29 +10,9 @@ type Props = {
   }
 }
 
+// 動的ルーティングを強制
 export const dynamic = 'force-dynamic'
-
-export async function generateStaticParams() {
-  try {
-    if (!prisma) {
-      console.error('Prisma client is not initialized')
-      return []
-    }
-
-    const reservations = await prisma.reservation.findMany({
-      select: {
-        id: true,
-      },
-    })
-
-    return reservations.map((reservation) => ({
-      id: reservation.id,
-    }))
-  } catch (error) {
-    console.error('Error in generateStaticParams:', error)
-    return []
-  }
-}
+export const revalidate = 0
 
 export default async function ReservationDetailPage({ params }: Props) {
   const session = await getServerSession(authOptions)
@@ -77,7 +57,7 @@ export default async function ReservationDetailPage({ params }: Props) {
             <div>
               <p className="text-gray-600">時間</p>
               <p className="font-medium">
-                {reservation.startTime} 〜 {reservation.endTime}
+                {format(new Date(reservation.startTime), "HH:mm")} 〜 {format(new Date(reservation.endTime), "HH:mm")}
               </p>
             </div>
             <div>

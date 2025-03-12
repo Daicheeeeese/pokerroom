@@ -4,6 +4,15 @@ import RoomDetailSection from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import { RoomTags } from '@/components/rooms/RoomTags'
+import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Tag } from '@prisma/client'
+
+type RoomWithDetails = Room & {
+  reviews: Review[]
+  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+  images: RoomImage[]
+  tags: Tag[]
+}
 
 interface Props {
   params: {
@@ -58,7 +67,7 @@ export default async function RoomPage({ params }: Props) {
       },
       tags: true,
     }
-  })
+  }) as RoomWithDetails | null
 
   if (!room) {
     notFound()
