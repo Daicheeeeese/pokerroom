@@ -173,7 +173,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           disabled={isSubmitting}
           className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
         >
-          {isSubmitting ? "予約処理中..." : "予約（まだ請求されません）"}
+          {isSubmitting ? "予約処理中..." : session?.user?.id ? "予約（まだ請求されません）" : "予約"}
         </button>
         {!session?.user?.id && (
           <div className="text-center text-sm text-gray-600">
