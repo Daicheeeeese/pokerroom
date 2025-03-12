@@ -54,20 +54,20 @@ export default function RoomDetailSection({ room }: Props) {
           </div>
         )}
 
-        {/* 予約フォーム */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-4">予約</h2>
-          <ReservationForm room={room} selectedDate={selectedDate} />
-        </div>
-
         {/* 空き状況カレンダー */}
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-50 p-4 rounded-lg order-first md:order-none">
           <h2 className="text-lg font-semibold mb-4">空き状況</h2>
           <RoomAvailabilitySection 
             room={room}
             selectedDate={selectedDate} 
             onDateSelect={setSelectedDate} 
           />
+        </div>
+
+        {/* 予約フォーム */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">予約</h2>
+          <ReservationForm room={room} selectedDate={selectedDate} />
         </div>
       </div>
     </div>
