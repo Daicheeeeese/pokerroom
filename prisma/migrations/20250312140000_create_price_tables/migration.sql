@@ -1,9 +1,12 @@
 -- DropTable
 DROP TABLE IF EXISTS "hourly_prices";
 
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- CreateTable
 CREATE TABLE "hourly_prices_weekday" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "roomId" TEXT NOT NULL,
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
@@ -15,7 +18,7 @@ CREATE TABLE "hourly_prices_weekday" (
 
 -- CreateTable
 CREATE TABLE "hourly_prices_holiday" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "roomId" TEXT NOT NULL,
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
@@ -27,7 +30,7 @@ CREATE TABLE "hourly_prices_holiday" (
 
 -- CreateTable
 CREATE TABLE "Holiday" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "date" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
