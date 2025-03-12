@@ -55,8 +55,7 @@ export default function RoomDetailSection({ room }: Props) {
         )}
 
         {/* 空き状況カレンダー */}
-        <div className="bg-gray-50 p-4 rounded-lg order-first md:order-none">
-          <h2 className="text-lg font-semibold mb-4">空き状況</h2>
+        <div>
           <RoomAvailabilitySection 
             room={room}
             selectedDate={selectedDate} 
