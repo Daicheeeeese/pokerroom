@@ -169,4 +169,3 @@ CREATE UNIQUE INDEX "room_availability_roomId_date_key" ON "room_availability"("
 
 -- CreateIndex
 CREATE INDEX "_RoomToTag_B_index" ON "_RoomToTag"("B");
-
