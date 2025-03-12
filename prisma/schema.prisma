@@ -34,7 +34,8 @@ model Room {
   prefecture      String?
   city            String?
   images          RoomImage[]
-  hourlyPrices    HourlyPrice[]
+  hourlyPrices    HourlyPriceWeekday[]
+  hourlyPricesHoliday HourlyPriceHoliday[]
   availability    RoomAvailability[]
   timeSlots       TimeSlot[]
   reservations    Reservation[]
@@ -75,17 +76,30 @@ model Reservation {
   @@map("reservations")
 }
 
-model HourlyPrice {
-  id        String   @id @default(cuid())
+model HourlyPriceWeekday {
+  id        String   @id @default(uuid())
   roomId    String
-  room      Room     @relation(fields: [roomId], references: [id])
-  hour      Int      
-  price     Int      
+  hour      Int
+  price     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@unique([roomId, hour])
-  @@map("hourly_prices")
+  @@map("hourly_prices_weekday")
+}
+
+model HourlyPriceHoliday {
+  id        String   @id @default(uuid())
+  roomId    String
+  hour      Int
+  price     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, hour])
+  @@map("hourly_prices_holiday")
 }
 
 model RoomAvailability {
@@ -135,4 +149,14 @@ model Tag {
   rooms     Room[]   @relation("RoomTags")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Holiday {
+  id          String   @id @default(cuid())
+  date        DateTime
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([date])
 }

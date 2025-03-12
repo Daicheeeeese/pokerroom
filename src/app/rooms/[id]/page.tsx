@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     include: {
       reviews: true,
       hourlyPrices: true,
+      hourlyPricesHoliday: true,
       images: true
     }
   })
@@ -44,6 +45,7 @@ export default async function RoomPage({ params }: Props) {
     include: {
       reviews: true,
       hourlyPrices: true,
+      hourlyPricesHoliday: true,
       images: {
         orderBy: {
           order: 'asc'

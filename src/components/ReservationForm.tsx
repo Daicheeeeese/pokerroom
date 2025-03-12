@@ -6,10 +6,13 @@ import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { useSession } from "next-auth/react"
-import type { Room } from "@/app/rooms/[id]/page"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
 
 type Props = {
-  room: Room
+  room: Room & {
+    hourlyPrices: HourlyPriceWeekday[];
+    hourlyPricesHoliday: HourlyPriceHoliday[];
+  }
   selectedDate?: Date | null
 }
 
@@ -31,7 +34,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   }, [selectedDate]);
 
   const calculateTotalPrice = () => {
-    if (!startTime || !endTime) return 0
+    if (!startTime || !endTime || !date) return 0
     
     // 時間を分単位に変換
     const [startHour, startMinute = 0] = startTime.split(":").map(Number)
@@ -39,13 +42,19 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     const startTotalMinutes = (startHour * 60) + Number(startMinute)
     const endTotalMinutes = (endHour * 60) + Number(endMinute)
     
+    // 選択された日付が休日かどうかを判定
+    const selectedDate = new Date(date)
+    const isHoliday = selectedDate.getDay() === 0 || selectedDate.getDay() === 6 // 土日を休日とする
+    
     // 時間帯別料金がある場合はそれを使用し、ない場合はデフォルトの時間単価を使用
     let total = 0
-    if (room.hourlyPrices && room.hourlyPrices.length > 0) {
+    const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPrices
+    
+    if (hourlyPrices && hourlyPrices.length > 0) {
       // 30分単位で料金を計算
       for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
         const hour = Math.floor(minutes / 60)
-        const hourlyPrice = room.hourlyPrices.find(
+        const hourlyPrice = hourlyPrices.find(
           price => price.hour === hour
         )
         // 30分あたりの料金を加算

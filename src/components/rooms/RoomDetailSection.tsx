@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import RoomAvailabilitySection from './RoomAvailabilitySection'
 import ReservationForm from '../ReservationForm'
-import type { Room, Review, HourlyPrice, RoomImage, Tag } from '@prisma/client'
+import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Tag } from '@prisma/client'
 import { MapPinIcon } from "@heroicons/react/24/outline"
 
 type RoomWithDetails = Room & {
   reviews: Review[]
-  hourlyPrices: HourlyPrice[]
+  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
   tags: Tag[]
 }
