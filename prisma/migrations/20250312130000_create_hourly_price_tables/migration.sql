@@ -1,3 +1,6 @@
+-- DropTable
+DROP TABLE IF EXISTS "hourly_prices";
+
 -- CreateTable
 CREATE TABLE "hourly_prices_weekday" (
     "id" TEXT NOT NULL,
