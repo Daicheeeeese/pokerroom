@@ -67,11 +67,6 @@ export default async function RoomPage({ params }: Props) {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
               <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold text-blue-600">
-                ¥{room.pricePerHour.toLocaleString()}〜/時間
-              </div>
-            </div>
           </div>
           <div className="mt-4">
             <RoomTags tags={room.tags} />
