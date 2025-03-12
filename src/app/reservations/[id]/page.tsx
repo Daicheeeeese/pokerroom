@@ -10,8 +10,15 @@ type Props = {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   try {
+    if (!prisma) {
+      console.error('Prisma client is not initialized')
+      return []
+    }
+
     const reservations = await prisma.reservation.findMany({
       select: {
         id: true,
