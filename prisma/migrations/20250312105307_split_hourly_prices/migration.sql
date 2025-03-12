@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "hourly_prices_weekday" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL,
     "roomId" TEXT NOT NULL,
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE "hourly_prices_weekday" (
 
 -- CreateTable
 CREATE TABLE "hourly_prices_holiday" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" TEXT NOT NULL,
     "roomId" TEXT NOT NULL,
     "hour" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
