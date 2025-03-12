@@ -23,7 +23,7 @@ export async function GET(
       try {
         return new Date(date)
       } catch (error) {
-        console.error(`Invalid date format: ${date}`)
+        console.error(`Invalid date format: ${date}`, error)
         return null
       }
     }).filter((date): date is Date => date !== null)
@@ -34,6 +34,9 @@ export async function GET(
         { status: 400 }
       )
     }
+
+    console.log('Fetching availability for room:', params.id)
+    console.log('Dates:', dates.map(d => d.toISOString()))
 
     // 指定された日付の予約可能状態を取得
     const availabilities = await prisma.roomAvailability.findMany({
@@ -49,8 +52,11 @@ export async function GET(
       }
     })
 
+    console.log('Found availabilities:', availabilities)
+
     // データが見つからない場合は、すべての日付を利用可能として返す
     if (availabilities.length === 0) {
+      console.log('No availabilities found, returning all dates as available')
       return NextResponse.json(
         dates.map(date => ({
           date: date.toISOString(),
@@ -68,16 +74,27 @@ export async function GET(
     )
 
     // すべての日付に対して予約可能状態を返す
-    return NextResponse.json(
-      dates.map(date => ({
-        date: date.toISOString(),
-        isAvailable: availabilityMap.get(date.toISOString().split('T')[0]) ?? true
-      }))
-    )
+    const response = dates.map(date => ({
+      date: date.toISOString(),
+      isAvailable: availabilityMap.get(date.toISOString().split('T')[0]) ?? true
+    }))
+
+    console.log('Final response:', response)
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching room availability:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

@@ -5,6 +5,8 @@ import { neonConfig } from '@neondatabase/serverless'
 if (process.env.NODE_ENV === "production") {
   neonConfig.wsProxy = (host) => `${host}/v1`
   neonConfig.useSecureWebSocket = true
+  neonConfig.pipelineTLS = true
+  neonConfig.pipelineConnect = true
 }
 
 // ローカル開発環境の場合の設定
@@ -22,7 +24,12 @@ const prismaClientSingleton = () => {
   }
 
   const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: ['query', 'error', 'warn'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL
+      }
+    }
   })
 
   // ルーム作成時に自動的に時間帯別料金を設定するミドルウェア
