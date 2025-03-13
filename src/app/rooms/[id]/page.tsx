@@ -12,6 +12,7 @@ type RoomWithDetails = Room & {
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
   tags: Tag[]
+  pricePerHour: number | null
 }
 
 interface Props {

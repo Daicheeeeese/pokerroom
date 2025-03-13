@@ -12,6 +12,7 @@ type Props = {
   room: Room & {
     hourlyPrices: HourlyPriceWeekday[];
     hourlyPricesHoliday: HourlyPriceHoliday[];
+    pricePerHour: number | null;
   }
   selectedDate?: Date | null
 }
