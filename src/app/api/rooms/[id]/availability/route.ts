@@ -61,7 +61,7 @@ export async function GET(
       },
       select: {
         date: true,
-        isBooked: true
+        isAvailable: true
       }
     })
 
@@ -69,7 +69,7 @@ export async function GET(
       found: availabilities.length,
       records: availabilities.map(a => ({
         date: a.date.toISOString(),
-        isBooked: a.isBooked,
+        isAvailable: a.isAvailable,
         dateOnly: a.date.toISOString().split('T')[0]
       }))
     })
@@ -84,7 +84,7 @@ export async function GET(
       },
       select: {
         date: true,
-        isBooked: true
+        isAvailable: true
       }
     })
 
@@ -99,11 +99,11 @@ export async function GET(
       return NextResponse.json(defaultResponse)
     }
 
-    // 予約可能状態をマップ（isBookedの値を反転させてisAvailableとして返す）
+    // 予約可能状態をマップ
     const availabilityMap = new Map(
       availabilities.map(a => [
         a.date.toISOString().split('T')[0],
-        !a.isBooked // isBookedの値を反転
+        a.isAvailable
       ])
     )
     console.log('Availability map:', Object.fromEntries(availabilityMap))
