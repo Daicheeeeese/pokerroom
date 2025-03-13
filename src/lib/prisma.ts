@@ -7,6 +7,9 @@ if (process.env.NODE_ENV === "production") {
   neonConfig.useSecureWebSocket = true
   neonConfig.pipelineTLS = true
   neonConfig.pipelineConnect = true
+  neonConfig.connectionTimeoutMillis = 10000
+  neonConfig.keepAlive = true
+  neonConfig.keepAliveInitialDelayMillis = 10000
 }
 
 // ローカル開発環境の場合の設定
