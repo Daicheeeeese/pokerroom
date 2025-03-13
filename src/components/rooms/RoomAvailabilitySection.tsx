@@ -3,10 +3,18 @@
 import { useState, useEffect } from "react"
 import { generateTwoWeeksAvailability } from "./AvailabilityCalendar"
 import AvailabilityCalendar from "./AvailabilityCalendar"
-import type { Room } from "@prisma/client"
+import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Tag } from "@prisma/client"
+
+type RoomWithDetails = Room & {
+  reviews: Review[]
+  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+  images: RoomImage[]
+  tags: Tag[]
+}
 
 type Props = {
-  room: Room
+  room: RoomWithDetails
   onDateSelect?: (date: Date | null) => void
   selectedDate?: Date | null
 }
