@@ -130,15 +130,15 @@ CREATE TABLE "reservations" (
 );
 
 -- CreateTable
-CREATE TABLE "room_availability" (
+CREATE TABLE "room_availabilities" (
     "id" TEXT NOT NULL,
     "roomId" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
-    "isBooked" BOOLEAN NOT NULL DEFAULT false,
+    "isAvailable" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "room_availability_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "room_availabilities_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -165,7 +165,7 @@ CREATE UNIQUE INDEX "time_slots_roomId_date_hour_minute_key" ON "time_slots"("ro
 CREATE INDEX "_RoomTags_B_index" ON "_RoomTags"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "room_availability_roomId_date_key" ON "room_availability"("roomId", "date");
+CREATE UNIQUE INDEX "room_availabilities_roomId_date_key" ON "room_availabilities"("roomId", "date");
 
 -- CreateIndex
 CREATE INDEX "_RoomToTag_B_index" ON "_RoomToTag"("B");
