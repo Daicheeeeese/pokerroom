@@ -4,123 +4,85 @@ import { prisma } from '@/lib/prisma'
 // このルートを動的に設定
 export const dynamic = 'force-dynamic'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    console.log('=== API Request Start ===')
-    console.log('Request URL:', request.url)
-    console.log('Room ID:', params.id)
+    const roomId = params.id
+    const url = new URL(req.url)
+    const dateStrings = url.searchParams.get("dates")?.split(",") || []
 
-    const { searchParams } = new URL(request.url)
-    const datesParam = searchParams.get('dates')
-    console.log('Raw dates parameter:', datesParam)
-    
-    if (!datesParam) {
-      console.log('Error: Dates parameter is missing')
-      return NextResponse.json(
-        { error: 'Dates parameter is required' },
-        { status: 400 }
-      )
-    }
-
-    // 日付をUTCでパース
-    const dates = datesParam.split(',').map(date => {
-      try {
-        const parsedDate = new Date(date)
-        // 日付部分のみを取得（時刻を0に設定）
-        parsedDate.setUTCHours(0, 0, 0, 0)
-        return parsedDate
-      } catch (error) {
-        console.error(`Invalid date format: ${date}`, error)
-        return null
-      }
-    }).filter((date): date is Date => date !== null)
-
-    console.log('Parsed dates:', dates.map(d => ({
-      original: d.toISOString(),
-      dateOnly: d.toISOString().split('T')[0]
-    })))
+    // 日付のバリデーション
+    const dates = dateStrings
+      .map((d) => {
+        try {
+          const date = new Date(d)
+          date.setUTCHours(0, 0, 0, 0) // 時刻を0に設定
+          return date
+        } catch (error) {
+          console.error(`Invalid date format: ${d}`, error)
+          return null
+        }
+      })
+      .filter((date): date is Date => date !== null)
 
     if (dates.length === 0) {
-      console.log('Error: No valid dates after parsing')
       return NextResponse.json(
         { error: 'No valid dates provided' },
         { status: 400 }
       )
     }
 
-    // 指定された日付の予約可能状態を取得
-    const availabilities = await prisma.roomAvailability.findMany({
+    const availability = await prisma.roomAvailability.findMany({
       where: {
-        roomId: params.id,
+        roomId,
         date: {
-          in: dates
-        }
+          in: dates,
+        },
+      },
+      select: {
+        date: true,
+        isAvailable: true
       }
     })
 
-    console.log('Database query result:', {
-      found: availabilities.length,
-      records: availabilities.map(a => ({
-        date: a.date.toISOString(),
-        isAvailable: a.isAvailable,
-        dateOnly: a.date.toISOString().split('T')[0]
-      }))
-    })
-
     // データが見つからない場合は、すべての日付を利用可能として返す
-    if (availabilities.length === 0) {
-      console.log('No records found in database, returning default availabilities')
-      const defaultResponse = dates.map(date => ({
-        date: date.toISOString(),
-        isAvailable: true
-      }))
-      console.log('Default response:', defaultResponse)
-      return NextResponse.json(defaultResponse)
+    if (availability.length === 0) {
+      return NextResponse.json(
+        dates.map(date => ({
+          date: date.toISOString(),
+          isAvailable: true
+        }))
+      )
     }
 
-    // 予約可能状態をマップ（日付部分のみで比較）
+    // 予約可能状態をマップ
     const availabilityMap = new Map(
-      availabilities.map(a => [
+      availability.map(a => [
         a.date.toISOString().split('T')[0],
         a.isAvailable
       ])
     )
-    console.log('Availability map:', Object.fromEntries(availabilityMap))
 
     // すべての日付に対して予約可能状態を返す
-    const response = dates.map(date => {
-      const dateKey = date.toISOString().split('T')[0]
-      const isAvailable = availabilityMap.get(dateKey) ?? true
-      console.log(`Mapping date ${dateKey}: isAvailable = ${isAvailable}`)
-      return {
-        date: date.toISOString(),
-        isAvailable
-      }
-    })
+    const response = dates.map(date => ({
+      date: date.toISOString(),
+      isAvailable: availabilityMap.get(date.toISOString().split('T')[0]) ?? true
+    }))
 
-    console.log('=== Final Response ===')
-    console.log(JSON.stringify(response, null, 2))
-    console.log('=== API Request End ===')
-    
     return NextResponse.json(response)
-  } catch (error) {
-    console.error('=== Error in API ===')
-    console.error('Error fetching room availability:', error)
-    if (error instanceof Error) {
+  } catch (err) {
+    console.error("🔥 API error:", err)
+    if (err instanceof Error) {
       console.error('Detailed error information:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-        cause: error.cause
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        cause: err.cause
       })
     }
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: err instanceof Error ? err.message : 'Unknown error'
       },
       { status: 500 }
     )
