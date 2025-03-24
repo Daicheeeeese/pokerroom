@@ -69,30 +69,32 @@ export default async function RoomPage({ params }: Props) {
         },
         tags: true,
       }
-    }) as RoomWithDetails | null
+    })
 
     if (!room) {
       notFound()
     }
 
+    const roomWithDetails = room as RoomWithDetails
+
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          <ImageGallery mainImage={room.image || ''} images={room.images} />
+          <ImageGallery mainImage={roomWithDetails.image || ''} images={roomWithDetails.images} />
           <div className="mt-6 mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
-                <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{roomWithDetails.name}</h1>
+                <p className="mt-2 text-gray-500 text-sm md:text-base">{roomWithDetails.description || ''}</p>
               </div>
             </div>
             <div className="mt-4">
-              <RoomTags tags={room.tags} />
+              <RoomTags tags={roomWithDetails.tags} />
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <RoomDetailSection room={room} />
+              <RoomDetailSection room={roomWithDetails} />
             </div>
             <div className="lg:col-span-1">
               {/* 予約フォームやその他の情報をここに配置 */}
