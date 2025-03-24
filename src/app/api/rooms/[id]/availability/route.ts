@@ -65,7 +65,7 @@ export async function GET(
       found: availabilities.length,
       records: availabilities.map(a => ({
         date: a.date.toISOString(),
-        isBooked: a.isBooked,
+        isAvailable: a.isAvailable,
         dateOnly: a.date.toISOString().split('T')[0]
       }))
     })
@@ -85,7 +85,7 @@ export async function GET(
     const availabilityMap = new Map(
       availabilities.map(a => [
         a.date.toISOString().split('T')[0],
-        !a.isBooked // isBookedの逆がisAvailable
+        a.isAvailable
       ])
     )
     console.log('Availability map:', Object.fromEntries(availabilityMap))
