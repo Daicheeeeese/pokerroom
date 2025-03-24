@@ -23,31 +23,39 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = params
-  const room = await prisma.room.findUnique({
-    where: { id },
-    include: {
-      reviews: true,
-      hourlyPrices: true,
-      hourlyPricesHoliday: true,
-      images: {
-        orderBy: {
-          order: 'asc'
-        }
-      },
-      tags: true
-    }
-  })
+  try {
+    const room = await prisma.room.findUnique({
+      where: { id },
+      include: {
+        reviews: true,
+        hourlyPrices: true,
+        hourlyPricesHoliday: true,
+        images: {
+          orderBy: {
+            order: 'asc'
+          }
+        },
+        tags: true
+      }
+    })
 
-  if (!room) {
+    if (!room) {
+      return {
+        title: 'ルームが見つかりません',
+        description: '指定されたルームは存在しません。'
+      }
+    }
+
     return {
-      title: 'ルームが見つかりません',
-      description: '指定されたルームは存在しません。'
+      title: `${room.name} | PokerRoom`,
+      description: room.description || `${room.name}の詳細ページです。`
     }
-  }
-
-  return {
-    title: `${room.name} | PokerRoom`,
-    description: room.description || `${room.name}の詳細ページです。`
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'エラーが発生しました',
+      description: 'データの取得中にエラーが発生しました。'
+    }
   }
 }
 
@@ -108,11 +116,16 @@ export default async function RoomPage({ params }: Props) {
     )
   } catch (error) {
     console.error('Error fetching room details:', error)
+    // エラーの種類に応じて適切なメッセージを表示
+    const errorMessage = error instanceof Error 
+      ? `データの取得中にエラーが発生しました: ${error.message}`
+      : 'データの取得中にエラーが発生しました。しばらく時間をおいて再度お試しください。'
+
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-            データの取得中にエラーが発生しました。しばらく時間をおいて再度お試しください。
+            {errorMessage}
           </div>
         </div>
       </div>

@@ -7,9 +7,9 @@ if (process.env.NODE_ENV === "production") {
   neonConfig.useSecureWebSocket = true
   neonConfig.pipelineTLS = true
   neonConfig.pipelineConnect = true
-  neonConfig.connectionTimeoutMillis = 10000
+  neonConfig.connectionTimeoutMillis = 30000 // タイムアウトを30秒に延長
   neonConfig.keepAlive = true
-  neonConfig.keepAliveInitialDelayMillis = 10000
+  neonConfig.keepAliveInitialDelayMillis = 30000
 }
 
 // ローカル開発環境の場合の設定
@@ -32,6 +32,27 @@ const prismaClientSingleton = () => {
       db: {
         url: process.env.DATABASE_URL
       }
+    },
+    // 接続タイムアウトとリトライの設定を追加
+    connectionTimeout: 30000,
+    retry: {
+      maxRetries: 3,
+      backoff: {
+        initialDelay: 1000,
+        maxDelay: 5000,
+        factor: 2
+      }
+    }
+  })
+
+  // エラーハンドリングのミドルウェアを追加
+  client.$use(async (params, next) => {
+    try {
+      const result = await next(params)
+      return result
+    } catch (error) {
+      console.error(`Database error in ${params.model}.${params.action}:`, error)
+      throw error
     }
   })
 
