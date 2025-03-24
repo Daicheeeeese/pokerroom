@@ -25,9 +25,13 @@ export async function GET(
       )
     }
 
+    // 日付をUTCでパース
     const dates = datesParam.split(',').map(date => {
       try {
-        return new Date(date)
+        const parsedDate = new Date(date)
+        // 日付部分のみを取得（時刻を0に設定）
+        parsedDate.setUTCHours(0, 0, 0, 0)
+        return parsedDate
       } catch (error) {
         console.error(`Invalid date format: ${date}`, error)
         return null
@@ -47,10 +51,6 @@ export async function GET(
       )
     }
 
-    console.log('Executing Prisma query with parameters:')
-    console.log('Room ID:', params.id)
-    console.log('Dates:', dates.map(d => d.toISOString()))
-
     // 指定された日付の予約可能状態を取得
     const availabilities = await prisma.roomAvailability.findMany({
       where: {
@@ -58,10 +58,6 @@ export async function GET(
         date: {
           in: dates
         }
-      },
-      select: {
-        date: true,
-        isAvailable: true
       }
     })
 
@@ -69,23 +65,9 @@ export async function GET(
       found: availabilities.length,
       records: availabilities.map(a => ({
         date: a.date.toISOString(),
-        isAvailable: a.isAvailable,
+        isBooked: a.isBooked,
         dateOnly: a.date.toISOString().split('T')[0]
       }))
-    })
-
-    // Prismaのクエリパラメータをログに出力
-    console.log('Prisma query parameters:', {
-      where: {
-        roomId: params.id,
-        date: {
-          in: dates.map(d => d.toISOString())
-        }
-      },
-      select: {
-        date: true,
-        isAvailable: true
-      }
     })
 
     // データが見つからない場合は、すべての日付を利用可能として返す
@@ -99,11 +81,11 @@ export async function GET(
       return NextResponse.json(defaultResponse)
     }
 
-    // 予約可能状態をマップ
+    // 予約可能状態をマップ（日付部分のみで比較）
     const availabilityMap = new Map(
       availabilities.map(a => [
         a.date.toISOString().split('T')[0],
-        a.isAvailable
+        !a.isBooked // isBookedの逆がisAvailable
       ])
     )
     console.log('Availability map:', Object.fromEntries(availabilityMap))
