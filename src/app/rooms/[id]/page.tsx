@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import RoomDetailSection from '@/components/rooms/RoomDetailSection'
+import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import { RoomTags } from '@/components/rooms/RoomTags'

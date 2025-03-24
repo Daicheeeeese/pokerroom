@@ -2,7 +2,7 @@
 
 import { RoomWithDetails } from '@/types/room'
 import { formatPrice } from '@/lib/format'
-import { ReservationForm } from '@/components/ReservationForm'
+import ReservationForm from '@/components/ReservationForm'
 import { Card } from '@/components/ui/card'
 import { MapPin, Users, Clock } from 'lucide-react'
 
