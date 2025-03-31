@@ -110,15 +110,6 @@ model Tag {
   rooms     Room[]   @relation("RoomToTag")
 }
 
-model RoomToTag {
-  A String
-  B String
-
-  @@id([A, B], map: "_RoomToTag_AB_pkey")
-  @@index([B], map: "_RoomToTag_B_index")
-  @@map("_RoomToTag")
-}
-
 enum ReservationStatus {
   PENDING
   CONFIRMED
