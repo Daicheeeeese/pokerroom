@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { ReservationStatus } from "@prisma/client"
 
 // CORSヘッダーを設定する関数
 function corsResponse(data: any, status: number = 200) {
@@ -69,7 +70,7 @@ export async function DELETE(
     // 予約のステータスを更新
     const updatedReservation = await prisma.reservation.update({
       where: { id: reservationId },
-      data: { status: "CANCELLED" }
+      data: { status: ReservationStatus.CANCELLED }
     })
 
     return corsResponse({

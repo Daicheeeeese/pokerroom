@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { sendReservationConfirmationEmail } from "@/lib/mail"
+import { ReservationStatus } from "@prisma/client"
 
 export const dynamic = 'force-dynamic'
 
@@ -120,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     // バリデーション
-    if (!data.roomId || !data.startTime || !data.endTime) {
+    if (!data.roomId || !data.date || !data.startTime || !data.endTime || !data.totalPrice) {
       console.error("バリデーションエラー: 必須フィールドが不足しています")
       return corsResponse(
         { error: "必須フィールドが不足しています" },
@@ -166,12 +167,13 @@ export async function POST(request: Request) {
 
       const reservation = await prisma.reservation.create({
         data: {
-          userId: user.id,
           roomId: data.roomId,
+          userId: user.id,
           date: reservationDate,
           startTime: data.startTime,
           endTime: data.endTime,
-          totalPrice: data.totalPrice
+          totalPrice: data.totalPrice,
+          status: ReservationStatus.PENDING
         },
         include: {
           room: true,
@@ -192,7 +194,10 @@ export async function POST(request: Request) {
         totalPrice: reservation.totalPrice,
       })
 
-      return corsResponse(reservation)
+      return corsResponse({
+        message: "予約が作成されました",
+        reservation
+      }, 201)
     } catch (dbError) {
       console.error("データベースエラー:", dbError)
       if (dbError instanceof Error) {
@@ -228,7 +233,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     console.log("API - セッション情報:", {
@@ -242,7 +247,10 @@ export async function GET() {
 
     if (!session?.user?.id) {
       console.log("API - 認証エラー: ユーザーIDが見つかりません")
-      return NextResponse.json({ error: "認証が必要です" }, { status: 401 })
+      return corsResponse(
+        { error: "認証が必要です" },
+        401
+      )
     }
 
     // データベースから正しいユーザーIDを取得
@@ -252,7 +260,10 @@ export async function GET() {
 
     if (!user) {
       console.log("API - エラー: ユーザーが見つかりません")
-      return NextResponse.json({ error: "ユーザーが見つかりません" }, { status: 404 })
+      return corsResponse(
+        { error: "ユーザーが見つかりません" },
+        404
+      )
     }
 
     console.log("API - データベースのユーザー情報:", {
@@ -261,9 +272,14 @@ export async function GET() {
       name: user.name
     })
 
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status') as ReservationStatus | null
+
+    // 予約の取得
     const reservations = await prisma.reservation.findMany({
       where: {
-        userId: user.id
+        userId: user.id,
+        ...(status ? { status } : {})
       },
       include: {
         room: {
@@ -288,7 +304,7 @@ export async function GET() {
       }))
     })
 
-    return corsResponse(reservations)
+    return corsResponse({ reservations })
   } catch (error) {
     console.error("予約取得エラー:", error)
     return corsResponse(
