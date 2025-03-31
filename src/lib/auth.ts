@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             name: user.name,
             email: user.email,
+            image: user.image
           }
         } catch (error) {
           console.error("認証エラー:", error)
@@ -66,12 +67,14 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!existingUser) {
-            const newUser = await prisma.user.create({
+            await prisma.user.create({
               data: {
                 id: user.id,
                 email: user.email!,
-                name: user.name,
+                name: user.name || "",
                 password: "", // Googleログインの場合はパスワードは空
+                emailVerified: null,
+                image: user.image
               }
             })
           }
