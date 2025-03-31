@@ -110,13 +110,13 @@ model Tag {
   rooms     Room[]   @relation("RoomToTag")
 }
 
-model RoomTags {
+model RoomToTag {
   A String
   B String
 
-  @@id([A, B], map: "_RoomTags_AB_pkey")
-  @@index([B], map: "_RoomTags_B_index")
-  @@map("_RoomTags")
+  @@id([A, B], map: "_RoomToTag_AB_pkey")
+  @@index([B], map: "_RoomToTag_B_index")
+  @@map("_RoomToTag")
 }
 
 enum ReservationStatus {
@@ -144,13 +144,4 @@ model Reservation {
   @@index([userId])
   @@index([date])
   @@map("reservations")
-}
-
-model RoomToTag {
-  A String
-  B String
-
-  @@id([A, B], map: "_RoomToTag_AB_pkey")
-  @@index([B], map: "_RoomToTag_B_index")
-  @@map("_RoomToTag")
 }
