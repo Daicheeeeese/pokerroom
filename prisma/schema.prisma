@@ -19,6 +19,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime
   reviews       Review[]
+  reservations  Reservation[]
 
   @@map("users")
 }
@@ -42,6 +43,7 @@ model Room {
   hourlyPricesHoliday HourlyPriceHoliday[]
   reviews             Review[]
   tags                Tag[]                @relation("RoomToTag")
+  reservations        Reservation[]
 
   @@map("rooms")
 }
@@ -116,8 +118,8 @@ model RoomTags {
   @@map("_RoomTags")
 }
 
-model reservations {
-  id         String   @id
+model Reservation {
+  id         String   @id @default(cuid())
   roomId     String
   userId     String
   date       DateTime
@@ -126,7 +128,14 @@ model reservations {
   totalPrice Int
   status     String   @default("PENDING")
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
+  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([userId])
+  @@index([date])
+  @@map("reservations")
 }
 
 model RoomToTag {
