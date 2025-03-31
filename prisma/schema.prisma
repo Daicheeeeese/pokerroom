@@ -7,6 +7,7 @@ datasource db {
   url          = env("DATABASE_URL")
   directUrl    = env("POSTGRES_URL")
   relationMode = "prisma"
+  shadowDatabaseUrl = env("POSTGRES_PRISMA_URL")
 }
 
 model User {
