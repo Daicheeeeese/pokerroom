@@ -119,19 +119,26 @@ model RoomTags {
   @@map("_RoomTags")
 }
 
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
 model Reservation {
-  id         String   @id @default(cuid())
+  id         String            @id @default(cuid())
   roomId     String
   userId     String
   date       DateTime
   startTime  String
   endTime    String
   totalPrice Int
-  status     String   @default("PENDING")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status     ReservationStatus @default(PENDING)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([roomId])
   @@index([userId])
