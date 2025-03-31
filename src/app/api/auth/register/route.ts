@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import { Prisma } from "@prisma/client"
 
 export async function POST(request: Request) {
   try {
@@ -53,14 +54,16 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // ユーザーの作成
+    const userData: Prisma.UserCreateInput = {
+      name,
+      email,
+      password: hashedPassword,
+      emailVerified: null,
+      image: null
+    }
+
     const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        emailVerified: null,
-        image: null
-      },
+      data: userData,
     })
 
     console.log("新規ユーザー登録成功:", {
@@ -76,7 +79,15 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("ユーザー登録エラー:", error)
     
-    // より詳細なエラー情報を返す
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+          { error: "このメールアドレスは既に登録されています" },
+          { status: 400 }
+        )
+      }
+    }
+
     if (error instanceof Error) {
       return NextResponse.json(
         { 
