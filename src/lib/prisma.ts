@@ -27,22 +27,7 @@ const prismaClientSingleton = () => {
   }
 
   const client = new PrismaClient({
-    log: ['query', 'error', 'warn'],
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL
-      }
-    },
-    // 接続タイムアウトとリトライの設定を追加
-    connectionTimeout: 30000,
-    retry: {
-      maxRetries: 3,
-      backoff: {
-        initialDelay: 1000,
-        maxDelay: 5000,
-        factor: 2
-      }
-    }
+    log: ['query', 'error', 'warn']
   })
 
   // エラーハンドリングのミドルウェアを追加
@@ -98,8 +83,6 @@ declare global {
 }
 
 const prisma = globalThis.prisma ?? prismaClientSingleton()
-
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
 
 export { prisma }
 export default prisma 
