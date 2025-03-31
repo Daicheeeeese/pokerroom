@@ -7,7 +7,7 @@ CREATE TABLE "users" (
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -69,20 +69,6 @@ CREATE TABLE "hourly_prices_holiday" (
 );
 
 -- CreateTable
-CREATE TABLE "time_slots" (
-    "id" TEXT NOT NULL,
-    "roomId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "hour" INTEGER NOT NULL,
-    "minute" INTEGER NOT NULL,
-    "isAvailable" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "time_slots_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "reviews" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -130,18 +116,6 @@ CREATE TABLE "reservations" (
 );
 
 -- CreateTable
-CREATE TABLE "room_availabilities" (
-    "id" TEXT NOT NULL,
-    "roomId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "isAvailable" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "room_availabilities_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "_RoomToTag" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -159,13 +133,16 @@ CREATE UNIQUE INDEX "hourly_prices_weekday_roomid_hour_key" ON "hourly_prices_we
 CREATE UNIQUE INDEX "hourly_prices_holiday_roomid_hour_key" ON "hourly_prices_holiday"("roomId", "hour");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "time_slots_roomId_date_hour_minute_key" ON "time_slots"("roomId", "date", "hour", "minute");
-
--- CreateIndex
 CREATE INDEX "_RoomTags_B_index" ON "_RoomTags"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "room_availabilities_roomId_date_key" ON "room_availabilities"("roomId", "date");
+CREATE INDEX "reservations_roomId_idx" ON "reservations"("roomId");
+
+-- CreateIndex
+CREATE INDEX "reservations_userId_idx" ON "reservations"("userId");
+
+-- CreateIndex
+CREATE INDEX "reservations_date_idx" ON "reservations"("date");
 
 -- CreateIndex
 CREATE INDEX "_RoomToTag_B_index" ON "_RoomToTag"("B");
