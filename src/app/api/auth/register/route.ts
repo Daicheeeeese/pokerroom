@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(request: Request) {
   try {
@@ -56,7 +55,6 @@ export async function POST(request: Request) {
     // ユーザーの作成
     const user = await prisma.user.create({
       data: {
-        id: uuidv4(),
         name,
         email,
         password: hashedPassword,
