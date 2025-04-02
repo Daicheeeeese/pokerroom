@@ -6,7 +6,7 @@ export type RoomWithDetails = {
   description: string
   capacity: number
   address: string
-  price: number
+  pricePerHour: number
   hourlyPrices: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
@@ -14,7 +14,6 @@ export type RoomWithDetails = {
   nearestStations: NearestStation[]
   createdAt: Date
   updatedAt: Date
-  pricePerHour: number
 }
 
 export interface Room {
