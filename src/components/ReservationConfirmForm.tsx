@@ -80,6 +80,9 @@ export default function ReservationConfirmForm({ room, user, date, startTime, en
           >
             予約を確定する
           </button>
+          <p className="text-sm text-gray-600 text-center mt-4">
+            送信後、予約メールが届きますのでご確認ください。
+          </p>
         </form>
       </div>
     </div>
