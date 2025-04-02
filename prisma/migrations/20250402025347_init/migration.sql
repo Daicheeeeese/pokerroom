@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ReservationStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -93,10 +96,10 @@ CREATE TABLE "Tag" (
 
 -- CreateTable
 CREATE TABLE "_RoomTags" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+    "roomId" TEXT NOT NULL,
+    "tagId" TEXT NOT NULL,
 
-    CONSTRAINT "_RoomTags_AB_pkey" PRIMARY KEY ("A","B")
+    CONSTRAINT "_RoomTags_pkey" PRIMARY KEY ("roomId","tagId")
 );
 
 -- CreateTable
@@ -108,19 +111,11 @@ CREATE TABLE "reservations" (
     "startTime" TEXT NOT NULL,
     "endTime" TEXT NOT NULL,
     "totalPrice" INTEGER NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "status" "ReservationStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "reservations_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "_RoomToTag" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-
-    CONSTRAINT "_RoomToTag_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -133,9 +128,6 @@ CREATE UNIQUE INDEX "hourly_prices_weekday_roomid_hour_key" ON "hourly_prices_we
 CREATE UNIQUE INDEX "hourly_prices_holiday_roomid_hour_key" ON "hourly_prices_holiday"("roomId", "hour");
 
 -- CreateIndex
-CREATE INDEX "_RoomTags_B_index" ON "_RoomTags"("B");
-
--- CreateIndex
 CREATE INDEX "reservations_roomId_idx" ON "reservations"("roomId");
 
 -- CreateIndex
@@ -143,6 +135,3 @@ CREATE INDEX "reservations_userId_idx" ON "reservations"("userId");
 
 -- CreateIndex
 CREATE INDEX "reservations_date_idx" ON "reservations"("date");
-
--- CreateIndex
-CREATE INDEX "_RoomToTag_B_index" ON "_RoomToTag"("B");
