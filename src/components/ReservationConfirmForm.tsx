@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { format } from "date-fns"
 import type { Room, User, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+import { useRouter } from "next/navigation"
 
 type RoomWithPrices = Room & {
   hourlyPrices: HourlyPriceWeekday[]
@@ -20,6 +21,41 @@ type Props = {
 }
 
 export default function ReservationConfirmForm({ room, user, date, startTime, endTime, totalPrice }: Props) {
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string>("")
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSuccessMessage("")
+
+    try {
+      const formData = new FormData(e.currentTarget)
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error("予約の作成に失敗しました")
+      }
+
+      setSuccessMessage("予約を受け付けました。詳細は予約メールをご確認ください")
+      toast.success("予約を受け付けました")
+      
+      // 3秒後に予約一覧ページにリダイレクト
+      setTimeout(() => {
+        router.push("/reservations")
+      }, 3000)
+    } catch (error) {
+      console.error("予約エラー:", error)
+      toast.error("予約の作成に失敗しました")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-8">予約の確認</h1>
@@ -67,7 +103,7 @@ export default function ReservationConfirmForm({ room, user, date, startTime, en
           </div>
         </div>
 
-        <form action="/api/reservations" method="POST" className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input type="hidden" name="roomId" value={room.id} />
           <input type="hidden" name="date" value={date} />
           <input type="hidden" name="startTime" value={startTime} />
@@ -76,14 +112,21 @@ export default function ReservationConfirmForm({ room, user, date, startTime, en
           
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors"
+            disabled={isSubmitting}
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
           >
-            予約を確定する
+            {isSubmitting ? "予約処理中..." : "予約を確定する"}
           </button>
           <p className="text-sm text-gray-600 text-center mt-4">
             送信後、予約メールが届きますのでご確認ください。
           </p>
         </form>
+
+        {successMessage && (
+          <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-center">
+            {successMessage}
+          </div>
+        )}
       </div>
     </div>
   )
