@@ -57,7 +57,7 @@ export default async function ReservationDetailPage({ params }: Props) {
             <div>
               <p className="text-gray-600">時間</p>
               <p className="font-medium">
-                {format(new Date(reservation.startTime), "HH:mm")} 〜 {format(new Date(reservation.endTime), "HH:mm")}
+                {reservation.startTime} 〜 {reservation.endTime}
               </p>
             </div>
             <div>
