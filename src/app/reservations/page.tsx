@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { ReservationList } from "@/components/ReservationList"
+import { ReservationStatus } from "@prisma/client"
 
 type Reservation = {
   id: string
@@ -11,6 +12,7 @@ type Reservation = {
   startTime: string
   endTime: string
   totalPrice: number
+  status: ReservationStatus
   room: {
     name: string
   }
@@ -48,14 +50,16 @@ export default function ReservationsPage() {
           }
           
           const data = await response.json()
-          console.log("取得した予約データ:", {
-            count: data.length,
-            reservations: data
-          })
+          console.log("取得した予約データ:", data)
           
-          setReservations(data)
+          if (data.reservations) {
+            setReservations(data.reservations)
+          } else {
+            setReservations([])
+          }
         } catch (error) {
           console.error("予約取得エラー:", error)
+          setReservations([])
         } finally {
           setIsLoading(false)
         }
