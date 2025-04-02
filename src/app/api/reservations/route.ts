@@ -197,10 +197,9 @@ export async function GET(request: Request) {
           }
         }
       },
-      orderBy: [
-        { date: 'desc' },
-        { startTime: 'desc' }
-      ]
+      orderBy: {
+        createdAt: 'desc'
+      }
     })
 
     console.log("API - 取得した予約データ:", {
