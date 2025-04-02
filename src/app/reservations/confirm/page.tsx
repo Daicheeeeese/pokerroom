@@ -5,7 +5,12 @@ import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { useSession } from "next-auth/react"
 import { format } from "date-fns"
-import type { Room, User } from "@prisma/client"
+import type { Room, User, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+
+type RoomWithPrices = Room & {
+  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+}
 
 type Props = {
   searchParams: {
@@ -17,10 +22,13 @@ type Props = {
   }
 }
 
+export const dynamic = 'force-dynamic'
+export const revalidate = false
+
 export default function ReservationConfirmPage({ searchParams }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [room, setRoom] = useState<Room | null>(null)
+  const [room, setRoom] = useState<RoomWithPrices | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
