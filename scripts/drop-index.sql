@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS time_slots_roomId_fkey; 

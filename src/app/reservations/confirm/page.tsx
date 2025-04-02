@@ -10,6 +10,7 @@ export default function ReservationConfirmPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [request, setRequest] = useState("")
 
   const roomId = searchParams.get("roomId")
   const roomName = searchParams.get("roomName")
@@ -42,6 +43,7 @@ export default function ReservationConfirmPage() {
           endTime,
           totalPrice: Number(totalPrice),
           userId: session.user.id,
+          request,
         }),
       })
 
@@ -92,6 +94,20 @@ export default function ReservationConfirmPage() {
               <dd className="font-medium">¥{Number(totalPrice).toLocaleString()}</dd>
             </div>
           </dl>
+        </div>
+
+        <div className="mt-6">
+          <label htmlFor="request" className="block text-sm font-medium text-gray-700 mb-2">
+            ご要望（任意）
+          </label>
+          <textarea
+            id="request"
+            value={request}
+            onChange={(e) => setRequest(e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ご要望がありましたらご記入ください"
+          />
         </div>
 
         <div className="space-y-4 mt-6">

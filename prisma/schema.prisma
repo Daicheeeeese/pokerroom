@@ -3,22 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  directUrl    = env("POSTGRES_URL")
-  relationMode = "prisma"
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("POSTGRES_URL")
   shadowDatabaseUrl = env("POSTGRES_PRISMA_URL")
+  relationMode      = "prisma"
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String        @unique
   password      String
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
   reviews       Review[]
   reservations  Reservation[]
 
@@ -101,13 +101,6 @@ model Review {
   @@map("reviews")
 }
 
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-}
-
 model Reservation {
   id         String            @id @default(cuid())
   roomId     String
@@ -117,6 +110,7 @@ model Reservation {
   endTime    String
   totalPrice Int
   status     ReservationStatus @default(PENDING)
+  request    String?          // ユーザーの要望
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
@@ -126,4 +120,11 @@ model Reservation {
   @@index([userId])
   @@index([date])
   @@map("reservations")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }

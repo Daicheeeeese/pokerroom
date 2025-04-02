@@ -31,127 +31,25 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    console.log("予約APIが呼び出されました")
-    
+    const data = await request.json()
     const session = await getServerSession(authOptions)
-    console.log("セッション情報の詳細:", {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userId: session?.user?.id,
-      email: session?.user?.email,
-      name: session?.user?.name,
-      rawSession: session
-    })
 
     if (!session?.user?.id) {
-      console.error("ユーザー認証エラー: セッションまたはユーザーIDが存在しません")
-      return corsResponse(
-        { error: "認証が必要です" },
-        401
-      )
+      return corsResponse({ error: "認証が必要です" }, 401)
     }
 
-    // ユーザーの存在確認
-    let user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { id: session.user.id },
-          { email: session.user.email }
-        ]
-      }
-    })
-    console.log("データベースのユーザー情報:", user)
-
-    if (!user) {
-      console.error("ユーザーが見つかりません。セッション情報:", {
-        userId: session.user.id,
-        email: session.user.email
-      })
-      
-      // ユーザーを作成
-      try {
-        const defaultPassword = "temporary_" + Math.random().toString(36).slice(2)
-        const newUser = await prisma.user.create({
-          data: {
-            id: session.user.id,
-            email: session.user.email || `${session.user.id}@example.com`,
-            name: session.user.name || "",
-            password: defaultPassword
-          }
-        })
-        console.log("新しいユーザーを作成しました:", newUser)
-        user = newUser // 作成したユーザーを設定
-      } catch (createError) {
-        console.error("ユーザー作成エラー:", createError)
-        if (createError instanceof Error) {
-          console.error("エラーの詳細:", {
-            message: createError.message,
-            stack: createError.stack,
-            name: createError.name
-          })
-          // 既存のユーザーを使用
-          const existingUser = await prisma.user.findUnique({
-            where: {
-              email: session.user.email
-            }
-          })
-          if (existingUser) {
-            console.log("既存のユーザーを使用します:", existingUser)
-            user = existingUser // 既存のユーザーを設定
-          } else {
-            return corsResponse(
-              { error: "ユーザーの作成に失敗しました" },
-              500
-            )
-          }
-        }
-      }
-    }
-
-    const data = await request.json()
-    console.log("リクエストデータ:", JSON.stringify(data, null, 2))
-
-    // この時点でユーザーが存在しない場合は早期リターン
-    if (!user) {
-      console.error("ユーザーが見つかりません")
-      return corsResponse(
-        { error: "ユーザーが見つかりません" },
-        404
-      )
-    }
-
-    // バリデーション
-    if (!data.roomId || !data.date || !data.startTime || !data.endTime || !data.totalPrice) {
-      console.error("バリデーションエラー: 必須フィールドが不足しています")
-      return corsResponse(
-        { error: "必須フィールドが不足しています" },
-        400
-      )
-    }
-
-    // 部屋の存在確認
-    const room = await prisma.room.findUnique({
-      where: {
-        id: data.roomId
-      }
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
     })
 
-    if (!room) {
-      console.error("部屋が見つかりません。部屋ID:", data.roomId)
-      return corsResponse(
-        { error: "指定された部屋が見つかりません" },
-        404
-      )
+    if (!user) {
+      return corsResponse({ error: "ユーザーが見つかりません" }, 404)
     }
 
-    // 日付のバリデーション
+    // 日付の検証
     const reservationDate = new Date(data.date)
     if (isNaN(reservationDate.getTime())) {
-      console.error("日付バリデーションエラー: 無効な日付形式です")
-      return corsResponse(
-        { error: "無効な日付形式です" },
-        400
-      )
+      return corsResponse({ error: "無効な日付です" }, 400)
     }
 
     // 予約の作成
@@ -162,7 +60,8 @@ export async function POST(request: Request) {
         date: reservationDate,
         startTime: data.startTime,
         endTime: data.endTime,
-        totalPrice: data.totalPrice
+        totalPrice: data.totalPrice,
+        request: data.request
       })
 
       const reservation = await prisma.reservation.create({
@@ -173,7 +72,8 @@ export async function POST(request: Request) {
           startTime: data.startTime,
           endTime: data.endTime,
           totalPrice: data.totalPrice,
-          status: ReservationStatus.PENDING
+          status: ReservationStatus.PENDING,
+          request: data.request
         },
         include: {
           room: true,
@@ -192,6 +92,7 @@ export async function POST(request: Request) {
         startTime: data.startTime,
         endTime: data.endTime,
         totalPrice: reservation.totalPrice,
+        request: reservation.request
       })
 
       return corsResponse({
@@ -216,18 +117,10 @@ export async function POST(request: Request) {
         500
       )
     }
-
   } catch (error) {
-    console.error("予約作成中にエラーが発生:", error)
-    if (error instanceof Error) {
-      console.error("エラーの詳細:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      })
-    }
+    console.error("予約エラー:", error)
     return corsResponse(
-      { error: "予約の作成中にエラーが発生しました" },
+      { error: "予約の作成に失敗しました" },
       500
     )
   }
