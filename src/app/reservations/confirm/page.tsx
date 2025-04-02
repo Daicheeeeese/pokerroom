@@ -22,7 +22,7 @@ type Props = {
 }
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = false
 
 export default async function ReservationConfirmPage({ searchParams }: Props) {
   const session = await getServerSession(authOptions)
