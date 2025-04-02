@@ -32,7 +32,10 @@ export async function OPTIONS() {
 export async function POST(request: Request) {
   try {
     const data = await request.json()
+    console.log("予約リクエストデータ:", JSON.stringify(data, null, 2))
+    
     const session = await getServerSession(authOptions)
+    console.log("セッション情報:", JSON.stringify(session, null, 2))
 
     if (!session?.user?.id) {
       return corsResponse({ error: "認証が必要です" }, 401)
@@ -41,6 +44,7 @@ export async function POST(request: Request) {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     })
+    console.log("ユーザー情報:", JSON.stringify(user, null, 2))
 
     if (!user) {
       return corsResponse({ error: "ユーザーが見つかりません" }, 404)
@@ -105,7 +109,8 @@ export async function POST(request: Request) {
         console.error("エラーの詳細:", {
           message: dbError.message,
           stack: dbError.stack,
-          name: dbError.name
+          name: dbError.name,
+          cause: dbError.cause
         })
         return corsResponse(
           { error: `データベースエラー: ${dbError.message}` },
@@ -119,6 +124,14 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("予約エラー:", error)
+    if (error instanceof Error) {
+      console.error("エラーの詳細:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        cause: error.cause
+      })
+    }
     return corsResponse(
       { error: "予約の作成に失敗しました" },
       500
