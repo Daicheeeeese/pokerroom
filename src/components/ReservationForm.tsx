@@ -34,6 +34,20 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     }
   }, [selectedDate]);
 
+  // 開始時間が変更されたら、終了時間をリセット
+  useEffect(() => {
+    if (startTime && endTime) {
+      const [startHour, startMinute = 0] = startTime.split(":").map(Number)
+      const [endHour, endMinute = 0] = endTime.split(":").map(Number)
+      const startTotalMinutes = (startHour * 60) + Number(startMinute)
+      const endTotalMinutes = (endHour * 60) + Number(endMinute)
+
+      if (endTotalMinutes <= startTotalMinutes) {
+        setEndTime("")
+      }
+    }
+  }, [startTime])
+
   const calculateTotalPrice = () => {
     if (!startTime || !endTime || !date) return 0
     
@@ -94,19 +108,24 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   }
 
   // 30分単位の時間オプションを生成する関数
-  const generateTimeOptions = () => {
+  const generateTimeOptions = (minTime?: string) => {
     const options = []
+    const startHour = minTime ? parseInt(minTime.split(":")[0]) : 0
+    const startMinute = minTime ? parseInt(minTime.split(":")[1]) : 0
+    const startTotalMinutes = (startHour * 60) + startMinute
+
     for (let hour = 0; hour < 24; hour++) {
-      options.push(
-        <option key={`${hour}:00`} value={`${hour.toString().padStart(2, '0')}:00`}>
-          {`${hour.toString().padStart(2, '0')}:00`}
-        </option>
-      )
-      options.push(
-        <option key={`${hour}:30`} value={`${hour.toString().padStart(2, '0')}:30`}>
-          {`${hour.toString().padStart(2, '0')}:30`}
-        </option>
-      )
+      for (let minute = 0; minute < 60; minute += 30) {
+        const totalMinutes = (hour * 60) + minute
+        if (!minTime || totalMinutes > startTotalMinutes) {
+          const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+          options.push(
+            <option key={timeString} value={timeString}>
+              {timeString}
+            </option>
+          )
+        }
+      }
     }
     return options
   }
@@ -142,9 +161,10 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          disabled={!startTime}
         >
           <option value="">選択してください</option>
-          {generateTimeOptions()}
+          {generateTimeOptions(startTime)}
         </select>
       </div>
 
