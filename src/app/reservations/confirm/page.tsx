@@ -1,10 +1,3 @@
-"use client"
-
-import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { toast } from "react-hot-toast"
-import { useSession } from "next-auth/react"
-import { format } from "date-fns"
 import type { Room, User, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -28,7 +21,6 @@ type Props = {
 }
 
 export const dynamic = 'force-dynamic'
-export const revalidate = false
 
 export default async function ReservationConfirmPage({ searchParams }: Props) {
   const session = await getServerSession(authOptions)
