@@ -12,28 +12,6 @@ async function main() {
   try {
     console.log("Checking existing data...");
     
-    // タグの存在確認
-    const existingTags = await prisma.tag.findMany();
-    let tags = existingTags;
-
-    // タグが存在しない場合のみ作成
-    if (existingTags.length === 0) {
-      console.log("Creating tags...");
-      await prisma.tag.createMany({
-        data: [
-          { id: 'food-allowed', name: '飲食持ち込み可', updatedAt: new Date() },
-          { id: 'dealer-available', name: 'ディーラー可', updatedAt: new Date() },
-          { id: 'smoking-allowed', name: '喫煙可', updatedAt: new Date() },
-          { id: 'rfid', name: 'RFID', updatedAt: new Date() },
-          { id: 'wifi', name: 'Wi-Fi完備', updatedAt: new Date() },
-        ],
-      });
-      tags = await prisma.tag.findMany();
-      console.log("Created tags:", tags);
-    } else {
-      console.log("Tags already exist, skipping creation");
-    }
-
     // ルームの存在確認
     const existingRooms = await prisma.room.findMany();
     
@@ -54,16 +32,6 @@ async function main() {
             address: '東京都渋谷区渋谷1-1-1',
             latitude: 35.658034,
             longitude: 139.701636,
-            tags: {
-              connectOrCreate: tags.map(tag => ({
-                where: { id: tag.id },
-                create: {
-                  id: tag.id,
-                  name: tag.name,
-                  updatedAt: new Date()
-                }
-              }))
-            },
           },
         }),
         prisma.room.create({
@@ -79,9 +47,6 @@ async function main() {
             address: '神奈川県横浜市西区みなとみらい2-2-2',
             latitude: 35.4628,
             longitude: 139.6222,
-            tags: {
-              connect: tags.map(tag => ({ id: tag.id })),
-            },
           },
         }),
         prisma.room.create({
@@ -97,9 +62,6 @@ async function main() {
             address: '大阪府大阪市北区大深町3-3-3',
             latitude: 34.7024,
             longitude: 135.4959,
-            tags: {
-              connect: tags.map(tag => ({ id: tag.id })),
-            },
           },
         }),
         prisma.room.create({
@@ -115,9 +77,6 @@ async function main() {
             address: '愛知県名古屋市中村区名駅4-4-4',
             latitude: 35.1709,
             longitude: 136.8815,
-            tags: {
-              connect: tags.map(tag => ({ id: tag.id })),
-            },
           },
         }),
         prisma.room.create({
@@ -133,9 +92,6 @@ async function main() {
             address: '福岡県福岡市博多区博多駅5-5-5',
             latitude: 33.5902,
             longitude: 130.4017,
-            tags: {
-              connect: tags.map(tag => ({ id: tag.id })),
-            },
           },
         }),
       ]);

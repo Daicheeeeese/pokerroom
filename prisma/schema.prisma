@@ -43,7 +43,6 @@ model Room {
   hourlyPrices        HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
   reviews             Review[]
-  tags                RoomTag[]
   reservations        Reservation[]
 
   @@map("rooms")
@@ -95,29 +94,11 @@ model Review {
   comment   String
   roomId    String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
-}
-
-model Tag {
-  id        String    @id
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
-  rooms     RoomTag[]
-}
-
-model RoomTag {
-  roomId String
-  tagId  String
-  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([roomId, tagId])
-  @@map("_RoomTags")
 }
 
 enum ReservationStatus {
