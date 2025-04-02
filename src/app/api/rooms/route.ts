@@ -51,8 +51,6 @@ export async function GET(request: Request) {
       where,
       include: {
         reviews: true,
-        hourlyPrices: true,
-        hourlyPricesHoliday: true,
         images: {
           orderBy: {
             order: 'asc'
@@ -65,7 +63,7 @@ export async function GET(request: Request) {
     console.log('Found rooms:', rooms.map(room => ({
       id: room.id,
       name: room.name,
-      price: room.price,
+      pricePerHour: room.pricePerHour,
       image: room.images[0]?.url
     })))
 
