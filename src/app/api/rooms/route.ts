@@ -24,8 +24,6 @@ export async function GET(request: Request) {
     // エリア検索条件
     if (area) {
       where.OR = [
-        { prefecture: { contains: area } },
-        { city: { contains: area } },
         { address: { contains: area } }
       ]
     }
@@ -52,7 +50,14 @@ export async function GET(request: Request) {
     const rooms = await prisma.room.findMany({
       where,
       include: {
-        reviews: true
+        reviews: true,
+        hourlyPrices: true,
+        hourlyPricesHoliday: true,
+        images: {
+          orderBy: {
+            order: 'asc'
+          }
+        }
       }
     })
 
@@ -60,8 +65,8 @@ export async function GET(request: Request) {
     console.log('Found rooms:', rooms.map(room => ({
       id: room.id,
       name: room.name,
-      pricePerHour: room.pricePerHour,
-      image: room.image
+      price: room.price,
+      image: room.images[0]?.url
     })))
 
     // 日付が指定されている場合、予約済みのルームをフィルタリング
@@ -75,9 +80,17 @@ export async function GET(request: Request) {
             }
           })
           console.log(`Room ${room.id} has ${reservations.length} reservations`)
-          return { ...room, hasReservation: reservations.length > 0 }
+          return { 
+            ...room, 
+            hasReservation: reservations.length > 0,
+            image: room.images[0]?.url || null
+          }
         }))
-      : rooms.map(room => ({ ...room, hasReservation: false }))
+      : rooms.map(room => ({ 
+          ...room, 
+          hasReservation: false,
+          image: room.images[0]?.url || null
+        }))
 
     console.log('Filtered rooms count:', filteredRooms.length)
     console.log('Filtered rooms:', filteredRooms.map(room => ({

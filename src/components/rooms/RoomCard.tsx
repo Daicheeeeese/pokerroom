@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import type { Review, Tag } from "@prisma/client"
+import type { Review, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 
 type RoomWithReviewsAndTags = {
@@ -10,13 +10,15 @@ type RoomWithReviewsAndTags = {
   name: string
   description: string | null
   image: string | null
-  pricePerHour: number
+  price: number
+  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
   capacity: number
   reviews: Review[]
   address?: string | null
   prefecture?: string | null
   city?: string | null
-  tags: Tag[]
+  tags: any[]
 }
 
 type Props = {
@@ -31,6 +33,22 @@ export default function RoomCard({ room, selectedDate }: Props) {
   const averageRating = room.reviews.length > 0
     ? room.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / room.reviews.length
     : null
+
+  // 基本料金を取得（時間帯別料金がない場合のデフォルト）
+  const basePrice = room.price
+
+  // 平日の最安値を取得
+  const minWeekdayPrice = room.hourlyPrices.length > 0
+    ? Math.min(...room.hourlyPrices.map(p => p.price))
+    : basePrice
+
+  // 休日の最安値を取得
+  const minHolidayPrice = room.hourlyPricesHoliday.length > 0
+    ? Math.min(...room.hourlyPricesHoliday.map(p => p.price))
+    : basePrice
+
+  // 表示する価格（最安値）を決定
+  const displayPrice = Math.min(minWeekdayPrice, minHolidayPrice, basePrice)
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
@@ -59,7 +77,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">
-              ¥{(room.pricePerHour ?? 0).toLocaleString()}~/時間
+              ¥{displayPrice.toLocaleString()}~/時間
             </p>
             {averageRating && (
               <div className="flex items-center">
