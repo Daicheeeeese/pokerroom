@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { addDays, setHours, setMinutes } = require('date-fns');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
@@ -11,6 +12,26 @@ function generateImageUrl(roomNumber, type) {
 async function main() {
   try {
     console.log("Checking existing data...");
+    
+    // テストユーザーの作成
+    const existingUser = await prisma.user.findUnique({
+      where: { email: 'test@example.com' }
+    });
+
+    if (!existingUser) {
+      console.log("Creating test user...");
+      const hashedPassword = await bcrypt.hash('password123', 10);
+      await prisma.user.create({
+        data: {
+          name: 'テストユーザー',
+          email: 'test@example.com',
+          password: hashedPassword,
+        },
+      });
+      console.log("Test user created successfully");
+    } else {
+      console.log("Test user already exists");
+    }
     
     // ルームの存在確認
     const existingRooms = await prisma.room.findMany();
