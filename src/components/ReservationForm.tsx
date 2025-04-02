@@ -81,37 +81,16 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
-    setIsSubmitting(true)
+    const totalPrice = calculateTotalPrice()
+    const searchParams = new URLSearchParams({
+      roomId: room.id,
+      date: date.toISOString(),
+      startTime,
+      endTime,
+      totalPrice: totalPrice.toString(),
+    })
 
-    try {
-      const totalPrice = calculateTotalPrice()
-      const response = await fetch("/api/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: room.id,
-          date: date.toISOString(),
-          startTime,
-          endTime,
-          totalPrice,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "予約の作成に失敗しました")
-      }
-
-      const data = await response.json()
-      router.push(`/reservations/${data.reservation.id}`)
-    } catch (error) {
-      console.error("予約エラー:", error)
-      setError(error instanceof Error ? error.message : "予約の作成に失敗しました")
-    } finally {
-      setIsSubmitting(false)
-    }
+    router.push(`/reservations/confirm?${searchParams.toString()}`)
   }
 
   // 30分単位の時間オプションを生成する関数
