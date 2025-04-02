@@ -64,8 +64,7 @@ export async function POST(request: Request) {
         date: reservationDate,
         startTime: data.startTime,
         endTime: data.endTime,
-        totalPrice: data.totalPrice,
-        request: data.request
+        totalPrice: data.totalPrice
       })
 
       const reservation = await prisma.reservation.create({
