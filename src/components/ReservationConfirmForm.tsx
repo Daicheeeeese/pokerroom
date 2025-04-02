@@ -23,12 +23,10 @@ type Props = {
 export default function ReservationConfirmForm({ room, user, date, startTime, endTime, totalPrice }: Props) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState<string>("")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setSuccessMessage("")
 
     try {
       const formData = new FormData(e.currentTarget)
@@ -41,13 +39,8 @@ export default function ReservationConfirmForm({ room, user, date, startTime, en
         throw new Error("予約の作成に失敗しました")
       }
 
-      setSuccessMessage("予約を受け付けました。詳細は予約メールをご確認ください")
-      toast.success("予約を受け付けました")
-      
-      // 3秒後に予約一覧ページにリダイレクト
-      setTimeout(() => {
-        router.push("/reservations")
-      }, 3000)
+      toast.success("予約を受け付けました。詳細は予約メールをご確認ください")
+      router.push("/reservations")
     } catch (error) {
       console.error("予約エラー:", error)
       toast.error("予約の作成に失敗しました")
@@ -121,12 +114,6 @@ export default function ReservationConfirmForm({ room, user, date, startTime, en
             送信後、予約メールが届きますのでご確認ください。
           </p>
         </form>
-
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-center">
-            {successMessage}
-          </div>
-        )}
       </div>
     </div>
   )
