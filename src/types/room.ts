@@ -4,9 +4,9 @@ export type RoomWithDetails = {
   id: string
   name: string
   description: string
-  price: number
   capacity: number
   address: string
+  price: number
   hourlyPrices: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
@@ -22,7 +22,6 @@ export interface Room {
   name: string
   description: string
   capacity: number
-  price: number
   pricePerHour: number
   createdAt: Date
   updatedAt: Date

@@ -6,14 +6,11 @@ import "react-datepicker/dist/react-datepicker.css"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { useSession } from "next-auth/react"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+import type { HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+import { RoomWithDetails } from "@/types/room"
 
 type Props = {
-  room: Room & {
-    hourlyPrices: HourlyPriceWeekday[];
-    hourlyPricesHoliday: HourlyPriceHoliday[];
-    pricePerHour: number;
-  }
+  room: RoomWithDetails
   selectedDate?: Date | null
 }
 
@@ -67,8 +64,12 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     let total = 0
     // 30分単位で料金を計算
     for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
-      const hour = Math.floor(minutes / 60)
-      const hourlyPrice = hourlyPrices.find(price => price.hour === hour)
+      const currentTime = `${Math.floor(minutes / 60).toString().padStart(2, '0')}:${(minutes % 60).toString().padStart(2, '0')}`
+      
+      // 該当時間の料金を探す
+      const hourlyPrice = hourlyPrices.find(price => 
+        currentTime >= price.startTime && currentTime < price.endTime
+      )
       
       // 該当時間の料金が設定されていない場合はデフォルトの時間単価を使用
       const priceForThisSlot = hourlyPrice?.price ?? room.pricePerHour
