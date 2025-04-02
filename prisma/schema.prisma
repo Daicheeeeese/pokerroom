@@ -111,12 +111,13 @@ model Tag {
 }
 
 model RoomTag {
-  roomId String
-  tagId  String
-  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  roomId    String
+  tagId     String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-  @@id([roomId, tagId])
+  @@unique([roomId, tagId])
   @@map("_RoomTags")
 }
 
