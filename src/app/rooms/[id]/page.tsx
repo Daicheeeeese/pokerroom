@@ -3,15 +3,13 @@ import { prisma } from '@/lib/prisma'
 import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
-import { RoomTags } from '@/components/rooms/RoomTags'
-import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Tag } from '@prisma/client'
+import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from '@prisma/client'
 
 type RoomWithDetails = Room & {
   reviews: Review[]
   hourlyPrices: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
-  tags: Tag[]
   pricePerHour: number | null
 }
 
@@ -34,8 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           orderBy: {
             order: 'asc'
           }
-        },
-        tags: true
+        }
       }
     })
 
@@ -74,8 +71,7 @@ export default async function RoomPage({ params }: Props) {
           orderBy: {
             order: 'asc'
           }
-        },
-        tags: true,
+        }
       }
     })
 
@@ -98,9 +94,6 @@ export default async function RoomPage({ params }: Props) {
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{roomWithDetails.name}</h1>
                 <p className="mt-2 text-gray-500 text-sm md:text-base">{roomWithDetails.description || ''}</p>
               </div>
-            </div>
-            <div className="mt-4">
-              <RoomTags tags={roomWithDetails.tags} />
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
