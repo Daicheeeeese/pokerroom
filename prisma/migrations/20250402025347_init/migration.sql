@@ -99,7 +99,9 @@ CREATE TABLE "_RoomTags" (
     "roomId" TEXT NOT NULL,
     "tagId" TEXT NOT NULL,
 
-    CONSTRAINT "_RoomTags_pkey" PRIMARY KEY ("roomId","tagId")
+    CONSTRAINT "_RoomTags_pkey" PRIMARY KEY ("roomId","tagId"),
+    CONSTRAINT "_RoomTags_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_RoomTags_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
