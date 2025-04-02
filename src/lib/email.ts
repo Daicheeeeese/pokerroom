@@ -6,5 +6,4 @@ export interface ReservationEmailData {
   startTime: string
   endTime: string
   totalPrice: number
-  request?: string
 } 

@@ -77,7 +77,6 @@ export async function POST(request: Request) {
           endTime: data.endTime,
           totalPrice: data.totalPrice,
           status: ReservationStatus.PENDING,
-          request: data.request
         },
         include: {
           room: true,
@@ -96,7 +95,6 @@ export async function POST(request: Request) {
         startTime: data.startTime,
         endTime: data.endTime,
         totalPrice: reservation.totalPrice,
-        request: reservation.request
       })
 
       return corsResponse({

@@ -20,17 +20,17 @@ type Props = {
 export default function ReservationForm({ room, selectedDate }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [date, setDate] = useState(selectedDate ? selectedDate.toISOString().split('T')[0] : '')
-  const [startTime, setStartTime] = useState("")
-  const [endTime, setEndTime] = useState("")
-  const [error, setError] = useState<string | null>(null)
+  const [date, setDate] = useState<Date | null>(null)
+  const [startTime, setStartTime] = useState<string>("")
+  const [endTime, setEndTime] = useState<string>("")
+  const [error, setError] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string>("")
 
   useEffect(() => {
     if (selectedDate) {
       const adjustedDate = new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000));
-      setDate(adjustedDate.toISOString().split('T')[0]);
+      setDate(adjustedDate);
     }
   }, [selectedDate]);
 
@@ -68,8 +68,11 @@ export default function ReservationForm({ room, selectedDate }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+    setSuccessMessage("")
+
     if (!date || !startTime || !endTime) {
-      setError("全ての項目を入力してください")
+      setError("日付と時間を選択してください")
       return
     }
 
@@ -78,28 +81,37 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
-    // 開始時間と終了時間の検証
-    const [startHour, startMinute = 0] = startTime.split(":").map(Number)
-    const [endHour, endMinute = 0] = endTime.split(":").map(Number)
-    const startTotalMinutes = (startHour * 60) + Number(startMinute)
-    const endTotalMinutes = (endHour * 60) + Number(endMinute)
-    
-    if (startTotalMinutes >= endTotalMinutes) {
-      setError("終了時間は開始時間より後にしてください")
-      return
+    setIsSubmitting(true)
+
+    try {
+      const totalPrice = calculateTotalPrice()
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: room.id,
+          date: date.toISOString(),
+          startTime,
+          endTime,
+          totalPrice,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "予約の作成に失敗しました")
+      }
+
+      const data = await response.json()
+      router.push(`/reservations/${data.reservation.id}`)
+    } catch (error) {
+      console.error("予約エラー:", error)
+      setError(error instanceof Error ? error.message : "予約の作成に失敗しました")
+    } finally {
+      setIsSubmitting(false)
     }
-
-    const totalPrice = calculateTotalPrice()
-    const params = new URLSearchParams({
-      roomId: room.id,
-      roomName: room.name,
-      date,
-      startTime,
-      endTime,
-      totalPrice: totalPrice.toString(),
-    })
-
-    router.push(`/reservations/confirm?${params.toString()}`)
   }
 
   // 30分単位の時間オプションを生成する関数
@@ -126,8 +138,8 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         <label className="block text-sm font-medium text-gray-700">日付</label>
         <input
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={date ? date.toISOString().split('T')[0] : ''}
+          onChange={(e) => setDate(new Date(e.target.value))}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           required
         />
@@ -169,9 +181,9 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         </div>
       )}
 
-      {success && (
+      {successMessage && (
         <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md whitespace-pre-wrap">
-          {success}
+          {successMessage}
         </div>
       )}
 
