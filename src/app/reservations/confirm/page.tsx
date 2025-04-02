@@ -1,15 +1,11 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { useSession } from "next-auth/react"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import { format } from "date-fns"
-import { notFound } from "next/navigation"
-import { redirect } from "next/navigation"
+import type { Room, User } from "@prisma/client"
 
 type Props = {
   searchParams: {
@@ -21,35 +17,82 @@ type Props = {
   }
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = false
+export default function ReservationConfirmPage({ searchParams }: Props) {
+  const router = useRouter()
+  const { data: session } = useSession()
+  const [room, setRoom] = useState<Room | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-export default async function ReservationConfirmPage({ searchParams }: Props) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    redirect('/login')
+  useEffect(() => {
+    if (!session?.user?.id) {
+      router.push('/login')
+      return
+    }
+
+    const fetchData = async () => {
+      try {
+        const { roomId } = searchParams
+        if (!roomId) {
+          router.push('/')
+          return
+        }
+
+        const [roomResponse, userResponse] = await Promise.all([
+          fetch(`/api/rooms/${roomId}`),
+          fetch(`/api/users/${session.user.id}`)
+        ])
+
+        if (!roomResponse.ok || !userResponse.ok) {
+          throw new Error('データの取得に失敗しました')
+        }
+
+        const [roomData, userData] = await Promise.all([
+          roomResponse.json(),
+          userResponse.json()
+        ])
+
+        setRoom(roomData)
+        setUser(userData)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        toast.error('データの読み込みに失敗しました')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [session, router, searchParams])
+
+  const { date, startTime, endTime, totalPrice } = searchParams
+
+  if (isLoading) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-8"></div>
+          <div className="bg-white shadow rounded-lg p-6 space-y-6">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="grid grid-cols-2 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-4 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  const { roomId, date, startTime, endTime, totalPrice } = searchParams
-
-  if (!roomId || !date || !startTime || !endTime || !totalPrice) {
-    return notFound()
-  }
-
-  const room = await prisma.room.findUnique({
-    where: { id: roomId }
-  })
-
-  if (!room) {
-    return notFound()
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id }
-  })
-
-  if (!user) {
-    return notFound()
+  if (!room || !user) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          データの読み込みに失敗しました
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -100,7 +143,7 @@ export default async function ReservationConfirmPage({ searchParams }: Props) {
         </div>
 
         <form action="/api/reservations" method="POST" className="space-y-4">
-          <input type="hidden" name="roomId" value={roomId} />
+          <input type="hidden" name="roomId" value={room.id} />
           <input type="hidden" name="date" value={date} />
           <input type="hidden" name="startTime" value={startTime} />
           <input type="hidden" name="endTime" value={endTime} />
