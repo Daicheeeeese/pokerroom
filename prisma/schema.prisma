@@ -26,22 +26,18 @@ model User {
 }
 
 model Room {
-  id                  String               @id
+  id                  String               @id @default(cuid())
   name                String
-  description         String?
-  address             String?
-  latitude            Float?
-  longitude           Float?
-  image               String?
-  pricePerHour        Int
+  description         String
+  address             String
   capacity            Int
-  prefecture          String?
-  city                String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  images              RoomImage[]
+  nearestStations     NearestStation[]
+  price               Int
   hourlyPrices        HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
+  images              RoomImage[]
   reviews             Review[]
   reservations        Reservation[]
 
@@ -52,38 +48,37 @@ model RoomImage {
   id        String   @id @default(cuid())
   roomId    String
   url       String
-  caption   String?
-  order     Int      @default(0)
+  order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id])
 
   @@map("room_images")
 }
 
 model HourlyPriceWeekday {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(cuid())
   roomId    String
-  hour      Int
   price     Int
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  endTime   String
+  startTime String
+  room      Room     @relation(fields: [roomId], references: [id])
 
-  @@unique([roomId, hour], map: "hourly_prices_weekday_roomid_hour_key")
   @@map("hourly_prices_weekday")
 }
 
 model HourlyPriceHoliday {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(cuid())
   roomId    String
-  hour      Int
   price     Int
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  endTime   String
+  startTime String
+  room      Room     @relation(fields: [roomId], references: [id])
 
-  @@unique([roomId, hour], map: "hourly_prices_holiday_roomid_hour_key")
   @@map("hourly_prices_holiday")
 }
 
@@ -94,10 +89,12 @@ model Review {
   comment   String
   roomId    String
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+  room      Room     @relation(fields: [roomId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
+  @@index([roomId])
+  @@index([userId])
   @@map("reviews")
 }
 
@@ -128,4 +125,18 @@ enum ReservationStatus {
   COMPLETED
 
   @@map("ReservationStatus")
+}
+
+model NearestStation {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id])
+  name        String   // 駅名
+  transport   String   // 移動手段（徒歩、バスなど）
+  minutes     Int      // 所要時間（分）
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([roomId])
+  @@map("nearest_stations")
 }

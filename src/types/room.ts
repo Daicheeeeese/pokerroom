@@ -1,11 +1,20 @@
-import type { Room as PrismaRoom, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from '@prisma/client'
+import type { Room as PrismaRoom, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, NearestStation } from '@prisma/client'
 
-export type RoomWithDetails = PrismaRoom & {
-  reviews: Review[]
+export type RoomWithDetails = {
+  id: string
+  name: string
+  description: string
+  price: number
+  capacity: number
+  address: string
   hourlyPrices: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
-  pricePerHour: number | null
+  reviews: Review[]
+  nearestStations: NearestStation[]
+  createdAt: Date
+  updatedAt: Date
+  pricePerHour: number
 }
 
 export interface Room {
@@ -13,6 +22,7 @@ export interface Room {
   name: string
   description: string
   capacity: number
+  price: number
   pricePerHour: number
   createdAt: Date
   updatedAt: Date

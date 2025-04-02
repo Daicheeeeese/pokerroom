@@ -32,7 +32,7 @@ export function RoomDetailSection({ room }: Props) {
             <Clock className="w-5 h-5 text-gray-500" />
             <div>
               <h3 className="font-medium">料金</h3>
-              <p className="text-sm text-gray-500">{formatPrice(room.pricePerHour)}/時間</p>
+              <p className="text-sm text-gray-500">{formatPrice(room.price)}/時間</p>
               <p className="text-xs text-gray-400 mt-1">※土日祝日や時間帯により料金が変動する場合があります</p>
             </div>
           </div>
@@ -40,12 +40,21 @@ export function RoomDetailSection({ room }: Props) {
 
         {/* 住所 */}
         <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-gray-500" />
-            <div>
-              <h3 className="font-medium">住所</h3>
-              <p className="text-sm text-gray-500">{room.address}</p>
-            </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">住所・アクセス</h3>
+            <p className="text-gray-600">{room.address}</p>
+            {room.nearestStations && room.nearestStations.length > 0 && (
+              <div className="mt-2">
+                <h4 className="font-medium">最寄駅</h4>
+                <ul className="mt-1 space-y-1">
+                  {room.nearestStations.map((station) => (
+                    <li key={station.id} className="text-gray-600">
+                      {station.name} {station.transport}で{station.minutes}分
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </Card>
       </div>
