@@ -112,7 +112,6 @@ model Reservation {
   status     ReservationStatus @default(PENDING)
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
-  request    String?
   room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
