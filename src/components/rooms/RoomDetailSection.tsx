@@ -43,18 +43,24 @@ export function RoomDetailSection({ room }: Props) {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">住所・アクセス</h3>
             <p className="text-gray-600">{room.address}</p>
-            {room.nearestStations && room.nearestStations.length > 0 && (
-              <div className="mt-2">
-                <h4 className="font-medium">最寄駅</h4>
-                <ul className="mt-1 space-y-1">
-                  {room.nearestStations.map((station) => (
-                    <li key={station.id} className="text-gray-600">
-                      {station.name} {station.transport}で{station.minutes}分
-                    </li>
+          </div>
+        </Card>
+
+        {/* 最寄駅 */}
+        <Card className="p-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">最寄駅</h3>
+            <div className="text-gray-600">
+              {room.nearestStations && room.nearestStations.length > 0 ? (
+                <ul className="list-disc pl-5">
+                  {room.nearestStations.map((station, index) => (
+                    <li key={index}>{station.name}（{station.transport}{station.minutes}分）</li>
                   ))}
                 </ul>
-              </div>
-            )}
+              ) : (
+                <p>最寄駅情報はありません</p>
+              )}
+            </div>
           </div>
         </Card>
       </div>
