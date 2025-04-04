@@ -2,6 +2,7 @@
 
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
+import { useEffect, useState } from "react"
 
 type DayAvailability = {
   date: Date
@@ -9,14 +10,37 @@ type DayAvailability = {
 }
 
 type Props = {
-  availabilityData: DayAvailability[]
-  onDateClick?: (date: Date | null) => void
-  selectedDate?: Date
+  roomId: string
+  selectedDate?: Date | null
+  onDateSelect: (date: Date | null) => void
 }
 
-export default function AvailabilityCalendar({ availabilityData, onDateClick, selectedDate }: Props) {
+export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelect }: Props) {
+  const [availabilityData, setAvailabilityData] = useState<DayAvailability[]>([])
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`/api/rooms/${roomId}/availability`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch availability data')
+        }
+        const data = await response.json()
+        setAvailabilityData(data.map((item: any) => ({
+          date: new Date(item.date),
+          isAvailable: item.isAvailable
+        })))
+      } catch (error) {
+        console.error('Error fetching availability:', error)
+        // エラー時は仮のデータを表示
+        setAvailabilityData(generateTwoWeeksAvailability())
+      }
+    }
+
+    fetchAvailability()
+  }, [roomId])
 
   return (
     <div>
@@ -54,7 +78,7 @@ export default function AvailabilityCalendar({ availabilityData, onDateClick, se
           return (
             <button
               key={date.toISOString()}
-              onClick={() => onDateClick?.(date)}
+              onClick={() => onDateSelect(date)}
               disabled={!isAvailable || isPast}
               className={`
                 p-2 text-center rounded-md transition-colors

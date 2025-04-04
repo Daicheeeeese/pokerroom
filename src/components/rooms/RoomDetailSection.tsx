@@ -1,73 +1,107 @@
 'use client'
 
-import { RoomWithDetails } from '@/types/room'
-import { formatPricePerHour } from '@/lib/format'
-import ReservationForm from '@/components/ReservationForm'
+import { useState } from "react"
+import Image from "next/image"
+import { MapPinIcon } from "@heroicons/react/24/outline"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+import AvailabilityCalendar from "./AvailabilityCalendar"
+import ReservationForm from "../ReservationForm"
 import { Card } from '@/components/ui/card'
-import { MapPin, Users, Clock } from 'lucide-react'
+import { Users, Clock } from 'lucide-react'
+import { formatPricePerHour } from '@/lib/format'
 
-interface Props {
-  room: RoomWithDetails
+type RoomWithDetails = Room & {
+  images: any[]
+  hourlyPricesWeekday: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+  pricePerHour: number
+  amenities: string[]
+  availableFrom: string
+  availableTo: string
 }
 
-export function RoomDetailSection({ room }: Props) {
+type Props = {
+  room: RoomWithDetails
+  selectedDate?: Date | null
+}
+
+export default function RoomDetailSection({ room, selectedDate }: Props) {
+  const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null)
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* 左側：部屋の詳細情報 */}
-      <div className="space-y-6">
-        {/* 定員 */}
-        <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-gray-500" />
-            <div>
-              <h3 className="font-medium">定員</h3>
-              <p className="text-gray-500">{room.capacity}名</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <div className="relative h-96 rounded-lg overflow-hidden">
+            <Image
+              src={room.images && room.images.length > 0 ? room.images[0].url : '/placeholder.png'}
+              alt={room.name}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
+          <div className="mt-4 grid grid-cols-4 gap-2">
+            {room.images?.slice(1).map((image, index) => (
+              <div key={index} className="relative h-24 rounded-lg overflow-hidden">
+                <Image
+                  src={image.url}
+                  alt={`${room.name} - 画像 ${index + 2}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold mb-4">{room.name}</h1>
+          <div className="flex items-center gap-2 mb-4">
+            <MapPinIcon className="h-5 w-5 text-gray-500" />
+            <p className="text-gray-600">
+              {room.address}
+            </p>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">料金</h2>
+            <p className="text-2xl font-bold text-blue-600">
+              {formatPricePerHour(room.pricePerHour)}/時間
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              ※土日祝日や時間帯により料金が変動する場合があります
+            </p>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">収容人数</h2>
+            <p className="text-gray-600">最大{room.capacity}人</p>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">設備</h2>
+            <div className="grid grid-cols-2 gap-2">
+              {room.amenities.map((amenity: string, index: number) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="text-gray-600">{amenity}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </Card>
-
-        {/* 料金 */}
-        <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-gray-500" />
-            <div>
-              <h3 className="font-medium">料金</h3>
-              <p className="text-gray-500">{formatPricePerHour(room.price)}/時間</p>
-              <p className="text-xs text-gray-400 mt-1">※土日祝日や時間帯により料金が変動する場合があります</p>
-            </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">利用可能時間</h2>
+            <p className="text-gray-600">{room.availableFrom} - {room.availableTo}</p>
           </div>
-        </Card>
-
-        {/* 住所 */}
-        <Card className="p-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">住所・アクセス</h3>
-            <p className="text-gray-600">{room.address}</p>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">空き状況</h2>
+            <AvailabilityCalendar
+              roomId={room.id}
+              selectedDate={selectedDateState}
+              onDateSelect={setSelectedDateState}
+            />
           </div>
-        </Card>
-
-        {/* 最寄駅 */}
-        <Card className="p-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">最寄駅</h3>
-            <div className="text-gray-600">
-              {room.nearestStations && room.nearestStations.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {room.nearestStations.map((station, index) => (
-                    <li key={index}>{station.name}（{station.transport}{station.minutes}分）</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>最寄駅情報はありません</p>
-              )}
-            </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">予約</h2>
+            <ReservationForm room={room} selectedDate={selectedDateState} />
           </div>
-        </Card>
-      </div>
-
-      {/* 右側：予約フォーム */}
-      <div>
-        <ReservationForm room={room} />
+        </div>
       </div>
     </div>
   )
