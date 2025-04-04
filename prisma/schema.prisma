@@ -59,7 +59,7 @@ model RoomImage {
 model HourlyPriceWeekday {
   id        String   @id @default(cuid())
   roomId    String
-  price     Int
+  pricePerHour     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   endTime   String
@@ -72,7 +72,7 @@ model HourlyPriceWeekday {
 model HourlyPriceHoliday {
   id        String   @id @default(cuid())
   roomId    String
-  price     Int
+  pricePerHour     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   endTime   String

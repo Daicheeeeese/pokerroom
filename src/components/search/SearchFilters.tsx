@@ -68,7 +68,7 @@ export function SearchFilters() {
             <label key={index} className="flex items-center">
               <input
                 type="radio"
-                name="price"
+                name="pricePerHour"
                 value={index}
                 checked={selectedPriceRange === index}
                 onChange={() => setSelectedPriceRange(index)}
