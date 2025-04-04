@@ -63,7 +63,7 @@ export function ReservationForm({ room }: Props) {
   // 料金計算
   const calculateTotalPrice = () => {
     const hours = parseInt(endTime) - parseInt(startTime)
-    return room.price * hours
+    return room.pricePerHour * hours
   }
 
   return (
@@ -85,7 +85,7 @@ export function ReservationForm({ room }: Props) {
             <div>
               <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
               <p className="text-gray-600 mb-2">{room.area}</p>
-              <p className="text-blue-600 font-semibold">¥{room.price.toLocaleString()}/時間</p>
+              <p className="text-blue-600 font-semibold">¥{room.pricePerHour.toLocaleString()}/時間</p>
             </div>
           </div>
         </div>

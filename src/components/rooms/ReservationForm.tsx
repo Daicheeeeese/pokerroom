@@ -22,7 +22,7 @@ export function ReservationForm({ room }: Props) {
     const [startHour] = startTime.split(":").map(Number)
     const [endHour] = endTime.split(":").map(Number)
     const hours = endHour - startHour
-    return room.price * hours
+    return room.pricePerHour * hours
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

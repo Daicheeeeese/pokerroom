@@ -13,6 +13,15 @@ export default async function ReservePage({ params }: Props) {
     where: {
       id: params.id,
     },
+    include: {
+      images: {
+        orderBy: {
+          order: 'asc'
+        }
+      },
+      nearestStations: true,
+      reviews: true
+    }
   })
 
   if (!room) {
@@ -26,7 +35,7 @@ export default async function ReservePage({ params }: Props) {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
-            <p className="text-gray-600">¥{room.price.toLocaleString()}/時間 · 最大{room.capacity}人</p>
+            <p className="text-gray-600">¥{room.pricePerHour.toLocaleString()}/時間 · 最大{room.capacity}人</p>
           </div>
           <ReservationForm room={room} />
         </div>
