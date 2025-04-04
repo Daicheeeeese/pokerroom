@@ -21,7 +21,7 @@ export function RoomDetailSection({ room }: Props) {
             <Users className="w-5 h-5 text-gray-500" />
             <div>
               <h3 className="font-medium">定員</h3>
-              <p className="text-sm text-gray-500">{room.capacity}名</p>
+              <p className="text-gray-500">{room.capacity}名</p>
             </div>
           </div>
         </Card>
@@ -32,7 +32,7 @@ export function RoomDetailSection({ room }: Props) {
             <Clock className="w-5 h-5 text-gray-500" />
             <div>
               <h3 className="font-medium">料金</h3>
-              <p className="text-sm text-gray-500">{formatPrice(room.pricePerHour)}/時間</p>
+              <p className="text-gray-500">{formatPrice(room.pricePerHour)}/時間</p>
               <p className="text-xs text-gray-400 mt-1">※土日祝日や時間帯により料金が変動する場合があります</p>
             </div>
           </div>
