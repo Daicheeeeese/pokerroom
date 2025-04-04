@@ -19,7 +19,7 @@ ADD COLUMN     "pricePerHour" INTEGER NOT NULL;
 
 -- AlterTable
 ALTER TABLE "rooms" DROP COLUMN "price",
-ADD COLUMN     "amenities" TEXT[],
+ADD COLUMN     "amenities" TEXT[] DEFAULT ARRAY[]::TEXT[],
 ADD COLUMN     "availableFrom" TEXT NOT NULL DEFAULT '09:00',
 ADD COLUMN     "availableTo" TEXT NOT NULL DEFAULT '21:00',
 ADD COLUMN     "pricePerHour" INTEGER NOT NULL;
