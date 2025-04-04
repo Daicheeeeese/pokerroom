@@ -38,6 +38,8 @@ model Room {
   images              RoomImage[]
   reviews             Review[]
   reservations        Reservation[]
+  hourlyPricesWeekday HourlyPriceWeekday[]
+  hourlyPricesHoliday HourlyPriceHoliday[]
 
   @@map("rooms")
 }
