@@ -49,18 +49,6 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
               className="object-cover"
             />
           </div>
-          <div className="mt-4 grid grid-cols-4 gap-2">
-            {room.images?.slice(1).map((image, index) => (
-              <div key={index} className="relative h-24 rounded-lg overflow-hidden">
-                <Image
-                  src={image.url}
-                  alt={`${room.name} - 画像 ${index + 2}`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
         </div>
         <div>
           <div className="flex items-center gap-2 mb-4">
