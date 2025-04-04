@@ -63,7 +63,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     // 30分単位で料金を計算
     for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
       // デフォルトの時間単価を使用
-      total += room.pricePerHour / 2
+      total += room.price / 2
     }
     
     return Math.floor(total) // 小数点以下を切り捨て

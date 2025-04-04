@@ -5,28 +5,28 @@ import Link from "next/link"
 import type { Review } from "@prisma/client"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 
-type RoomWithReviewsAndTags = {
+type RoomWithReviews = {
   id: string
   name: string
   description: string | null
   image: string | null
-  pricePerHour: number
+  price: number
   capacity: number
   reviews: Review[]
   address?: string | null
   prefecture?: string | null
   city?: string | null
-  tags: any[]
+  images?: any[]
 }
 
 type Props = {
-  room: RoomWithReviewsAndTags
+  room: RoomWithReviews
   selectedDate?: Date | null
 }
 
 export default function RoomCard({ room, selectedDate }: Props) {
-  // tagsのデフォルト値を設定
-  const tags = room.tags || []
+  // 画像の取得
+  const roomImage = room.images && room.images.length > 0 ? room.images[0].url : room.image || '/placeholder.png'
 
   const averageRating = room.reviews.length > 0
     ? room.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / room.reviews.length
@@ -37,7 +37,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
         <div className="relative h-48">
           <Image
-            src={room.image || '/placeholder.png'}
+            src={roomImage}
             alt={room.name}
             fill
             priority
@@ -59,7 +59,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
           <p className="text-gray-600 mb-2 line-clamp-2">{room.description}</p>
           <div className="flex justify-between items-center mb-2">
             <p className="text-blue-600 font-semibold">
-              ¥{room.pricePerHour.toLocaleString()}~/時間
+              ¥{room.price.toLocaleString()}~/時間
             </p>
             {averageRating && (
               <div className="flex items-center">

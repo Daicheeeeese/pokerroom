@@ -1,15 +1,13 @@
 import { prisma } from "@/lib/prisma"
 import RoomCard from '@/components/rooms/RoomCard'
 import Link from "next/link"
-import type { Room, Review, Tag } from '@prisma/client'
+import type { Room, Review } from '@prisma/client'
 import Image from "next/image"
-import { RoomTags } from '@/components/rooms/RoomTags'
 
 export const dynamic = "force-dynamic"
 
-type RoomWithReviewsAndTags = Room & {
+type RoomWithReviews = Room & {
   reviews: Review[]
-  tags: Tag[]
 }
 
 export default async function RoomsPage() {
@@ -18,7 +16,11 @@ export default async function RoomsPage() {
     const rooms = await prisma.room.findMany({
       include: {
         reviews: true,
-        tags: true,
+        images: {
+          orderBy: {
+            order: 'asc'
+          }
+        }
       },
     })
 
@@ -37,7 +39,7 @@ export default async function RoomsPage() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room: RoomWithReviewsAndTags) => (
+          {rooms.map((room: RoomWithReviews) => (
             <RoomCard key={room.id} room={room} selectedDate={null} />
           ))}
         </div>
