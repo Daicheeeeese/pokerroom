@@ -78,7 +78,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
           <div className="sticky top-8">
             <Card className="p-6">
               <ReservationForm room={room} selectedDate={selectedDateState} />
-              <p className="text-gray-600">※予約はまだ確定されません</p>
+              <p className="text-sm text-gray-500 mt-1">※予約はまだ確定されません</p>
             </Card>
           </div>
         </div>
