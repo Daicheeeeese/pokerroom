@@ -9,6 +9,9 @@ type Reservation = {
   endTime: string
   room: {
     name: string
+    images?: {
+      url: string
+    }[]
   }
   totalPrice: number
   status: string

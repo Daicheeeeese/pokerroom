@@ -193,7 +193,12 @@ export async function GET(request: Request) {
         room: {
           select: {
             name: true,
-            image: true
+            images: {
+              orderBy: {
+                order: 'asc'
+              },
+              take: 1
+            }
           }
         }
       },
