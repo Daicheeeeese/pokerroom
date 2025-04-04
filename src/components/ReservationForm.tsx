@@ -83,16 +83,34 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
-    const totalPrice = calculateTotalPrice()
-    const queryParams = new URLSearchParams({
-      roomId: room.id,
-      date: date.toISOString().split("T")[0],
-      startTime,
-      endTime,
-      totalPrice: totalPrice.toString(),
-    })
+    try {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: room.id,
+          date: date.toISOString().split("T")[0],
+          startTime,
+          endTime,
+          totalPrice: calculateTotalPrice(),
+        }),
+      })
 
-    router.push(`/reservations/confirm?${queryParams.toString()}`)
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message || "予約に失敗しました")
+      }
+
+      const data = await response.json()
+      setSuccessMessage("予約が完了しました")
+      router.push(`/reservations/${data.id}`)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "予約に失敗しました")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const generateTimeOptions = () => {
@@ -104,6 +122,16 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       }
     }
     return options
+  }
+
+  const getAvailableEndTimes = () => {
+    if (!startTime) return generateTimeOptions()
+
+    const start = new Date(`2000-01-01T${startTime}`)
+    return generateTimeOptions().filter(time => {
+      const end = new Date(`2000-01-01T${time}`)
+      return end > start
+    })
   }
 
   return (
@@ -123,7 +151,12 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         <label className="block text-sm font-medium text-gray-700">開始時間</label>
         <select
           value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
+          onChange={(e) => {
+            setStartTime(e.target.value)
+            if (endTime && new Date(`2000-01-01T${endTime}`) <= new Date(`2000-01-01T${e.target.value}`)) {
+              setEndTime("")
+            }
+          }}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         >
           <option value="">選択してください</option>
@@ -141,9 +174,10 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          disabled={!startTime}
         >
           <option value="">選択してください</option>
-          {generateTimeOptions().map((time) => (
+          {getAvailableEndTimes().map((time) => (
             <option key={time} value={time}>
               {time}
             </option>
@@ -172,7 +206,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
         disabled={isSubmitting}
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
       >
-        {isSubmitting ? "予約中..." : "予約する"}
+        {isSubmitting ? "..." : "予約する"}
       </button>
     </form>
   )
