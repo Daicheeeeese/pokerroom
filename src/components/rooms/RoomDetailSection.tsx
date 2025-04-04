@@ -31,15 +31,6 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <div className="relative h-96 rounded-lg overflow-hidden mb-8">
-            <Image
-              src={room.images && room.images.length > 0 ? room.images[0].url : '/placeholder.png'}
-              alt={room.name}
-              fill
-              priority
-              className="object-cover"
-            />
-          </div>
 
           <div className="space-y-6">
             <div>
@@ -79,14 +70,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
               </div>
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-2">空き状況</h2>
-              <AvailabilityCalendar
-                roomId={room.id}
-                selectedDate={selectedDateState}
-                onDateSelect={setSelectedDateState}
-              />
-            </div>
+
           </div>
         </div>
 
@@ -95,6 +79,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">予約する（まだ確定されません）</h2>
               <ReservationForm room={room} selectedDate={selectedDateState} />
+              <p className="text-gray-600">※予約はまだ確定されません</p>
             </Card>
           </div>
         </div>
