@@ -83,34 +83,16 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
-    try {
-      const response = await fetch("/api/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: room.id,
-          date: date.toISOString().split("T")[0],
-          startTime,
-          endTime,
-          totalPrice: calculateTotalPrice(),
-        }),
-      })
+    const totalPrice = calculateTotalPrice()
+    const queryParams = new URLSearchParams({
+      roomId: room.id,
+      date: date.toISOString().split("T")[0],
+      startTime,
+      endTime,
+      totalPrice: totalPrice.toString(),
+    })
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.message || "予約に失敗しました")
-      }
-
-      const data = await response.json()
-      setSuccessMessage("予約が完了しました")
-      router.push(`/reservations/${data.id}`)
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "予約に失敗しました")
-    } finally {
-      setIsSubmitting(false)
-    }
+    router.push(`/reservations/confirm?${queryParams.toString()}`)
   }
 
   const generateTimeOptions = () => {

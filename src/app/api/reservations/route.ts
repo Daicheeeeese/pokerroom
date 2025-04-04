@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         totalPrice: reservation.totalPrice,
       })
 
-      return NextResponse.redirect(new URL(`/reservations/${reservation.id}`, request.url))
+      return corsResponse({ id: reservation.id })
     } catch (dbError) {
       console.error("データベースエラー:", dbError)
       if (dbError instanceof Error) {
