@@ -3,21 +3,29 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma/client"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review } from "@prisma/client"
 import AvailabilityCalendar from "./AvailabilityCalendar"
 import ReservationForm from "../ReservationForm"
 import { Card } from '@/components/ui/card'
 import { Users, Clock } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
 
-type RoomWithDetails = Room & {
-  images: any[]
-  hourlyPricesWeekday: HourlyPriceWeekday[]
-  hourlyPricesHoliday: HourlyPriceHoliday[]
+type RoomWithDetails = {
+  id: string
+  name: string
+  description: string
+  address: string
+  capacity: number
   pricePerHour: number
   amenities: string[]
   availableFrom: string
   availableTo: string
+  createdAt: Date
+  updatedAt: Date
+  images: RoomImage[]
+  hourlyPricesWeekday: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+  reviews: Review[]
 }
 
 type Props = {
