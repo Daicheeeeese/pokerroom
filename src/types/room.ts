@@ -7,7 +7,7 @@ export type RoomWithDetails = {
   capacity: number
   address: string
   pricePerHour: number
-  hourlyPrices: HourlyPriceWeekday[]
+  hourlyPricesWeekday: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   images: RoomImage[]
   reviews: Review[]

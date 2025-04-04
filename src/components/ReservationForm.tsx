@@ -59,7 +59,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     const isHoliday = selectedDate.getDay() === 0 || selectedDate.getDay() === 6 // 土日を休日とする
     
     // 時間帯別料金を取得
-    const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPrices
+    const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPricesWeekday
     
     let total = 0
     // 30分単位で料金を計算

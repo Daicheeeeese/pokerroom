@@ -9,7 +9,7 @@ export async function GET(
     const room = await prisma.room.findUnique({
       where: { id: params.id },
       include: {
-        hourlyPrices: true,
+        hourlyPricesWeekday: true,
         hourlyPricesHoliday: true
       }
     })

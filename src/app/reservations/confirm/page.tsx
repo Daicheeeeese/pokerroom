@@ -5,10 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import ReservationConfirmForm from "@/components/ReservationConfirmForm"
 
-type RoomWithPrices = Room & {
-  hourlyPrices: HourlyPriceWeekday[]
-  hourlyPricesHoliday: HourlyPriceHoliday[]
-}
+
 
 type Props = {
   searchParams: {
