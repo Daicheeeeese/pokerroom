@@ -63,7 +63,6 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
           </div>
         </div>
         <div>
-          <h1 className="text-3xl font-bold mb-4">{room.name}</h1>
           <div className="flex items-center gap-2 mb-4">
             <MapPinIcon className="h-5 w-5 text-gray-500" />
             <p className="text-gray-600">
@@ -82,28 +81,6 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">収容人数</h2>
             <p className="text-gray-600">最大{room.capacity}人</p>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">設備</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {room.amenities.map((amenity: string, index: number) => (
-                <div key={index} className="flex items-center gap-2">
-                  <span className="text-gray-600">{amenity}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">利用可能時間</h2>
-            <p className="text-gray-600">{room.availableFrom} - {room.availableTo}</p>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">空き状況</h2>
-            <AvailabilityCalendar
-              roomId={room.id}
-              selectedDate={selectedDateState}
-              onDateSelect={setSelectedDateState}
-            />
           </div>
           <div>
             <h2 className="text-xl font-semibold mb-2">予約</h2>
