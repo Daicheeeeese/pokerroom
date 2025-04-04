@@ -57,7 +57,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       const timeString = `${currentHour.toString().padStart(2, '0')}:${(currentMinutes % 60).toString().padStart(2, '0')}`
 
       const hourlyPrice = hourlyPrices.find(price => price.startTime <= timeString && price.endTime > timeString)
-      totalPrice += hourlyPrice ? hourlyPrice.price / 2 : room.pricePerHour / 2
+      totalPrice += hourlyPrice ? hourlyPrice.pricePerHour / 2 : room.pricePerHour / 2
     }
 
     return totalPrice

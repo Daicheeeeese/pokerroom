@@ -31,15 +31,7 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const data = {
-      roomId: formData.get('roomId') as string,
-      date: formData.get('date') as string,
-      startTime: formData.get('startTime') as string,
-      endTime: formData.get('endTime') as string,
-      totalPrice: parseInt(formData.get('totalPrice') as string),
-    }
-    
+    const data = await request.json()
     console.log("予約リクエストデータ:", JSON.stringify(data, null, 2))
     
     const session = await getServerSession(authOptions)
@@ -104,7 +96,7 @@ export async function POST(request: Request) {
         totalPrice: reservation.totalPrice,
       })
 
-      return NextResponse.redirect(new URL(`/reservations/${reservation.id}`, request.url))
+      return corsResponse({ id: reservation.id })
     } catch (dbError) {
       console.error("データベースエラー:", dbError)
       if (dbError instanceof Error) {
