@@ -35,7 +35,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold mb-2">料金</h2>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-gray-600">
                 {formatPricePerHour(room.pricePerHour)}/時間
               </p>
               <p className="text-sm text-gray-500 mt-1">
