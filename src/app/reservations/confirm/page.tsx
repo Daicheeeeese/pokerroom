@@ -20,31 +20,44 @@ type Props = {
 
 export const dynamic = 'force-dynamic'
 
-export default async function ReservationConfirmPage({ searchParams }: Props) {
+export default async function ReservationConfirmPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   const session = await getServerSession(authOptions)
+
   if (!session?.user?.id) {
-    redirect('/login')
+    redirect("/auth/signin")
   }
 
-  const { roomId, date, startTime, endTime, totalPrice } = searchParams
+  const roomId = searchParams.roomId as string
+  const date = searchParams.date as string
+  const startTime = searchParams.startTime as string
+  const endTime = searchParams.endTime as string
+  const totalPrice = searchParams.totalPrice as string
 
   if (!roomId || !date || !startTime || !endTime || !totalPrice) {
-    redirect('/')
+    redirect("/")
   }
 
   const [room, user] = await Promise.all([
     prisma.room.findUnique({
       where: { id: roomId },
       include: {
-      }
+        images: {
+          orderBy: { order: "asc" },
+          take: 1,
+        },
+      },
     }),
     prisma.user.findUnique({
-      where: { id: session.user.id }
-    })
+      where: { id: session.user.id },
+    }),
   ])
 
   if (!room || !user) {
-    redirect('/')
+    redirect("/")
   }
 
   return (
