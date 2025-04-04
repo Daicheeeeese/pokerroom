@@ -7,7 +7,6 @@ import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } 
 
 type RoomWithDetails = Room & {
   reviews: Review[]
-
   images: RoomImage[]
   pricePerHour: number | null
 }
@@ -25,7 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       where: { id },
       include: {
         reviews: true,
-
         images: {
           orderBy: {
             order: 'asc'
@@ -63,8 +61,6 @@ export default async function RoomPage({ params }: Props) {
       },
       include: {
         reviews: true,
-        hourlyPricesWeekday: true,
-        hourlyPricesHoliday: true,
         images: {
           orderBy: {
             order: 'asc'

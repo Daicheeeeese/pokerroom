@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import ReservationConfirmForm from "@/components/ReservationConfirmForm"
 
-
+type RoomWithPrices = Room & {
+}
 
 type Props = {
   searchParams: {
@@ -35,8 +36,6 @@ export default async function ReservationConfirmPage({ searchParams }: Props) {
     prisma.room.findUnique({
       where: { id: roomId },
       include: {
-        hourlyPrices: true,
-        hourlyPricesHoliday: true
       }
     }),
     prisma.user.findUnique({

@@ -7,8 +7,6 @@ import type { Room, User, HourlyPriceWeekday, HourlyPriceHoliday } from "@prisma
 import { useRouter } from "next/navigation"
 
 type RoomWithPrices = Room & {
-  hourlyPrices: HourlyPriceWeekday[]
-  hourlyPricesHoliday: HourlyPriceHoliday[]
 }
 
 type Props = {
