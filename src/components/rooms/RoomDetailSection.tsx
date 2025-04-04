@@ -63,7 +63,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
                   <div key={station.id} className="flex items-center gap-2">
                     <Train className="h-5 w-5 text-gray-500" />
                     <p className="text-gray-600">
-                      {station.name}（{station.transport}）徒歩{station.minutes}分
+                      {station.name}{station.transport}{station.minutes}分
                     </p>
                   </div>
                 ))}
