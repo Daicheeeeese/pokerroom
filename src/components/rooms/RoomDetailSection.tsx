@@ -1,7 +1,7 @@
 'use client'
 
 import { RoomWithDetails } from '@/types/room'
-import { formatPrice } from '@/lib/format'
+import { formatPricePerHour } from '@/lib/format'
 import ReservationForm from '@/components/ReservationForm'
 import { Card } from '@/components/ui/card'
 import { MapPin, Users, Clock } from 'lucide-react'
@@ -32,7 +32,7 @@ export function RoomDetailSection({ room }: Props) {
             <Clock className="w-5 h-5 text-gray-500" />
             <div>
               <h3 className="font-medium">料金</h3>
-              <p className="text-gray-500">{formatPrice(room.pricePerHour)}/時間</p>
+              <p className="text-gray-500">{formatPricePerHour(room.pricePerHour)}/時間</p>
               <p className="text-xs text-gray-400 mt-1">※土日祝日や時間帯により料金が変動する場合があります</p>
             </div>
           </div>
