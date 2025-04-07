@@ -26,7 +26,7 @@ type Props = {
 
 export default function RoomCard({ room, selectedDate }: Props) {
   // 画像の取得
-  const roomImage = room.images && room.images.length > 0 ? room.images[0].url : room.image || '/placeholder.png'
+  const roomImage = room.image || (room.images && room.images.length > 0 ? room.images[0].url : '/placeholder.png')
 
   const averageRating = room.reviews.length > 0
     ? room.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / room.reviews.length
