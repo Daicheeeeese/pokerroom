@@ -1,16 +1,14 @@
+import ContactForm from '@/components/ContactForm'
+
+export const metadata = {
+  title: 'お問い合わせ | PokerRoom',
+  description: 'PokerRoomへのお問い合わせはこちらから',
+}
+
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          お問い合わせ
-        </h1>
-        <div className="bg-white shadow rounded-lg p-6">
-          <p className="text-gray-600">
-            準備中です...
-          </p>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <ContactForm />
     </div>
   )
 } 
