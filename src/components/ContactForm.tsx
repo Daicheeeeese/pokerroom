@@ -7,7 +7,7 @@ export default function ContactForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSfZcnGJORyG8Man8YZvcvS8HFu-PB1gr5EtzNFEJFiS0dSYtg/viewform?usp=header'
+    window.open('https://docs.google.com/forms/d/e/1FAIpQLSfZcnGJORyG8Man8YZvcvS8HFu-PB1gr5EtzNFEJFiS0dSYtg/viewform?usp=header', '_blank', 'noopener,noreferrer')
   }
 
   return (
