@@ -10,6 +10,8 @@ import ReservationForm from "../ReservationForm"
 import { Card } from '@/components/ui/card'
 import { Users, Clock } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
+import { useSession } from "next-auth/react"
+import Link from "next/link"
 
 type RoomWithDetails = Room & {
   images: RoomImage[]
@@ -26,6 +28,7 @@ type Props = {
 
 export default function RoomDetailSection({ room, selectedDate }: Props) {
   const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null)
+  const { data: session } = useSession()
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -77,8 +80,17 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
         <div className="lg:col-span-1">
           <div className="sticky top-8">
             <Card className="p-6">
-              <ReservationForm room={room} selectedDate={selectedDateState} />
-              <p className="text-sm text-gray-500 mt-1">※予約はまだ確定されません</p>
+              <h3 className="text-xl font-bold mb-4">予約する</h3>
+              {session ? (
+                <>
+                  <ReservationForm room={room} />
+                  <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">※予約はまだ確定されません</p>
+                </>
+              ) : (
+                <div className="text-center">
+                  <p className="text-sm text-gray-500 mb-4">※予約するには<Link href="/login" className="text-blue-600 hover:underline">ログイン</Link>してください</p>
+                </div>
+              )}
             </Card>
           </div>
         </div>
