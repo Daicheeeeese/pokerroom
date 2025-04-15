@@ -60,9 +60,9 @@ export default function RoomSearchPage() {
   const sortedRooms = [...rooms].sort((a, b) => {
     switch (sortBy) {
       case 'priceAsc':
-        return a.price - b.price
+        return a.pricePerHour - b.pricePerHour
       case 'priceDesc':
-        return b.price - a.price
+        return b.pricePerHour - a.pricePerHour
       case 'ratingDesc':
         const aRating = a.reviews.reduce((acc, review) => acc + review.rating, 0) / (a.reviews.length || 1)
         const bRating = b.reviews.reduce((acc, review) => acc + review.rating, 0) / (b.reviews.length || 1)

@@ -9,7 +9,6 @@ const sortOptions: SortOption[] = [
   { value: 'recommended', label: 'おすすめ順' },
   { value: 'priceAsc', label: '料金が安い順' },
   { value: 'priceDesc', label: '料金が高い順' },
-  { value: 'ratingDesc', label: '評価が高い順' },
   { value: 'newest', label: '新着順' }
 ]
 

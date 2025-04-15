@@ -39,7 +39,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
             <div>
               <h2 className="text-xl font-semibold mb-2">料金</h2>
               <p className="text-gray-600">
-                {formatPricePerHour(room.pricePerHour)}/時間
+                {formatPricePerHour(room.pricePerHour)}~/時間
               </p>
               <p className="text-sm text-gray-500 mt-1">
                 ※土日祝日や時間帯により料金が変動する場合があります
@@ -88,7 +88,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
                 </>
               ) : (
                 <div className="text-center">
-                  <p className="text-sm text-gray-500 mb-4">※予約するには<Link href="/login" className="text-blue-600 hover:underline">ログイン</Link>してください</p>
+                  <p className="text-sm text-gray-500 mb-4">※予約するには<Link href="/login" className="text-blue-600 hover:underline">ログイン</Link>をしてください</p>
                 </div>
               )}
             </Card>
