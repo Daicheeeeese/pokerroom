@@ -32,14 +32,18 @@ export default function RootLayout({
   return (
     <html lang="ja" className={inter.className}>
       <head>
-       <script async src="https://www.googletagmanager.com/gtag/js?id=G-DR0ZCLKC4T"></script>
-        <script>
-         window.dataLayer = window.dataLayer || [];
-         function gtag(){dataLayer.push(arguments);}
-         gtag('js', new Date());
-
-         gtag('config', 'G-DR0ZCLKC4T');
-        </script>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-DR0ZCLKC4T"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-DR0ZCLKC4T');
+          `}
+        </Script>
       </head>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <div className="flex flex-col min-h-screen">
