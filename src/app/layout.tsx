@@ -11,14 +11,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'ポーカールーム予約',
-    template: '%s | ポーカールーム予約',
+    default: 'プライベートポーカールーム予約',
+    template: '%s | プライベートポーカールーム予約',
   },
-  description: "東京のポーカールームを簡単に検索・予約できるサービスです。",
-  keywords: ['ポーカー', 'ポーカールーム', '予約', '東京'],
+  description: "東京のプライベートポーカールームを簡単に検索・予約できるサービスです。",
+  keywords: ['ポーカー', 'プライベートポーカールーム', '予約', '東京'],
   openGraph: {
-    title: 'ポーカールーム予約',
-    description: '東京のポーカールームを簡単に検索・予約できるサービスです。',
+    title: 'プライベートポーカールーム予約',
+    description: '東京のプライベートポーカールームを簡単に検索・予約できるサービスです。',
     type: 'website',
     locale: 'ja_JP',
   },
