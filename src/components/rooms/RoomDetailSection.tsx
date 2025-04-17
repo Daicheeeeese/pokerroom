@@ -103,7 +103,15 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
               <h3 className="text-xl font-bold mb-4">予約する</h3>
               {session ? (
                 <>
-                  <ReservationForm room={room} />
+                  <AvailabilityCalendar
+                    roomId={room.id}
+                    selectedDate={selectedDateState}
+                    onDateSelect={setSelectedDateState}
+                    businessHours={room.businessHours}
+                  />
+                  <div className="mt-4">
+                    <ReservationForm room={room} selectedDate={selectedDateState} />
+                  </div>
                   <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">※予約はまだ確定されません</p>
                 </>
               ) : (

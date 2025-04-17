@@ -4,24 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from "@prisma/client"
-
-type RoomWithDetails = {
-  id: string
-  name: string
-  description: string
-  address: string
-  capacity: number
-  pricePerHour: number
-  amenities: string[]
-  availableFrom: string
-  availableTo: string
-  createdAt: Date
-  updatedAt: Date
-  images: RoomImage[]
-  hourlyPricesWeekday: HourlyPriceWeekday[]
-  hourlyPricesHoliday: HourlyPriceHoliday[]
-}
+import type { HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from "@prisma/client"
+import { RoomWithDetails } from "@/types/room"
 
 type Props = {
   room: RoomWithDetails
