@@ -36,16 +36,6 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="space-y-6">
-            <div className="relative h-96 rounded-lg overflow-hidden">
-              <Image
-                src={room.image || '/placeholder.png'}
-                alt={room.name}
-                fill
-                priority
-                className="object-cover"
-              />
-            </div>
-
             <div>
               <h2 className="text-xl font-semibold mb-2">料金</h2>
               <p className="text-gray-600">
