@@ -3,12 +3,12 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import { Train } from "lucide-react"
+import { Train, Clock } from "lucide-react"
 import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation } from "@prisma/client"
 import AvailabilityCalendar from "./AvailabilityCalendar"
 import ReservationForm from "../ReservationForm"
 import { Card } from '@/components/ui/card'
-import { Users, Clock } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
@@ -73,6 +73,15 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
               </div>
             </div>
 
+            <div>
+              <h2 className="text-xl font-semibold mb-2">営業時間</h2>
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-gray-500" />
+                <p className="text-gray-600">
+                  {room.availableFrom}〜{room.availableTo}
+                </p>
+              </div>
+            </div>
 
           </div>
         </div>
