@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 
 type RoomWithDetails = Room & {
+  image: string
   images: RoomImage[]
   hourlyPricesWeekday: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
@@ -34,8 +35,17 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-
           <div className="space-y-6">
+            <div className="relative h-96 rounded-lg overflow-hidden">
+              <Image
+                src={room.image || '/placeholder.png'}
+                alt={room.name}
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+
             <div>
               <h2 className="text-xl font-semibold mb-2">料金</h2>
               <p className="text-gray-600">
