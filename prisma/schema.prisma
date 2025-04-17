@@ -138,6 +138,7 @@ model RoomBusinessHours {
   id        String   @id @default(cuid())
   roomId    String
   dayType   String   // "weekday" or "weekend"
+  day       String   // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
   openTime  String
   closeTime String
   createdAt DateTime @default(now())
