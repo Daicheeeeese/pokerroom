@@ -13,7 +13,6 @@ import { formatPricePerHour } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { RoomWithDetails } from '@/types/room'
-import { RoomAvailabilityCalendar } from './RoomAvailabilityCalendar'
 
 interface RoomBusinessHours {
   id: string;
