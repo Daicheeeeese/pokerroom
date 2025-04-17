@@ -107,7 +107,6 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
                     roomId={room.id}
                     selectedDate={selectedDateState}
                     onDateSelect={setSelectedDateState}
-                    businessHours={room.businessHours}
                   />
                   <div className="mt-4">
                     <ReservationForm room={room} selectedDate={selectedDateState} />

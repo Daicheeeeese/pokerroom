@@ -19,29 +19,10 @@ export async function GET(
     // 各日付の空き状況を取得
     const availabilityData = await Promise.all(
       dates.map(async (date) => {
-        // その日の予約数を取得
-        const reservations = await prisma.reservation.count({
-          where: {
-            roomId,
-            date: format(date, 'yyyy-MM-dd'),
-            status: {
-              not: 'CANCELLED'
-            }
-          }
-        })
-
-        // ルームの収容人数を取得
-        const room = await prisma.room.findUnique({
-          where: { id: roomId },
-          select: { capacity: true }
-        })
-
-        // 予約数が収容人数未満なら空きあり
-        const isAvailable = reservations < (room?.capacity || 1)
-
+        // すべての日付を予約可能にする
         return {
           date: format(date, 'yyyy-MM-dd'),
-          isAvailable
+          isAvailable: true
         }
       })
     )

@@ -3,22 +3,19 @@
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
 import { useEffect, useState } from "react"
-import { RoomBusinessHours } from "@prisma/client"
 
 type DayAvailability = {
   date: Date
   isAvailable: boolean
-  businessHours?: RoomBusinessHours[]
 }
 
 type Props = {
   roomId: string
   selectedDate?: Date | null
   onDateSelect: (date: Date | null) => void
-  businessHours: RoomBusinessHours[]
 }
 
-export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelect, businessHours }: Props) {
+export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelect }: Props) {
   const [availabilityData, setAvailabilityData] = useState<DayAvailability[]>([])
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -33,8 +30,7 @@ export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelec
         const data = await response.json()
         setAvailabilityData(data.map((item: any) => ({
           date: new Date(item.date),
-          isAvailable: item.isAvailable,
-          businessHours: getBusinessHoursForDay(new Date(item.date))
+          isAvailable: item.isAvailable
         })))
       } catch (error) {
         console.error('Error fetching availability:', error)
@@ -45,28 +41,6 @@ export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelec
 
     fetchAvailability()
   }, [roomId])
-
-  // 曜日に基づいて営業時間を取得する関数
-  const getBusinessHoursForDay = (date: Date) => {
-    const dayOfWeek = date.getDay()
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-    const dayName = dayNames[dayOfWeek]
-    
-    return businessHours.filter(hours => hours.day === dayName)
-  }
-
-  // 営業時間を表示する関数
-  const formatBusinessHours = (hours: RoomBusinessHours[] | undefined) => {
-    if (!hours || hours.length === 0) return null
-    
-    const sortedHours = [...hours].sort((a, b) => a.openTime.localeCompare(b.openTime))
-    return sortedHours.map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`).join(', ')
-  }
-
-  // 時間をフォーマットする関数
-  const formatTime = (time: string) => {
-    return time.slice(0, 5)
-  }
 
   return (
     <div>
@@ -97,28 +71,28 @@ export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelec
         ))}
 
         {/* 日付の表示 */}
-        {availabilityData.map(({ date, isAvailable, businessHours }) => {
+        {availabilityData.map(({ date, isAvailable }) => {
           const isSelected = selectedDate?.toDateString() === date.toDateString()
           const isPast = date < today
-          const hasBusinessHours = businessHours && businessHours.length > 0
-          const hoursDisplay = formatBusinessHours(businessHours)
+          // 営業時間の制限を無視して、過去の日付以外はすべて予約可能にする
+          const isSelectable = !isPast
 
           return (
             <button
               key={date.toISOString()}
               onClick={() => onDateSelect(date)}
-              disabled={!isAvailable || isPast || !hasBusinessHours}
+              disabled={!isSelectable}
               className={`
                 p-2 text-center rounded-md transition-colors
                 ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                ${!isAvailable || isPast || !hasBusinessHours ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-200'}
+                ${!isSelectable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-200'}
               `}
             >
               <div className="text-sm">
                 {format(date, 'd')}
               </div>
               <div className="text-xs mt-1">
-                {hoursDisplay || '営業時間なし'}
+                24時間利用可能
               </div>
             </button>
           )
