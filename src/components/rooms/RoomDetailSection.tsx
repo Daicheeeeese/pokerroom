@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock } from "lucide-react"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation, RoomBusinessHours } from "@prisma/client"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation } from "@prisma/client"
 import AvailabilityCalendar from "./AvailabilityCalendar"
 import ReservationForm from "../ReservationForm"
 import { Card } from '@/components/ui/card'
@@ -14,13 +14,18 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 
 type RoomWithDetails = Room & {
-  image: string
+  image?: string
   images: RoomImage[]
   hourlyPricesWeekday: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
   reviews: Review[]
   nearestStations: NearestStation[]
-  businessHours: RoomBusinessHours[]
+  businessHours?: {
+    id: string
+    dayType: string
+    openTime: string
+    closeTime: string
+  }[]
 }
 
 type Props = {
@@ -77,7 +82,7 @@ export default function RoomDetailSection({ room, selectedDate }: Props) {
             <div>
               <h2 className="text-xl font-semibold mb-2">営業時間</h2>
               <div className="space-y-2">
-                {room.businessHours.map((hours) => (
+                {room.businessHours?.map((hours) => (
                   <div key={hours.id} className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-gray-500" />
                     <p className="text-gray-600">

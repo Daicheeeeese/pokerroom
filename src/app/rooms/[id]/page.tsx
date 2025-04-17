@@ -15,11 +15,14 @@ type RoomInclude = {
   hourlyPricesWeekday: true
   hourlyPricesHoliday: true
   nearestStations: true
+  businessHours: true
 }
 
 type RoomWithDetails = Prisma.RoomGetPayload<{
   include: RoomInclude
-}>
+}> & {
+  image?: string
+}
 
 interface Props {
   params: {
@@ -78,7 +81,8 @@ export default async function RoomPage({ params }: Props) {
         },
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
-        nearestStations: true
+        nearestStations: true,
+        businessHours: true
       }
     }) as RoomWithDetails | null
 
