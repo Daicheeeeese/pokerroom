@@ -4,8 +4,24 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import type { HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from "@prisma/client"
-import { RoomWithDetails } from "@/types/room"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from "@prisma/client"
+
+type RoomWithDetails = {
+  id: string
+  name: string
+  description: string
+  address: string
+  capacity: number
+  pricePerHour: number
+  amenities: string[]
+  availableFrom: string
+  availableTo: string
+  createdAt: Date
+  updatedAt: Date
+  images: RoomImage[]
+  hourlyPricesWeekday: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+}
 
 type Props = {
   room: RoomWithDetails
@@ -20,6 +36,10 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   const [error, setError] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string>("")
+
+  // デフォルトの利用可能時間を設定
+  const defaultAvailableFrom = "00:00"
+  const defaultAvailableTo = "23:59"
 
   const calculateTotalPrice = () => {
     if (!date || !startTime || !endTime) return 0

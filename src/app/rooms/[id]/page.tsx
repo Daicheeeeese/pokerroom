@@ -1,10 +1,9 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
+import RoomDetailSection from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Prisma } from '@prisma/client'
-import { RoomWithDetails } from '@/types/room'
 
 type RoomInclude = {
   reviews: true
@@ -17,6 +16,12 @@ type RoomInclude = {
   hourlyPricesHoliday: true
   nearestStations: true
   businessHours: true
+}
+
+type RoomWithDetails = Prisma.RoomGetPayload<{
+  include: RoomInclude
+}> & {
+  image?: string
 }
 
 interface Props {
@@ -79,34 +84,27 @@ export default async function RoomPage({ params }: Props) {
         nearestStations: true,
         businessHours: true
       }
-    })
+    }) as RoomWithDetails | null
 
     if (!room) {
       notFound()
     }
 
-    // RoomWithDetails型に変換
-    const roomWithDetails: RoomWithDetails = {
-      ...room,
-      availableFrom: room.availableFrom || '00:00',
-      availableTo: room.availableTo || '23:59'
-    }
-
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          <ImageGallery mainImage={roomWithDetails.images.length > 0 ? roomWithDetails.images[0].url : ''} images={roomWithDetails.images} />
+          <ImageGallery mainImage={room.images.length > 0 ? room.images[0].url : ''} images={room.images} />
           <div className="mt-6 mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{roomWithDetails.name}</h1>
-                <p className="mt-2 text-gray-500 text-sm md:text-base">{roomWithDetails.description || ''}</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
+                <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <RoomDetailSection room={roomWithDetails} />
+              <RoomDetailSection room={room} />
             </div>
             <div className="lg:col-span-1">
               {/* 予約フォームやその他の情報をここに配置 */}

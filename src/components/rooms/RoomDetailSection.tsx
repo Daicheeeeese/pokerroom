@@ -30,6 +30,13 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
   const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null)
   const { data: session } = useSession()
 
+  // デフォルトの利用可能時間を設定
+  const roomWithDefaults = {
+    ...room,
+    availableFrom: room.availableFrom || "00:00",
+    availableTo: room.availableTo || "23:59"
+  }
+
   const formatTime = (time: string) => {
     return time.slice(0, 5);
   };
@@ -56,13 +63,29 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
       return acc;
     }, {} as { [key: string]: RoomBusinessHours[] });
 
-    return Object.entries(groupedHours)
-      .map(([day, dayHours]) => {
-        const sortedHours = dayHours.sort((a, b) => a.openTime.localeCompare(b.openTime));
-        const timeRanges = sortedHours.map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`).join(', ');
-        return `${getDayName(day)}：${timeRanges}`;
-      })
-      .join('\n');
+    const days: { [key: string]: string } = {
+      monday: '月曜日',
+      tuesday: '火曜日',
+      wednesday: '水曜日',
+      thursday: '木曜日',
+      friday: '金曜日',
+      saturday: '土曜日',
+      sunday: '日曜日',
+    };
+
+    // すべての曜日をチェックし、データがない場合は「定休日」と表示
+    const allDays = Object.keys(days);
+    const result = allDays.map(day => {
+      if (!groupedHours[day] || groupedHours[day].length === 0) {
+        return `${days[day]}：定休日`;
+      }
+      
+      const sortedHours = groupedHours[day].sort((a, b) => a.openTime.localeCompare(b.openTime));
+      const timeRanges = sortedHours.map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`).join(', ');
+      return `${days[day]}：${timeRanges}`;
+    });
+
+    return result.join('\n');
   };
 
   return (
@@ -109,7 +132,7 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
                     onDateSelect={setSelectedDateState}
                   />
                   <div className="mt-4">
-                    <ReservationForm room={room} selectedDate={selectedDateState} />
+                    <ReservationForm room={roomWithDefaults} selectedDate={selectedDateState} />
                   </div>
                   <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">※予約はまだ確定されません</p>
                 </>

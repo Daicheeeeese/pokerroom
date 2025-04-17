@@ -74,25 +74,23 @@ export default function AvailabilityCalendar({ roomId, selectedDate, onDateSelec
         {availabilityData.map(({ date, isAvailable }) => {
           const isSelected = selectedDate?.toDateString() === date.toDateString()
           const isPast = date < today
-          // 営業時間の制限を無視して、過去の日付以外はすべて予約可能にする
-          const isSelectable = !isPast
 
           return (
             <button
               key={date.toISOString()}
               onClick={() => onDateSelect(date)}
-              disabled={!isSelectable}
+              disabled={!isAvailable || isPast}
               className={`
                 p-2 text-center rounded-md transition-colors
                 ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                ${!isSelectable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-200'}
+                ${!isAvailable || isPast ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-200'}
               `}
             >
               <div className="text-sm">
                 {format(date, 'd')}
               </div>
-              <div className="text-xs mt-1">
-                24時間利用可能
+              <div className="text-lg font-bold">
+                {isAvailable && !isPast ? '○' : '×'}
               </div>
             </button>
           )
