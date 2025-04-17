@@ -1,23 +1,109 @@
-import { Room, RoomImage, HourlyPriceWeekday, HourlyPriceHoliday, Review, NearestStation, RoomBusinessHours } from '@prisma/client'
+import { Room as PrismaRoom } from '@prisma/client'
 
-export type RoomWithDetails = Room & {
-  image?: string
-  images: RoomImage[]
-  hourlyPricesWeekday: HourlyPriceWeekday[]
-  hourlyPricesHoliday: HourlyPriceHoliday[]
-  reviews: Review[]
-  nearestStations: NearestStation[]
-  businessHours: RoomBusinessHours[]
-  availableFrom?: string
-  availableTo?: string
+export type Room = PrismaRoom & {
+  images: {
+    id: string
+    url: string
+    order: number
+    roomId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  hourlyPrices: {
+    id: string
+    hour: number
+    price: number
+    roomId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  hourlyPricesHoliday: {
+    id: string
+    hour: number
+    price: number
+    roomId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  availability: {
+    id: string
+    date: Date
+    isAvailable: boolean
+    roomId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  reviews: {
+    id: string
+    rating: number
+    comment: string
+    userId: string
+    roomId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  tags: {
+    id: string
+    name: string
+    rooms: Room[]
+  }[]
 }
 
-export interface Room {
+export type RoomWithDetails = Room & {
+  averageRating: number
+  totalReviews: number
+  isAvailable: boolean
+  nextAvailableDate: Date | null
+}
+
+export type RoomImage = {
   id: string
-  name: string
-  description: string
-  capacity: number
-  pricePerHour: number
+  url: string
+  order: number
+  roomId: string
   createdAt: Date
   updatedAt: Date
+}
+
+export type HourlyPrice = {
+  id: string
+  hour: number
+  price: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type HourlyPriceHoliday = {
+  id: string
+  hour: number
+  price: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type RoomAvailability = {
+  id: string
+  date: Date
+  isAvailable: boolean
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type Review = {
+  id: string
+  rating: number
+  comment: string
+  userId: string
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type Tag = {
+  id: string
+  name: string
+  rooms: Room[]
 } 
