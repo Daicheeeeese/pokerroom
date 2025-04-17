@@ -35,8 +35,6 @@ model Room {
   updatedAt           DateTime             @updatedAt
   pricePerHour        Int
   amenities           String[]
-  availableFrom       String               @default("09:00")
-  availableTo         String               @default("21:00")
   nearestStations     NearestStation[]
   images              RoomImage[]
   reviews             Review[]
