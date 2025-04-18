@@ -42,6 +42,7 @@ model Room {
   hourlyPricesWeekday HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
   businessHours       RoomBusinessHours[]
+  options             Option[]
 
   @@map("rooms")
 }
@@ -147,6 +148,21 @@ model RoomBusinessHours {
 
   @@index([roomId])
   @@map("room_business_hours")
+}
+
+model Option {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  option      String
+  price       Int
+  priceType   String   // "fixed" or "per_hour"
+  unit        String   // "個", "セット" など
+  isRequired  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([roomId])
 }
 
 enum ReservationStatus {
