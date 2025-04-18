@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import RoomDetailSection from '@/components/rooms/RoomDetailSection'
+import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Prisma } from '@prisma/client'
@@ -21,7 +21,8 @@ type RoomInclude = {
 type RoomWithDetails = Prisma.RoomGetPayload<{
   include: RoomInclude
 }> & {
-  image?: string
+  image?: string;
+  nextAvailableDate: Date | null;
 }
 
 interface Props {

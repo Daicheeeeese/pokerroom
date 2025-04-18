@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock } from "lucide-react"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation } from "@prisma/client"
+import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation, RoomBusinessHours } from "@prisma/client"
 import AvailabilityCalendar from "./AvailabilityCalendar"
 import ReservationForm from '../ReservationForm'
 import { Card } from '@/components/ui/card'
@@ -19,13 +19,7 @@ type RoomWithDetails = Room & {
   hourlyPricesHoliday: HourlyPriceHoliday[];
   reviews: Review[];
   nextAvailableDate: Date | null;
-  businessHours: {
-    id: string;
-    dayOfWeek: number;
-    openTime: string;
-    closeTime: string;
-    isClosed: boolean;
-  }[];
+  businessHours: RoomBusinessHours[];
 };
 
 interface Props {
@@ -41,41 +35,40 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
     return time.slice(0, 5);
   };
 
-  const getDayName = (dayOfWeek: number) => {
-    const days: { [key: number]: string } = {
-      0: '日曜日',
-      1: '月曜日',
-      2: '火曜日',
-      3: '水曜日',
-      4: '木曜日',
-      5: '金曜日',
-      6: '土曜日',
+  const getDayName = (day: string) => {
+    const days: { [key: string]: string } = {
+      monday: '月曜日',
+      tuesday: '火曜日',
+      wednesday: '水曜日',
+      thursday: '木曜日',
+      friday: '金曜日',
+      saturday: '土曜日',
+      sunday: '日曜日',
     };
-    return days[dayOfWeek] || '';
+    return days[day] || day;
   };
 
-  const formatBusinessHours = (hours: { id: string; dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }[]) => {
+  const formatBusinessHours = (hours: RoomBusinessHours[]) => {
     const groupedHours = hours.reduce((acc, hour) => {
-      if (!acc[hour.dayOfWeek]) {
-        acc[hour.dayOfWeek] = [];
+      if (!acc[hour.day]) {
+        acc[hour.day] = [];
       }
-      acc[hour.dayOfWeek].push(hour);
+      acc[hour.day].push(hour);
       return acc;
-    }, {} as { [key: number]: { id: string; dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }[] });
+    }, {} as { [key: string]: RoomBusinessHours[] });
 
-    const result = [];
-    for (let i = 0; i < 7; i++) {
-      const dayHours = groupedHours[i] || [];
-      if (dayHours.length === 0 || dayHours.every(h => h.isClosed)) {
-        result.push(`${getDayName(i)}：定休日`);
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const result = days.map(day => {
+      const dayHours = groupedHours[day] || [];
+      if (dayHours.length === 0) {
+        return `${getDayName(day)}：定休日`;
       } else {
         const timeRanges = dayHours
-          .filter(h => !h.isClosed)
           .map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`)
           .join(', ');
-        result.push(`${getDayName(i)}：${timeRanges}`);
+        return `${getDayName(day)}：${timeRanges}`;
       }
-    }
+    });
 
     return result.join('\n');
   };
@@ -108,9 +101,6 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
             <h3 className="text-lg font-medium text-gray-900">営業時間</h3>
             <p className="mt-2 text-gray-600 whitespace-pre-line">
               {formatBusinessHours(room.businessHours)}
-            </p>
-            <p className="mt-1 text-sm text-gray-500">
-              ※表示時間外でも予約可能です
             </p>
           </div>
         </div>
