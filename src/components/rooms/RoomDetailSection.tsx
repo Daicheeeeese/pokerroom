@@ -48,29 +48,33 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
     return days[day] || day;
   };
 
-  const formatBusinessHours = (hours: RoomBusinessHours[]) => {
-    const groupedHours = hours.reduce((acc, hour) => {
-      if (!acc[hour.day]) {
-        acc[hour.day] = [];
-      }
-      acc[hour.day].push(hour);
-      return acc;
-    }, {} as { [key: string]: RoomBusinessHours[] });
+  const getBusinessHours = () => {
+    const days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日'];
+    const businessHoursByDay = new Map<string, RoomBusinessHours[]>();
 
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    const result = days.map(day => {
-      const dayHours = groupedHours[day] || [];
-      if (dayHours.length === 0) {
-        return `${getDayName(day)}：予約不可`;
-      } else {
-        const timeRanges = dayHours
-          .map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`)
-          .join(', ');
-        return `${getDayName(day)}：${timeRanges}`;
-      }
+    // 曜日ごとに営業時間をグループ化
+    room.businessHours.forEach((hours) => {
+      const dayHours = businessHoursByDay.get(hours.day) || [];
+      dayHours.push(hours);
+      businessHoursByDay.set(hours.day, dayHours);
     });
 
-    return result.join('\n');
+    // 各曜日の営業時間をopenTimeでソート
+    businessHoursByDay.forEach((hours, day) => {
+      hours.sort((a, b) => a.openTime.localeCompare(b.openTime));
+    });
+
+    return days.map((day) => {
+      const hours = businessHoursByDay.get(day) || [];
+      if (hours.length === 0) return `${day}: 定休日`;
+
+      // 同じ曜日の営業時間を結合
+      const timeRanges = hours
+        .map((h) => `${h.openTime}~${h.closeTime}`)
+        .join(', ');
+
+      return `${day}: ${timeRanges}`;
+    });
   };
 
   return (
@@ -100,7 +104,7 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
           <div>
             <h3 className="text-lg font-medium text-gray-900">営業時間</h3>
             <p className="mt-2 text-gray-600 whitespace-pre-line">
-              {formatBusinessHours(room.businessHours)}
+              {getBusinessHours().join('\n')}
             </p>
           </div>
         </div>
