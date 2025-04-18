@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
 import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage } from "@prisma/client"
 
 type RoomWithDetails = {
@@ -33,7 +31,7 @@ type Props = {
 
 export default function ReservationForm({ room, selectedDate }: Props) {
   const router = useRouter()
-  const [date, setDate] = useState<Date | null>(selectedDate || null)
+  const [date, setDate] = useState<string>(selectedDate ? selectedDate.toISOString().split('T')[0] : '')
   const [startTime, setStartTime] = useState<string>("")
   const [endTime, setEndTime] = useState<string>("")
   const [error, setError] = useState<string>("")
@@ -43,7 +41,8 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   const calculateTotalPrice = () => {
     if (!date || !startTime || !endTime) return 0
 
-    const isHoliday = date.getDay() === 0 || date.getDay() === 6
+    const selectedDate = new Date(date)
+    const isHoliday = selectedDate.getDay() === 0 || selectedDate.getDay() === 6
     const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPricesWeekday
 
     const start = new Date(`2000-01-01T${startTime}`)
@@ -77,6 +76,17 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       return
     }
 
+    const selectedDate = new Date(date)
+    const dayOfWeek = selectedDate.getDay()
+    const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    const day = dayMapping[dayOfWeek]
+
+    if (!room.businessHours.some(hours => hours.day === day)) {
+      setError("選択された日付は予約できません")
+      setIsSubmitting(false)
+      return
+    }
+
     const start = new Date(`2000-01-01T${startTime}`)
     const end = new Date(`2000-01-01T${endTime}`)
 
@@ -89,7 +99,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     const totalPrice = calculateTotalPrice()
     const queryParams = new URLSearchParams({
       roomId: room.id,
-      date: date.toISOString().split("T")[0],
+      date,
       startTime,
       endTime,
       totalPrice: totalPrice.toString(),
@@ -119,29 +129,16 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     })
   }
 
-  const isDateAvailable = (date: Date) => {
-    const dayOfWeek = date.getDay()
-    const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-    const day = dayMapping[dayOfWeek]
-    
-    return room.businessHours.some(hours => hours.day === day)
-  }
-
-  const filterDate = (date: Date) => {
-    return isDateAvailable(date)
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">日付</label>
-        <DatePicker
-          selected={date}
-          onChange={(date: Date | null) => setDate(date)}
-          minDate={new Date()}
-          filterDate={filterDate}
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          min={new Date().toISOString().split('T')[0]}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          dateFormat="yyyy/MM/dd"
         />
         <p className="mt-1 text-sm text-gray-500">※予約可能な曜日のみ選択できます</p>
       </div>
