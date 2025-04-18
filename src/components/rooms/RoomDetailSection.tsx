@@ -49,14 +49,24 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
   };
 
   const getBusinessHours = () => {
-    const days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日'];
+    const dayMapping: { [key: string]: string } = {
+      monday: '月曜日',
+      tuesday: '火曜日',
+      wednesday: '水曜日',
+      thursday: '木曜日',
+      friday: '金曜日',
+      saturday: '土曜日',
+      sunday: '日曜日'
+    };
+
     const businessHoursByDay = new Map<string, RoomBusinessHours[]>();
 
     // 曜日ごとに営業時間をグループ化
     room.businessHours.forEach((hours) => {
-      const dayHours = businessHoursByDay.get(hours.day) || [];
+      const dayName = dayMapping[hours.day] || hours.day;
+      const dayHours = businessHoursByDay.get(dayName) || [];
       dayHours.push(hours);
-      businessHoursByDay.set(hours.day, dayHours);
+      businessHoursByDay.set(dayName, dayHours);
     });
 
     // 各曜日の営業時間をopenTimeでソート
@@ -64,9 +74,9 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
       hours.sort((a, b) => a.openTime.localeCompare(b.openTime));
     });
 
-    return days.map((day) => {
+    return Object.values(dayMapping).map((day) => {
       const hours = businessHoursByDay.get(day) || [];
-      if (hours.length === 0) return `${day}: 定休日`;
+      if (hours.length === 0) return `${day}: 予約不可`;
 
       // 同じ曜日の営業時間を結合
       const timeRanges = hours
