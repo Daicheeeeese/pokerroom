@@ -14,12 +14,20 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { RoomWithDetails } from '@/types/room'
 
-interface RoomBusinessHours {
-  id: string;
-  day: string;
-  openTime: string;
-  closeTime: string;
-}
+type RoomWithDetails = Room & {
+  images: RoomImage[];
+  hourlyPricesWeekday: HourlyPriceWeekday[];
+  hourlyPricesHoliday: HourlyPriceHoliday[];
+  reviews: Review[];
+  nextAvailableDate: Date | null;
+  businessHours: {
+    id: string;
+    dayOfWeek: number;
+    openTime: string;
+    closeTime: string;
+    isClosed: boolean;
+  }[];
+};
 
 interface Props {
   room: RoomWithDetails;
@@ -30,60 +38,45 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
   const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null)
   const { data: session } = useSession()
 
-  // デフォルトの利用可能時間を設定
-  const roomWithDefaults = {
-    ...room,
-    availableFrom: room.availableFrom || "00:00",
-    availableTo: room.availableTo || "23:59"
-  }
-
   const formatTime = (time: string) => {
     return time.slice(0, 5);
   };
 
-  const getDayName = (day: string) => {
-    const days: { [key: string]: string } = {
-      monday: '月曜日',
-      tuesday: '火曜日',
-      wednesday: '水曜日',
-      thursday: '木曜日',
-      friday: '金曜日',
-      saturday: '土曜日',
-      sunday: '日曜日',
+  const getDayName = (dayOfWeek: number) => {
+    const days: { [key: number]: string } = {
+      0: '日曜日',
+      1: '月曜日',
+      2: '火曜日',
+      3: '水曜日',
+      4: '木曜日',
+      5: '金曜日',
+      6: '土曜日',
     };
-    return days[day] || day;
+    return days[dayOfWeek] || '';
   };
 
-  const formatBusinessHours = (hours: RoomBusinessHours[]) => {
+  const formatBusinessHours = (hours: { id: string; dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }[]) => {
     const groupedHours = hours.reduce((acc, hour) => {
-      if (!acc[hour.day]) {
-        acc[hour.day] = [];
+      if (!acc[hour.dayOfWeek]) {
+        acc[hour.dayOfWeek] = [];
       }
-      acc[hour.day].push(hour);
+      acc[hour.dayOfWeek].push(hour);
       return acc;
-    }, {} as { [key: string]: RoomBusinessHours[] });
+    }, {} as { [key: number]: { id: string; dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }[] });
 
-    const days: { [key: string]: string } = {
-      monday: '月曜日',
-      tuesday: '火曜日',
-      wednesday: '水曜日',
-      thursday: '木曜日',
-      friday: '金曜日',
-      saturday: '土曜日',
-      sunday: '日曜日',
-    };
-
-    // すべての曜日をチェックし、データがない場合は「定休日」と表示
-    const allDays = Object.keys(days);
-    const result = allDays.map(day => {
-      if (!groupedHours[day] || groupedHours[day].length === 0) {
-        return `${days[day]}：定休日`;
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const dayHours = groupedHours[i] || [];
+      if (dayHours.length === 0 || dayHours.every(h => h.isClosed)) {
+        result.push(`${getDayName(i)}：定休日`);
+      } else {
+        const timeRanges = dayHours
+          .filter(h => !h.isClosed)
+          .map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`)
+          .join(', ');
+        result.push(`${getDayName(i)}：${timeRanges}`);
       }
-      
-      const sortedHours = groupedHours[day].sort((a, b) => a.openTime.localeCompare(b.openTime));
-      const timeRanges = sortedHours.map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`).join(', ');
-      return `${days[day]}：${timeRanges}`;
-    });
+    }
 
     return result.join('\n');
   };
@@ -117,6 +110,9 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
             <p className="mt-2 text-gray-600 whitespace-pre-line">
               {formatBusinessHours(room.businessHours)}
             </p>
+            <p className="mt-1 text-sm text-gray-500">
+              ※表示時間外でも予約可能です
+            </p>
           </div>
         </div>
 
@@ -132,7 +128,7 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
                     onDateSelect={setSelectedDateState}
                   />
                   <div className="mt-4">
-                    <ReservationForm room={roomWithDefaults} selectedDate={selectedDateState} />
+                    <ReservationForm room={room} selectedDate={selectedDateState} />
                   </div>
                   <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">※予約はまだ確定されません</p>
                 </>
