@@ -19,6 +19,11 @@ type RoomWithDetails = {
   images: RoomImage[]
   hourlyPricesWeekday: HourlyPriceWeekday[]
   hourlyPricesHoliday: HourlyPriceHoliday[]
+  businessHours: {
+    day: string
+    openTime: string
+    closeTime: string
+  }[]
 }
 
 type Props = {
@@ -114,6 +119,18 @@ export default function ReservationForm({ room, selectedDate }: Props) {
     })
   }
 
+  const isDateAvailable = (date: Date) => {
+    const dayOfWeek = date.getDay()
+    const dayMapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    const day = dayMapping[dayOfWeek]
+    
+    return room.businessHours.some(hours => hours.day === day)
+  }
+
+  const filterDate = (date: Date) => {
+    return isDateAvailable(date)
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -122,9 +139,11 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           selected={date}
           onChange={(date: Date | null) => setDate(date)}
           minDate={new Date()}
+          filterDate={filterDate}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           dateFormat="yyyy/MM/dd"
         />
+        <p className="mt-1 text-sm text-gray-500">※予約可能な曜日のみ選択できます</p>
       </div>
 
       <div>
