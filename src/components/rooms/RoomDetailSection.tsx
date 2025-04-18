@@ -61,7 +61,7 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
     const result = days.map(day => {
       const dayHours = groupedHours[day] || [];
       if (dayHours.length === 0) {
-        return `${getDayName(day)}：定休日`;
+        return `${getDayName(day)}：予約不可`;
       } else {
         const timeRanges = dayHours
           .map(h => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`)
