@@ -5,7 +5,6 @@ import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock } from "lucide-react"
 import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation, RoomBusinessHours } from "@prisma/client"
-import AvailabilityCalendar from "./AvailabilityCalendar"
 import ReservationForm from '../ReservationForm'
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
@@ -76,7 +75,7 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
 
     return Object.values(dayMapping).map((day) => {
       const hours = businessHoursByDay.get(day) || [];
-      if (hours.length === 0) return `${day}: 予約不可`;
+      if (hours.length === 0) return `${day}: 定休日`;
 
       // 同じ曜日の営業時間を結合
       const timeRanges = hours
@@ -125,11 +124,6 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
               <h3 className="text-xl font-bold mb-4">予約する</h3>
               {session ? (
                 <>
-                  <AvailabilityCalendar
-                    roomId={room.id}
-                    selectedDate={selectedDateState}
-                    onDateSelect={setSelectedDateState}
-                  />
                   <div className="mt-4">
                     <ReservationForm room={room} selectedDate={selectedDateState} />
                   </div>
