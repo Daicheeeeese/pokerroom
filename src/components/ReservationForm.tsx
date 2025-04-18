@@ -140,7 +140,6 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           min={new Date().toISOString().split('T')[0]}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
-        <p className="mt-1 text-sm text-gray-500">※予約可能な曜日のみ選択できます</p>
       </div>
 
       <div>
