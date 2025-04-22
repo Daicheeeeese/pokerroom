@@ -20,7 +20,6 @@ export default function ReservationCompletePage({
               予約の詳細は予約メールよりご確認ください。
             </p>
           </div>
-          </div>
         </div>
       </Card>
     </div>
