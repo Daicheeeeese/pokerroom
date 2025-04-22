@@ -5,12 +5,12 @@ import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock } from "lucide-react"
 import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation, RoomBusinessHours } from "@prisma/client"
-import ReservationForm from '../ReservationForm'
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 type RoomWithDetails = Room & {
   images: RoomImage[];
@@ -23,12 +23,11 @@ type RoomWithDetails = Room & {
 
 interface Props {
   room: RoomWithDetails;
-  selectedDate?: Date | null;
 }
 
-export function RoomDetailSection({ room, selectedDate }: Props) {
-  const [selectedDateState, setSelectedDateState] = useState<Date | null>(selectedDate || null)
+export function RoomDetailSection({ room }: Props) {
   const { data: session } = useSession()
+  const router = useRouter()
 
   const formatTime = (time: string) => {
     return time.slice(0, 5);
@@ -86,6 +85,14 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
     });
   };
 
+  const handleReservationClick = () => {
+    if (!session) {
+      router.push('/login')
+      return
+    }
+    router.push(`/reservations/request?roomId=${room.id}`)
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -121,19 +128,27 @@ export function RoomDetailSection({ room, selectedDate }: Props) {
         <div className="lg:col-span-1">
           <div className="sticky top-8">
             <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">予約する</h3>
-              {session ? (
-                <>
-                  <div className="mt-4">
-                    <ReservationForm room={room} selectedDate={selectedDateState} />
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">※予約はまだ確定されません</p>
-                </>
-              ) : (
-                <div className="text-center">
-                  <p className="text-sm text-gray-500 mb-4">※予約するには<Link href="/login" className="text-blue-600 hover:underline">ログイン</Link>をしてください</p>
+              <h3 className="text-xl font-bold mb-4">料金</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    ¥{room.pricePerHour.toLocaleString()}
+                    <span className="text-lg font-normal text-gray-500">/時間</span>
+                  </p>
                 </div>
-              )}
+                {session ? (
+                  <button
+                    onClick={handleReservationClick}
+                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    予約
+                  </button>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-4">※予約するには<Link href="/login" className="text-blue-600 hover:underline">ログイン</Link>をしてください</p>
+                  </div>
+                )}
+              </div>
             </Card>
           </div>
         </div>
