@@ -1,19 +1,61 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { prisma } from '@/lib/prisma'
 
-export default async function ReservationConfirmPage() {
+interface Room {
+  id: string
+  name: string
+  address: string
+  pricePerHour: number
+  hourlyPricesWeekday: Array<{
+    startTime: string
+    endTime: string
+    pricePerHour: number
+  }>
+  hourlyPricesHoliday: Array<{
+    startTime: string
+    endTime: string
+    pricePerHour: number
+  }>
+}
+
+export default function ReservationConfirmPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const roomId = searchParams.get('roomId')
   const date = searchParams.get('date')
   const startTime = searchParams.get('startTime')
   const endTime = searchParams.get('endTime')
   const numberOfPeople = searchParams.get('numberOfPeople')
+
+  const [room, setRoom] = useState<Room | null>(null)
+  const [error, setError] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const response = await fetch(`/api/rooms/${roomId}`)
+        if (!response.ok) {
+          throw new Error('ルームの取得に失敗しました')
+        }
+        const data = await response.json()
+        setRoom(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'エラーが発生しました')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (roomId) {
+      fetchRoom()
+    }
+  }, [roomId])
 
   if (!roomId || !date || !startTime || !endTime || !numberOfPeople) {
     return (
@@ -26,13 +68,24 @@ export default async function ReservationConfirmPage() {
     )
   }
 
-  const room = await prisma.room.findUnique({
-    where: { id: roomId },
-    include: {
-      hourlyPricesWeekday: true,
-      hourlyPricesHoliday: true,
-    },
-  })
+  if (isLoading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-2xl font-bold mb-8">読み込み中...</h1>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-2xl font-bold mb-8">エラー</h1>
+        <Card className="p-6">
+          <p className="text-red-600">{error}</p>
+        </Card>
+      </div>
+    )
+  }
 
   if (!room) {
     return (
@@ -56,7 +109,11 @@ export default async function ReservationConfirmPage() {
 
     for (let time = start; time < end; time.setMinutes(time.getMinutes() + 30)) {
       const hour = time.getHours()
-      const price = hourlyPrices.find(p => p.hour === hour)?.price || room.pricePerHour
+      const price = hourlyPrices.find(p => {
+        const start = parseInt(p.startTime.split(':')[0])
+        const end = parseInt(p.endTime.split(':')[0])
+        return hour >= start && hour < end
+      })?.pricePerHour || room.pricePerHour
       totalPrice += price / 2
     }
 

@@ -9,18 +9,9 @@ export async function GET(
     const room = await prisma.room.findUnique({
       where: { id: params.id },
       include: {
-        nearestStations: true,
-        images: {
-          orderBy: {
-            order: 'asc'
-          }
-        },
-        reviews: {
-          include: {
-            user: true
-          }
-        }
-      }
+        hourlyPricesWeekday: true,
+        hourlyPricesHoliday: true,
+      },
     })
 
     if (!room) {
