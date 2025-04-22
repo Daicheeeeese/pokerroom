@@ -6,6 +6,13 @@ import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 
+interface Option {
+  id: string
+  name: string
+  description: string | null
+  price: number
+}
+
 interface Room {
   id: string
   name: string
@@ -21,6 +28,14 @@ interface Room {
     endTime: string
     pricePerHour: number
   }>
+  options: Array<{
+    option: Option
+  }>
+}
+
+interface SelectedOption {
+  optionId: string
+  quantity: number
 }
 
 export default function ReservationConfirmPage() {
@@ -31,6 +46,8 @@ export default function ReservationConfirmPage() {
   const startTime = searchParams.get('startTime')
   const endTime = searchParams.get('endTime')
   const numberOfPeople = searchParams.get('numberOfPeople')
+  const optionsParam = searchParams.get('options')
+  const selectedOptions: SelectedOption[] = optionsParam ? JSON.parse(optionsParam) : []
 
   const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
@@ -73,7 +90,8 @@ export default function ReservationConfirmPage() {
           date,
           startTime,
           endTime,
-          people: parseInt(numberOfPeople),
+          people: parseInt(numberOfPeople || '1'),
+          options: selectedOptions,
           totalPrice,
         }),
       })
@@ -137,7 +155,7 @@ export default function ReservationConfirmPage() {
   const isHoliday = new Date(date).getDay() === 0 || new Date(date).getDay() === 6
   const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPricesWeekday
 
-  const calculateTotalPrice = () => {
+  const calculateRoomPrice = () => {
     const start = new Date(`2000-01-01T${startTime}`)
     const end = new Date(`2000-01-01T${endTime}`)
     let totalPrice = 0
@@ -155,7 +173,16 @@ export default function ReservationConfirmPage() {
     return totalPrice
   }
 
-  const totalPrice = calculateTotalPrice()
+  const calculateOptionsPrice = () => {
+    return selectedOptions.reduce((total, { optionId, quantity }) => {
+      const option = room.options.find(o => o.option.id === optionId)?.option
+      return total + (option ? option.price * quantity : 0)
+    }, 0)
+  }
+
+  const roomPrice = calculateRoomPrice()
+  const optionsPrice = calculateOptionsPrice()
+  const totalPrice = roomPrice + optionsPrice
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -171,7 +198,28 @@ export default function ReservationConfirmPage() {
               <p>日付: {formattedDate}</p>
               <p>時間: {startTime} ~ {endTime}</p>
               <p>人数: {numberOfPeople}人</p>
-              <p className="text-lg font-bold">合計金額: ¥{totalPrice.toLocaleString()}</p>
+              <p>ルーム料金: ¥{roomPrice.toLocaleString()}</p>
+              
+              {selectedOptions.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-md font-medium text-gray-900">選択されたオプション</h3>
+                  <div className="mt-2 space-y-2">
+                    {selectedOptions.map(({ optionId, quantity }) => {
+                      const option = room.options.find(o => o.option.id === optionId)?.option
+                      if (!option) return null
+                      return (
+                        <div key={optionId} className="flex justify-between">
+                          <span>{option.name} × {quantity}</span>
+                          <span>¥{(option.price * quantity).toLocaleString()}</span>
+                        </div>
+                      )
+                    })}
+                    <p className="text-right">オプション料金: ¥{optionsPrice.toLocaleString()}</p>
+                  </div>
+                </div>
+              )}
+              
+              <p className="text-lg font-bold mt-4">合計金額: ¥{totalPrice.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -179,13 +227,6 @@ export default function ReservationConfirmPage() {
 
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input type="hidden" name="roomId" value={roomId} />
-          <input type="hidden" name="date" value={date} />
-          <input type="hidden" name="startTime" value={startTime} />
-          <input type="hidden" name="endTime" value={endTime} />
-          <input type="hidden" name="people" value={numberOfPeople} />
-          <input type="hidden" name="totalPrice" value={totalPrice} />
-
           {error && (
             <div className="text-red-600 text-sm">{error}</div>
           )}

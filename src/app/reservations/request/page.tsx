@@ -1,10 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+
+interface Option {
+  id: string
+  name: string
+  description: string | null
+  price: number
+}
+
+interface Room {
+  id: string
+  name: string
+  options: Array<{
+    option: Option
+  }>
+}
 
 export default function ReservationRequestPage() {
   const router = useRouter()
@@ -15,7 +30,31 @@ export default function ReservationRequestPage() {
   const [startTime, setStartTime] = useState<string>('')
   const [endTime, setEndTime] = useState<string>('')
   const [numberOfPeople, setNumberOfPeople] = useState<number>(1)
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: number }>({})
+  const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const response = await fetch(`/api/rooms/${roomId}`)
+        if (!response.ok) {
+          throw new Error('ルームの取得に失敗しました')
+        }
+        const data = await response.json()
+        setRoom(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'エラーが発生しました')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (roomId) {
+      fetchRoom()
+    }
+  }, [roomId])
 
   const generateTimeOptions = () => {
     const options = []
@@ -38,6 +77,13 @@ export default function ReservationRequestPage() {
     })
   }
 
+  const handleOptionChange = (optionId: string, quantity: number) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [optionId]: quantity,
+    }))
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -52,15 +98,39 @@ export default function ReservationRequestPage() {
       return
     }
 
+    const selectedOptionsList = Object.entries(selectedOptions)
+      .filter(([_, quantity]) => quantity > 0)
+      .map(([optionId, quantity]) => ({ optionId, quantity }))
+
     const queryParams = new URLSearchParams({
       roomId,
       date,
       startTime,
       endTime,
       numberOfPeople: numberOfPeople.toString(),
+      options: JSON.stringify(selectedOptionsList),
     })
 
     router.push(`/reservations/confirm?${queryParams.toString()}`)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-2xl font-bold mb-8">読み込み中...</h1>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-2xl font-bold mb-8">エラー</h1>
+        <Card className="p-6">
+          <p className="text-red-600">{error}</p>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -128,6 +198,32 @@ export default function ReservationRequestPage() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
+
+          {room?.options && room.options.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">オプション</h3>
+              <div className="space-y-4">
+                {room.options.map(({ option }) => (
+                  <div key={option.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{option.name}</p>
+                      {option.description && (
+                        <p className="text-sm text-gray-500">{option.description}</p>
+                      )}
+                      <p className="text-sm">¥{option.price.toLocaleString()}</p>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      value={selectedOptions[option.id] || 0}
+                      onChange={(e) => handleOptionChange(option.id, parseInt(e.target.value))}
+                      className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="text-red-600 text-sm">{error}</div>

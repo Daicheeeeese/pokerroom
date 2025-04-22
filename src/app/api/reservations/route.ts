@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { roomId, date, startTime, endTime, people, totalPrice } = body
+    const { roomId, date, startTime, endTime, people, options, totalPrice } = body
 
     if (!roomId || !date || !startTime || !endTime || !people || !totalPrice) {
       return NextResponse.json(
@@ -70,6 +70,19 @@ export async function POST(request: Request) {
         people: parseInt(people),
         totalPrice,
         status: 'PENDING',
+        options: {
+          create: options.map((option: { optionId: string, quantity: number }) => ({
+            optionId: option.optionId,
+            quantity: option.quantity,
+          })),
+        },
+      },
+      include: {
+        options: {
+          include: {
+            option: true,
+          },
+        },
       },
     })
 

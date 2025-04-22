@@ -26,25 +26,23 @@ model User {
 }
 
 model Room {
-  id                  String               @id @default(cuid())
+  id                  String              @id @default(cuid())
   name                String
   description         String
   address             String
-  capacity            Int
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
   pricePerHour        Int
-  amenities           String[]
-  nearestStations     NearestStation[]
+  maxCapacity         Int
+  minCapacity         Int
+  businessHours       RoomBusinessHours[]
+  options             RoomOption[]
   images              RoomImage[]
   reviews             Review[]
   reservations        Reservation[]
   hourlyPricesWeekday HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
-  businessHours       RoomBusinessHours[]
-  options             Option[]
-
-  @@map("rooms")
+  nearestStations     NearestStation[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
 }
 
 model RoomImage {
@@ -102,24 +100,40 @@ model Review {
 }
 
 model Reservation {
-  id         String            @id @default(cuid())
-  roomId     String
-  room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  userId     String
-  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date       DateTime
-  startTime  String
-  endTime    String
-  people     Int               @default(1)
-  status     ReservationStatus @default(PENDING)
-  totalPrice Int
-  createdAt  DateTime          @default(now())
-  updatedAt  DateTime          @updatedAt
+  id          String            @id @default(cuid())
+  roomId      String
+  room        Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  startTime   String
+  endTime     String
+  people      Int               @default(1)
+  status      ReservationStatus @default(PENDING)
+  totalPrice  Int
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  options     ReservationOption[]
 
   @@index([roomId])
   @@index([userId])
   @@index([date])
   @@map("reservations")
+}
+
+model ReservationOption {
+  id             Int           @id @default(autoincrement())
+  reservationId  String
+  optionId       String
+  quantity       Int           @default(1)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  reservation    Reservation   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  option         Option        @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([reservationId, optionId])
+  @@map("reservation_options")
 }
 
 model NearestStation {
@@ -151,19 +165,27 @@ model RoomBusinessHours {
   @@map("room_business_hours")
 }
 
-model Option {
-  id          String   @id @default(cuid())
-  roomId      String
-  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  option      String
-  price       Int
-  priceType   String   // "fixed" or "per_hour"
-  unit        String   // "個", "セット" など
-  isRequired  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model RoomOption {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([roomId])
+  @@unique([roomId, optionId])
+}
+
+model Option {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  rooms       RoomOption[]
+  reservations ReservationOption[]
 }
 
 enum ReservationStatus {
