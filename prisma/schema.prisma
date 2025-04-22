@@ -168,13 +168,15 @@ model RoomBusinessHours {
 
 model Option {
   id          String   @id @default(cuid())
-  name        String
-  description String?
+  roomId      String
+  option      String
   price       Float
-  unit        String   @default("booking")
+  priceType   String
+  unit        String
+  isRequired  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  rooms       Room[]
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   reservations ReservationOption[]
 }
 
