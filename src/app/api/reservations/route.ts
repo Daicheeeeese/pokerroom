@@ -31,112 +31,54 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const data = {
-      roomId: formData.get('roomId') as string,
-      date: formData.get('date') as string,
-      startTime: formData.get('startTime') as string,
-      endTime: formData.get('endTime') as string,
-      totalPrice: parseInt(formData.get('totalPrice') as string),
-    }
-    
-    console.log("予約リクエストデータ:", JSON.stringify(data, null, 2))
-    
     const session = await getServerSession(authOptions)
-    console.log("セッション情報:", JSON.stringify(session, null, 2))
-
-    if (!session?.user?.id) {
-      return corsResponse({ error: "認証が必要です" }, 401)
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'ログインが必要です' },
+        { status: 401 }
+      )
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { email: session.user.email },
     })
-    console.log("ユーザー情報:", JSON.stringify(user, null, 2))
 
     if (!user) {
-      return corsResponse({ error: "ユーザーが見つかりません" }, 404)
-    }
-
-    // 日付の検証
-    const reservationDate = new Date(data.date)
-    if (isNaN(reservationDate.getTime())) {
-      return corsResponse({ error: "無効な日付です" }, 400)
-    }
-
-    // 予約の作成
-    try {
-      console.log("予約作成開始:", {
-        userId: user.id,
-        roomId: data.roomId,
-        date: reservationDate,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        totalPrice: data.totalPrice
-      })
-
-      const reservation = await prisma.reservation.create({
-        data: {
-          roomId: data.roomId,
-          userId: user.id,
-          date: reservationDate,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          totalPrice: data.totalPrice,
-          status: ReservationStatus.PENDING,
-        },
-        include: {
-          room: true,
-          user: true,
-        },
-      })
-
-      console.log("予約が作成されました:", JSON.stringify(reservation, null, 2))
-
-      // 確認メールの送信
-      await sendReservationConfirmationEmail({
-        userEmail: reservation.user.email!,
-        userName: reservation.user.name!,
-        roomName: reservation.room.name,
-        date: data.date,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        totalPrice: reservation.totalPrice,
-      })
-
-      return corsResponse({ id: reservation.id })
-    } catch (dbError) {
-      console.error("データベースエラー:", dbError)
-      if (dbError instanceof Error) {
-        console.error("エラーの詳細:", {
-          message: dbError.message,
-          stack: dbError.stack,
-          name: dbError.name,
-          cause: dbError.cause
-        })
-        return corsResponse(
-          { error: `データベースエラー: ${dbError.message}` },
-          500
-        )
-      }
-      return corsResponse(
-        { error: "データベースエラーが発生しました" },
-        500
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
       )
     }
-  } catch (error) {
-    console.error("予約エラー:", error)
-    if (error instanceof Error) {
-      console.error("エラーの詳細:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-        cause: error.cause
-      })
+
+    const body = await request.json()
+    const { roomId, date, startTime, endTime, people, totalPrice } = body
+
+    if (!roomId || !date || !startTime || !endTime || !people || !totalPrice) {
+      return NextResponse.json(
+        { error: '必要な情報が不足しています' },
+        { status: 400 }
+      )
     }
-    return corsResponse(
-      { error: "予約の作成に失敗しました" },
-      500
+
+    const reservation = await prisma.reservation.create({
+      data: {
+        roomId,
+        userId: user.id,
+        date: new Date(date),
+        startTime,
+        endTime,
+        people: parseInt(people),
+        totalPrice,
+        status: 'PENDING',
+      },
+    })
+
+    return NextResponse.json(reservation)
+  } catch (error) {
+    console.error('Error creating reservation:', error)
+    return NextResponse.json(
+      { error: '予約の作成に失敗しました' },
+      { status: 500 }
     )
   }
 }

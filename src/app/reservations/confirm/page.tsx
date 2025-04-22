@@ -73,13 +73,14 @@ export default function ReservationConfirmPage() {
           date,
           startTime,
           endTime,
-          people: numberOfPeople,
+          people: parseInt(numberOfPeople),
           totalPrice,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('予約の作成に失敗しました')
+        const errorData = await response.json()
+        throw new Error(errorData.error || '予約の作成に失敗しました')
       }
 
       const data = await response.json()
