@@ -3,25 +3,19 @@ import { prisma } from '@/lib/prisma'
 import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
-import type { Room, Review, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Prisma } from '@prisma/client'
-
-type RoomInclude = {
-  reviews: true
-  images: {
-    orderBy: {
-      order: 'asc'
-    }
-  }
-  hourlyPricesWeekday: true
-  hourlyPricesHoliday: true
-  nearestStations: true
-  businessHours: true
-}
+import type { Prisma } from '@prisma/client'
 
 type RoomWithDetails = Prisma.RoomGetPayload<{
-  include: RoomInclude
+  include: {
+    reviews: true;
+    images: true;
+    hourlyPricesWeekday: true;
+    hourlyPricesHoliday: true;
+    nearestStations: true;
+    businessHours: true;
+    options: true;
+  };
 }> & {
-  image?: string;
   nextAvailableDate: Date | null;
 }
 
@@ -83,7 +77,8 @@ export default async function RoomPage({ params }: Props) {
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
         nearestStations: true,
-        businessHours: true
+        businessHours: true,
+        options: true
       }
     }) as RoomWithDetails | null
 

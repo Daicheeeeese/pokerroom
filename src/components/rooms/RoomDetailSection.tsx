@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock } from "lucide-react"
-import type { Room, HourlyPriceWeekday, HourlyPriceHoliday, RoomImage, Review, NearestStation, RoomBusinessHours } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
@@ -12,14 +12,23 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-type RoomWithDetails = Room & {
-  images: RoomImage[];
-  hourlyPricesWeekday: HourlyPriceWeekday[];
-  hourlyPricesHoliday: HourlyPriceHoliday[];
-  reviews: Review[];
+type RoomWithDetails = Prisma.RoomGetPayload<{
+  include: {
+    reviews: true;
+    images: true;
+    hourlyPricesWeekday: true;
+    hourlyPricesHoliday: true;
+    nearestStations: true;
+    businessHours: true;
+    options: {
+      include: {
+        option: true;
+      };
+    };
+  };
+}> & {
   nextAvailableDate: Date | null;
-  businessHours: RoomBusinessHours[];
-};
+}
 
 interface Props {
   room: RoomWithDetails;
@@ -57,7 +66,7 @@ export function RoomDetailSection({ room }: Props) {
       sunday: '日曜日'
     };
 
-    const businessHoursByDay = new Map<string, RoomBusinessHours[]>();
+    const businessHoursByDay = new Map<string, typeof room.businessHours[0][]>();
 
     // 曜日ごとに営業時間をグループ化
     room.businessHours.forEach((hours) => {
@@ -78,7 +87,7 @@ export function RoomDetailSection({ room }: Props) {
 
       // 同じ曜日の営業時間を結合
       const timeRanges = hours
-        .map((h) => `${h.openTime}~${h.closeTime}`)
+        .map((h) => `${formatTime(h.openTime)}~${formatTime(h.closeTime)}`)
         .join(', ');
 
       return `${day}: ${timeRanges}`;
@@ -123,6 +132,28 @@ export function RoomDetailSection({ room }: Props) {
               {getBusinessHours().join('\n')}
             </p>
           </div>
+
+          {room.options.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">オプション</h3>
+              <div className="mt-2 space-y-4">
+                {room.options.map((roomOption) => (
+                  <div key={roomOption.id} className="border rounded-lg p-4">
+                    <h4 className="font-medium text-gray-900">{roomOption.option.name}</h4>
+                    {roomOption.option.description && (
+                      <p className="mt-1 text-sm text-gray-500">{roomOption.option.description}</p>
+                    )}
+                    <p className="mt-2 text-gray-600">
+                      {roomOption.option.price.toLocaleString()}円
+                      {roomOption.option.unit === 'per_hour' && '/時間'}
+                      {roomOption.option.unit === 'per_halfHour' && '/30分'}
+                      {roomOption.option.unit === 'per_hour_person' && '/時間/人'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="lg:col-span-1">
