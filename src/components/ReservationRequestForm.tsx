@@ -8,7 +8,7 @@ type RoomWithDetails = {
     option: {
       name: string;
       description: string | null;
-      price: number;
+      price: number | null;
       unit: 'per_hour' | 'per_halfHour' | 'per_hour_person';
     };
   }[];
@@ -48,7 +48,7 @@ export function ReservationRequestForm({ room }: Props) {
                     </div>
                     <div className="text-right">
                       <p className="text-gray-600">
-                        {(roomOption.option.price || 0).toLocaleString()}円
+                        {(roomOption.option.price ?? 0).toLocaleString()}円
                         {roomOption.option.unit === 'per_hour' && '/時間'}
                         {roomOption.option.unit === 'per_halfHour' && '/30分'}
                         {roomOption.option.unit === 'per_hour_person' && '/時間/人'}
