@@ -37,28 +37,30 @@ export function ReservationRequestForm({ room }: Props) {
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">オプション</h3>
             <div className="space-y-4">
-              {room.options.map((roomOption) => {
-                console.log('roomOption:', roomOption);
-                console.log('roomOption.option:', roomOption.option);
-                console.log('roomOption.option.price:', roomOption.option?.price);
+              {room.options.map((roomOption, index) => {
+                console.log(`🔍 option[${index}]`, roomOption);
+                console.log(`🧪 option.price`, roomOption.option?.price);
+                console.log(`🧪 option.unit`, roomOption.option?.unit);
+
+                const opt = roomOption.option;
 
                 return (
                   <div key={roomOption.id} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium text-gray-900">{roomOption.option.name}</h4>
-                        {roomOption.option.description && (
-                          <p className="mt-1 text-sm text-gray-500">{roomOption.option.description}</p>
+                        <h4 className="font-medium text-gray-900">{opt?.name || '不明なオプション'}</h4>
+                        {opt?.description && (
+                          <p className="mt-1 text-sm text-gray-500">{opt.description}</p>
                         )}
                       </div>
                       <div className="text-right">
                         <p className="text-gray-600">
-                          {roomOption.option && typeof roomOption.option.price === 'number'
-                            ? roomOption.option.price.toLocaleString()
+                          {opt && typeof opt.price === 'number'
+                            ? opt.price.toLocaleString()
                             : '金額未定'}円
-                          {roomOption.option?.unit === 'per_hour' && '/時間'}
-                          {roomOption.option?.unit === 'per_halfHour' && '/30分'}
-                          {roomOption.option?.unit === 'per_hour_person' && '/時間/人'}
+                          {opt?.unit === 'per_hour' && '/時間'}
+                          {opt?.unit === 'per_halfHour' && '/30分'}
+                          {opt?.unit === 'per_hour_person' && '/時間/人'}
                         </p>
                       </div>
                     </div>
