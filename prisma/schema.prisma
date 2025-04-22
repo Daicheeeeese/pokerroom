@@ -178,6 +178,8 @@ model Option {
   updatedAt   DateTime @updatedAt
   room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   reservations ReservationOption[]
+
+  @@map("option")
 }
 
 enum ReservationStatus {
