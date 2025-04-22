@@ -171,7 +171,7 @@ model Option {
   roomId      String
   option      String
   price       Float
-  priceType   String
+  priceType   String?
   unit        String
   isRequired  Boolean  @default(false)
   createdAt   DateTime @default(now())
