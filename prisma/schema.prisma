@@ -26,7 +26,7 @@ model User {
 }
 
 model Room {
-  id                  Int                 @id @default(autoincrement())
+  id                  String              @id @default(cuid())
   name                String
   description         String
   address             String
@@ -48,7 +48,7 @@ model Room {
 
 model RoomImage {
   id        String   @id @default(cuid())
-  roomId    Int
+  roomId    String
   url       String
   order     Int
   createdAt DateTime @default(now())
@@ -60,7 +60,7 @@ model RoomImage {
 
 model HourlyPriceWeekday {
   id        String   @id @default(cuid())
-  roomId    Int
+  roomId    String
   pricePerHour     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,7 +73,7 @@ model HourlyPriceWeekday {
 
 model HourlyPriceHoliday {
   id        String   @id @default(cuid())
-  roomId    Int
+  roomId    String
   pricePerHour     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,7 +89,7 @@ model Review {
   userId    String
   rating    Int
   comment   String
-  roomId    Int
+  roomId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   room      Room     @relation(fields: [roomId], references: [id])
@@ -102,7 +102,7 @@ model Review {
 
 model Reservation {
   id          String            @id @default(cuid())
-  roomId      Int
+  roomId      String
   room        Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId      String
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -139,7 +139,7 @@ model ReservationOption {
 
 model NearestStation {
   id        String   @id @default(cuid())
-  roomId    Int
+  roomId    String
   name      String
   transport String
   minutes   Int
@@ -153,7 +153,7 @@ model NearestStation {
 
 model RoomBusinessHours {
   id        String   @id @default(cuid())
-  roomId    Int
+  roomId    String
   dayType   String   // "weekday" or "weekend"
   day       String   // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
   openTime  String
@@ -168,7 +168,7 @@ model RoomBusinessHours {
 
 model Option {
   id          String   @id @default(cuid())
-  roomId      Int
+  roomId      String
   option      String
   price       Float
   priceType   String
