@@ -48,7 +48,7 @@ export function ReservationRequestForm({ room }: Props) {
                     </div>
                     <div className="text-right">
                       <p className="text-gray-600">
-                        {typeof roomOption.option?.price === 'number'
+                        {roomOption.option && typeof roomOption.option.price === 'number'
                           ? roomOption.option.price.toLocaleString()
                           : '金額未定'}円
                         {roomOption.option?.unit === 'per_hour' && '/時間'}
