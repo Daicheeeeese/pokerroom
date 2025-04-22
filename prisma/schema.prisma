@@ -104,16 +104,17 @@ model Review {
 model Reservation {
   id         String            @id @default(cuid())
   roomId     String
+  room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   date       DateTime
   startTime  String
   endTime    String
-  totalPrice Int
+  people     Int               @default(1)
   status     ReservationStatus @default(PENDING)
+  totalPrice Int
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
-  room       Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([roomId])
   @@index([userId])
