@@ -20,11 +20,6 @@ type RoomWithDetails = Prisma.RoomGetPayload<{
     hourlyPricesHoliday: true;
     nearestStations: true;
     businessHours: true;
-    options: {
-      include: {
-        option: true;
-      };
-    };
   };
 }> & {
   nextAvailableDate: Date | null;
@@ -132,28 +127,6 @@ export function RoomDetailSection({ room }: Props) {
               {getBusinessHours().join('\n')}
             </p>
           </div>
-
-          {room.options.length > 0 && (
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">オプション</h3>
-              <div className="mt-2 space-y-4">
-                {room.options.map((roomOption) => (
-                  <div key={roomOption.id} className="border rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900">{roomOption.option.name}</h4>
-                    {roomOption.option.description && (
-                      <p className="mt-1 text-sm text-gray-500">{roomOption.option.description}</p>
-                    )}
-                    <p className="mt-2 text-gray-600">
-                      {(roomOption.option.price || 0).toLocaleString()}円
-                      {roomOption.option.unit === 'per_hour' && '/時間'}
-                      {roomOption.option.unit === 'per_halfHour' && '/30分'}
-                      {roomOption.option.unit === 'per_hour_person' && '/時間/人'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="lg:col-span-1">
