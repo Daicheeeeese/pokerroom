@@ -17,7 +17,7 @@ export default function ReservationCompletePage({
           
           <div className="space-y-4">
             <p className="text-gray-600">
-              予約の詳細は予約メールよりご確認ください。
+              詳細は予約メールよりご確認ください。
             </p>
           </div>
         </div>

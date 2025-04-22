@@ -22,6 +22,14 @@ type RoomWithDetails = {
     openTime: string
     closeTime: string
   }[]
+  options: {
+    option: {
+      id: string
+      name: string
+      description: string | null
+      price: number
+    }
+  }[]
 }
 
 type Props = {
@@ -34,6 +42,7 @@ export default function ReservationForm({ room, selectedDate }: Props) {
   const [date, setDate] = useState<string>(selectedDate ? selectedDate.toISOString().split('T')[0] : '')
   const [startTime, setStartTime] = useState<string>("")
   const [endTime, setEndTime] = useState<string>("")
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: number }>({})
   const [error, setError] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string>("")
@@ -62,7 +71,22 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       totalPrice += hourlyPrice ? hourlyPrice.pricePerHour / 2 : room.pricePerHour / 2
     }
 
+    // オプションの料金を追加
+    Object.entries(selectedOptions).forEach(([optionId, quantity]) => {
+      const option = room.options.find(opt => opt.option.id === optionId)
+      if (option) {
+        totalPrice += option.option.price * quantity
+      }
+    })
+
     return totalPrice
+  }
+
+  const handleOptionChange = (optionId: string, quantity: number) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [optionId]: quantity
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,6 +127,10 @@ export default function ReservationForm({ room, selectedDate }: Props) {
       startTime,
       endTime,
       totalPrice: totalPrice.toString(),
+      ...Object.entries(selectedOptions).reduce((acc, [optionId, quantity]) => {
+        acc[`option_${optionId}`] = quantity.toString()
+        return acc
+      }, {} as Record<string, string>)
     })
 
     router.push(`/reservations/confirm?${queryParams.toString()}`)
@@ -179,6 +207,40 @@ export default function ReservationForm({ room, selectedDate }: Props) {
           ))}
         </select>
       </div>
+
+      {room.options.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">オプション</h3>
+          {room.options.map(({ option }) => (
+            <div key={option.id} className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">{option.name}</p>
+                {option.description && (
+                  <p className="text-sm text-gray-500">{option.description}</p>
+                )}
+                <p className="text-sm text-gray-900">¥{option.price.toLocaleString()}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => handleOptionChange(option.id, Math.max(0, (selectedOptions[option.id] || 0) - 1))}
+                  className="p-1 rounded-md border border-gray-300 hover:bg-gray-50"
+                >
+                  -
+                </button>
+                <span className="w-8 text-center">{selectedOptions[option.id] || 0}</span>
+                <button
+                  type="button"
+                  onClick={() => handleOptionChange(option.id, (selectedOptions[option.id] || 0) + 1)}
+                  className="p-1 rounded-md border border-gray-300 hover:bg-gray-50"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {date && startTime && endTime && (
         <div className="mt-4">
