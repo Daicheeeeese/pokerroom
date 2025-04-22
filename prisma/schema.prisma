@@ -43,6 +43,8 @@ model Room {
   nearestStations     NearestStation[]
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
+
+  @@map("rooms")
 }
 
 model RoomImage {
