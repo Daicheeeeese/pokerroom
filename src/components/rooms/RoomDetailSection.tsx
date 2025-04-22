@@ -114,7 +114,7 @@ export function RoomDetailSection({ room }: Props) {
           <div>
             <h3 className="text-lg font-medium text-gray-900">料金</h3>
             <p className="mt-2 text-gray-600">
-              {room.pricePerHour.toLocaleString()}円/時間
+              {(room.pricePerHour || 0).toLocaleString()}円/時間
             </p>
             <p className="mt-1 text-sm text-gray-500">
               ※土日祝日や時間帯により料金が変動する場合があります
@@ -144,7 +144,7 @@ export function RoomDetailSection({ room }: Props) {
                       <p className="mt-1 text-sm text-gray-500">{roomOption.option.description}</p>
                     )}
                     <p className="mt-2 text-gray-600">
-                      {roomOption.option.price.toLocaleString()}円
+                      {(roomOption.option.price || 0).toLocaleString()}円
                       {roomOption.option.unit === 'per_hour' && '/時間'}
                       {roomOption.option.unit === 'per_halfHour' && '/30分'}
                       {roomOption.option.unit === 'per_hour_person' && '/時間/人'}
@@ -163,7 +163,7 @@ export function RoomDetailSection({ room }: Props) {
               <div className="space-y-4">
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    ¥{room.pricePerHour.toLocaleString()}
+                    ¥{(room.pricePerHour || 0).toLocaleString()}
                     <span className="text-lg font-normal text-gray-500">/時間</span>
                   </p>
                 </div>
