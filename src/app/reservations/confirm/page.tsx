@@ -35,6 +35,7 @@ export default function ReservationConfirmPage() {
   const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -56,6 +57,39 @@ export default function ReservationConfirmPage() {
       fetchRoom()
     }
   }, [roomId])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roomId,
+          date,
+          startTime,
+          endTime,
+          people: numberOfPeople,
+          totalPrice,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('予約の作成に失敗しました')
+      }
+
+      const data = await response.json()
+      router.push(`/reservations/${data.id}/complete`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '予約の作成に失敗しました')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   if (!roomId || !date || !startTime || !endTime || !numberOfPeople) {
     return (
@@ -143,7 +177,7 @@ export default function ReservationConfirmPage() {
       </Card>
 
       <Card className="p-6">
-        <form action="/api/reservations" method="POST" className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <input type="hidden" name="roomId" value={roomId} />
           <input type="hidden" name="date" value={date} />
           <input type="hidden" name="startTime" value={startTime} />
@@ -151,11 +185,16 @@ export default function ReservationConfirmPage() {
           <input type="hidden" name="people" value={numberOfPeople} />
           <input type="hidden" name="totalPrice" value={totalPrice} />
 
+          {error && (
+            <div className="text-red-600 text-sm">{error}</div>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            disabled={isSubmitting}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            予約する
+            {isSubmitting ? '予約処理中...' : '予約する'}
           </button>
         </form>
       </Card>
