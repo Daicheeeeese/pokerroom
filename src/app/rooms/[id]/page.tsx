@@ -65,7 +65,7 @@ export default async function RoomPage({ params }: Props) {
   try {
     const room = await prisma.room.findUnique({
       where: {
-        id: params.id,
+        id: String(id),
       },
       include: {
         reviews: true,
