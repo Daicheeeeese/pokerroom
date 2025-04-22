@@ -33,7 +33,7 @@ model Room {
   pricePerHour        Int
   capacity            Int
   businessHours       RoomBusinessHours[]
-  options             RoomOption[]
+  options             Option[]
   images              RoomImage[]
   reviews             Review[]
   reservations        Reservation[]
@@ -166,18 +166,6 @@ model RoomBusinessHours {
   @@map("room_business_hours")
 }
 
-model RoomOption {
-  id        String   @id @default(cuid())
-  roomId    String
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  optionId  String
-  option    Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([roomId, optionId])
-}
-
 model Option {
   id          String   @id @default(cuid())
   name        String
@@ -186,7 +174,7 @@ model Option {
   unit        String   @default("booking")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  rooms       RoomOption[]
+  rooms       Room[]
   reservations ReservationOption[]
 }
 
