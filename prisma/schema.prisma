@@ -169,7 +169,6 @@ model Option {
   id           String              @id @default(cuid())
   option       String
   price        Float
-  priceType    String?
   unit         String
   isRequired   Boolean             @default(false)
   createdAt    DateTime            @default(now())
