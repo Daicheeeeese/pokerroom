@@ -26,12 +26,14 @@ model User {
 }
 
 model Room {
-  id                  String              @id @default(cuid())
   name                String
   description         String
   address             String
   pricePerHour        Int
   capacity            Int
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  id                  String               @id @default(cuid())
   businessHours       RoomBusinessHours[]
   options             Option[]
   images              RoomImage[]
@@ -40,46 +42,44 @@ model Room {
   hourlyPricesWeekday HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
   nearestStations     NearestStation[]
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
 
   @@map("rooms")
 }
 
 model RoomImage {
   id        String   @id @default(cuid())
-  roomId    String
   url       String
   order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  roomId    String
   room      Room     @relation(fields: [roomId], references: [id])
 
   @@map("room_images")
 }
 
 model HourlyPriceWeekday {
-  id        String   @id @default(cuid())
-  roomId    String
-  pricePerHour     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  endTime   String
-  startTime String
-  room      Room     @relation(fields: [roomId], references: [id])
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  endTime      String
+  startTime    String
+  pricePerHour Int
+  roomId       String
+  room         Room     @relation(fields: [roomId], references: [id])
 
   @@map("hourly_prices_weekday")
 }
 
 model HourlyPriceHoliday {
-  id        String   @id @default(cuid())
-  roomId    String
-  pricePerHour     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  endTime   String
-  startTime String
-  room      Room     @relation(fields: [roomId], references: [id])
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  endTime      String
+  startTime    String
+  pricePerHour Int
+  roomId       String
+  room         Room     @relation(fields: [roomId], references: [id])
 
   @@map("hourly_prices_holiday")
 }
@@ -89,9 +89,9 @@ model Review {
   userId    String
   rating    Int
   comment   String
-  roomId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  roomId    String
   room      Room     @relation(fields: [roomId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 
@@ -101,20 +101,20 @@ model Review {
 }
 
 model Reservation {
-  id          String            @id @default(cuid())
-  roomId      String
-  room        Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date        DateTime
-  startTime   String
-  endTime     String
-  people      Int               @default(1)
-  status      ReservationStatus @default(PENDING)
-  totalPrice  Int
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  options     ReservationOption[]
+  id         String              @id @default(cuid())
+  userId     String
+  date       DateTime
+  startTime  String
+  endTime    String
+  totalPrice Int
+  status     ReservationStatus   @default(PENDING)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  people     Int                 @default(1)
+  roomId     String
+  room       Room                @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  options    ReservationOption[]
 
   @@index([roomId])
   @@index([userId])
@@ -123,15 +123,14 @@ model Reservation {
 }
 
 model ReservationOption {
-  id             Int           @id @default(autoincrement())
-  reservationId  String
-  optionId       String
-  quantity       Int           @default(1)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  reservation    Reservation   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-  option         Option        @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  id            Int         @id @default(autoincrement())
+  reservationId String
+  optionId      String
+  quantity      Int         @default(1)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  option        Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
   @@unique([reservationId, optionId])
   @@map("reservation_options")
@@ -139,12 +138,12 @@ model ReservationOption {
 
 model NearestStation {
   id        String   @id @default(cuid())
-  roomId    String
   name      String
   transport String
   minutes   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  roomId    String
   room      Room     @relation(fields: [roomId], references: [id])
 
   @@index([roomId])
@@ -153,13 +152,13 @@ model NearestStation {
 
 model RoomBusinessHours {
   id        String   @id @default(cuid())
-  roomId    String
-  dayType   String   // "weekday" or "weekend"
-  day       String   // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+  dayType   String
   openTime  String
   closeTime String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  day       String
+  roomId    String
   room      Room     @relation(fields: [roomId], references: [id])
 
   @@index([roomId])
@@ -167,16 +166,16 @@ model RoomBusinessHours {
 }
 
 model Option {
-  id          String   @id @default(cuid())
-  roomId      String
-  option      String
-  price       Float
-  priceType   String?
-  unit        String
-  isRequired  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  id           String              @id @default(cuid())
+  option       String
+  price        Float
+  priceType    String
+  unit         String
+  isRequired   Boolean             @default(false)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  roomId       String
+  room         Room                @relation(fields: [roomId], references: [id], onDelete: Cascade)
   reservations ReservationOption[]
 
   @@map("option")
