@@ -167,7 +167,7 @@ model RoomBusinessHours {
 
 model Option {
   id           String              @id @default(cuid())
-  option       String
+  name       String
   price        Float
   unit         String
   isRequired   Boolean             @default(false)
