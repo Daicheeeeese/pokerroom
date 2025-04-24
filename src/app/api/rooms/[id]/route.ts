@@ -11,11 +11,7 @@ export async function GET(
       include: {
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
-        options: {
-          include: {
-            options: true
-          }
-        }
+        options: true, // ✅ ここをシンプルに
       },
     })
 
@@ -34,4 +30,4 @@ export async function GET(
       { status: 500 }
     )
   }
-} 
+}
