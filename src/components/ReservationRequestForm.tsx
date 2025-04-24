@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react' // ← useEffect を忘れずに！
 
 type RoomWithDetails = {
   id: string
@@ -19,6 +19,10 @@ interface Props {
 
 export function ReservationRequestForm({ room }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    console.log('room.options:', room.options)
+  }, [room.options])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
