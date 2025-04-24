@@ -7,7 +7,6 @@ type RoomWithDetails = {
   options: {
     id: string
     option: string // ← オプション名が入っているカラム
-    description?: string | null
     price: number | null
     unit: 'per_hour' | 'per_halfHour' | 'per_hour_person'
   }[]
@@ -45,9 +44,6 @@ export function ReservationRequestForm({ room }: Props) {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium text-gray-900">{opt.option}</h4>
-                      {opt.description && (
-                        <p className="mt-1 text-sm text-gray-500">{opt.description}</p>
-                      )}
                     </div>
                     <div className="text-right">
                       <p className="text-gray-600">
