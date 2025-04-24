@@ -13,7 +13,7 @@ export async function GET(
         hourlyPricesHoliday: true,
         options: {
           include: {
-            option: true
+            options: true
           }
         }
       },
