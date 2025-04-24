@@ -11,7 +11,11 @@ export async function GET(
       include: {
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
-        options: true
+        options: {
+          include: {
+            option: true
+          }
+        }
       },
     })
 
