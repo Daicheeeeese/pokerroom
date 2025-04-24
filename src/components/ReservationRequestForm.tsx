@@ -21,6 +21,7 @@ export function ReservationRequestForm({ room }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
+    console.log('room:', room)
     console.log('room.options:', room.options)
   }, [room.options])
 
