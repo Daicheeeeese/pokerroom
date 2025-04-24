@@ -38,7 +38,12 @@ export function ReservationRequestForm({ room }: Props) {
             <h3 className="text-lg font-medium text-gray-900">オプション</h3>
             <div className="space-y-4">
               {room.options
-                .filter((roomOption) => roomOption.option && typeof roomOption.option.price === 'number')
+                .filter((roomOption) => {
+                  // オプションの存在チェック
+                  if (!roomOption?.option) return false;
+                  // 価格が数値であることをチェック
+                  return typeof roomOption.option.price === 'number';
+                })
                 .map((roomOption) => {
                   const opt = roomOption.option as {
                     name: string;
