@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react' // ← useEffect を忘れずに！
+import { useState, useEffect } from 'react'
 
 type RoomWithDetails = {
   id: string
@@ -20,6 +20,7 @@ interface Props {
 export function ReservationRequestForm({ room }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // オプションの構造確認用ログ
   useEffect(() => {
     console.log('room.options:', room.options)
   }, [room.options])
@@ -27,14 +28,16 @@ export function ReservationRequestForm({ room }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    // TODO: 予約リクエスト処理をここに実装
+
+    // TODO: 予約リクエストの処理をここに実装
+
     setIsSubmitting(false)
   }
 
   return (
     <div className="max-w-2xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
-
+        {/* オプション表示 */}
         {room.options && room.options.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">オプション</h3>
