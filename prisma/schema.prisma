@@ -39,8 +39,6 @@ model Room {
   images              RoomImage[]
   reviews             Review[]
   reservations        Reservation[]
-  hourlyPricesWeekday HourlyPriceWeekday[]
-  hourlyPricesHoliday HourlyPriceHoliday[]
   nearestStations     NearestStation[]
   durationDiscounts   DurationDiscount[]
   earlyBirdDiscounts  EarlyBirdDiscount[]
@@ -63,31 +61,6 @@ model RoomImage {
   @@map("room_images")
 }
 
-model HourlyPriceWeekday {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  endTime      String
-  startTime    String
-  pricePerHour Int
-  roomId       String
-  room         Room     @relation(fields: [roomId], references: [id])
-
-  @@map("hourly_prices_weekday")
-}
-
-model HourlyPriceHoliday {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  endTime      String
-  startTime    String
-  pricePerHour Int
-  roomId       String
-  room         Room     @relation(fields: [roomId], references: [id])
-
-  @@map("hourly_prices_holiday")
-}
 
 model Review {
   id        String   @id @default(cuid())

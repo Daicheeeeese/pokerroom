@@ -9,8 +9,6 @@ export async function GET(
     const room = await prisma.room.findUnique({
       where: { id: params.id },
       include: {
-        hourlyPricesWeekday: true,
-        hourlyPricesHoliday: true,
         options: true,
         images: {
           orderBy: {
@@ -39,9 +37,7 @@ export async function GET(
         unit: opt.unit,
         isRequired: opt.isRequired,
       })),
-      // hourlyPricesHolidayがnullの場合は空配列を返す
-      hourlyPricesHoliday: room.hourlyPricesHoliday || []
-    }
+      // hourlyPricesWeekdayがnullの場合は空配列を返す    }
 
     return NextResponse.json(flattenedRoom)
   } catch (error) {
