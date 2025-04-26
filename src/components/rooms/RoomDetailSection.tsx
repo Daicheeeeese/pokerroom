@@ -132,10 +132,8 @@ export function RoomDetailSection({ room }: Props) {
           </div>
         </div>
 
-
-
         <div className="lg:col-span-1">
-          <div className="sticky top-8">
+          <div className="sticky top-8 hidden lg:block">
             <Card className="p-6">
               <h3 className="text-xl font-bold mb-4">料金</h3>
               <div className="space-y-4">
@@ -160,6 +158,33 @@ export function RoomDetailSection({ room }: Props) {
               </div>
             </Card>
           </div>
+        </div>
+      </div>
+
+      {/* スマホ用の固定予約ボタン */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div>
+            <p className="text-lg font-bold text-gray-900">
+              ¥{(room.pricePerHour || 0).toLocaleString()}
+              <span className="text-sm font-normal text-gray-500">/時間</span>
+            </p>
+          </div>
+          {session ? (
+            <button
+              onClick={handleReservationClick}
+              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              予約
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="text-blue-600 hover:underline"
+            >
+              ログインして予約
+            </Link>
+          )}
         </div>
       </div>
     </div>
