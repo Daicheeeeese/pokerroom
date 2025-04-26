@@ -11,7 +11,15 @@ export async function GET(
       include: {
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
-        options: true, // ✅ ここをシンプルに
+        options: {
+          select: {
+            id: true,
+            option: true,
+            price: true,
+            unit: true,
+            isRequired: true,
+          }
+        },
       },
     })
 
@@ -22,7 +30,19 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(room)
+    // optionsをフラット化
+    const flattenedRoom = {
+      ...room,
+      options: room.options.map(opt => ({
+        id: opt.id,
+        name: opt.option,
+        price: opt.price,
+        unit: opt.unit,
+        isRequired: opt.isRequired,
+      }))
+    }
+
+    return NextResponse.json(flattenedRoom)
   } catch (error) {
     console.error("Error fetching room:", error)
     return NextResponse.json(
