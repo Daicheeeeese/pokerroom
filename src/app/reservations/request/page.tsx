@@ -85,6 +85,8 @@ export default function ReservationRequestPage() {
   const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -243,28 +245,20 @@ export default function ReservationRequestPage() {
       
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">利用日</label>
-            <DatePicker
-              selected={date ? new Date(date) : null}
-              onChange={(date) => {
-                if (date) {
-                  setDate(date.toISOString().split('T')[0])
-                }
-              }}
-              onSelect={() => {
-                const datePicker = document.querySelector('.react-datepicker')
-                if (datePicker) {
-                  datePicker.classList.add('react-datepicker--closed')
-                }
-              }}
-              minDate={new Date()}
-              dateFormat="yyyy年MM月dd日(EEE)"
-              locale={ja}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholderText="利用日を選択"
-              open
-            />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              利用日
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={selectedDate ? format(selectedDate, 'yyyy年MM月dd日') : ''}
+                onClick={() => setIsOpen(true)}
+                readOnly
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="利用日を選択"
+              />
+            </div>
           </div>
 
           <div>
