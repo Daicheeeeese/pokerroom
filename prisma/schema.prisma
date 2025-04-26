@@ -29,6 +29,8 @@ model Room {
   name                String
   description         String
   address             String
+  latitude            Float?
+  longitude           Float?
   pricePerHour        Int
   capacity            Int
   createdAt           DateTime             @default(now())
