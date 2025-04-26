@@ -114,13 +114,12 @@ export function RoomDetailSection({ room }: Props) {
 
           <div>
             <h3 className="text-lg font-medium text-gray-900">最寄駅</h3>
-            <div className="mt-2 text-gray-600 whitespace-pre-line">
-              {room.nearestStations.map((station, index) => (
-                <span key={station.id} className="flex items-center gap-1">
-                  {index > 0 && '、'}
+            <div className="mt-2 text-gray-600">
+              {room.nearestStations.map((station) => (
+                <div key={station.id} className="flex items-center gap-1">
                   <Train className="w-4 h-4" />
                   {`${station.name}${station.transport}${station.minutes}分`}
-                </span>
+                </div>
               ))}
             </div>
           </div>
