@@ -42,6 +42,11 @@ model Room {
   hourlyPricesWeekday HourlyPriceWeekday[]
   hourlyPricesHoliday HourlyPriceHoliday[]
   nearestStations     NearestStation[]
+  durationDiscounts   DurationDiscount[]
+  earlyBirdDiscounts  EarlyBirdDiscount[]
+  extensionRates      ExtensionRate[]
+  minimumPersons      MinimumPerson[]
+  entryFees           EntryFee[]
 
   @@map("rooms")
 }
@@ -187,4 +192,78 @@ enum ReservationStatus {
   COMPLETED
 
   @@map("ReservationStatus")
+}
+
+model Holiday {
+  id        String   @id @default(cuid())
+  date      DateTime
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("holidays")
+  @@index([date])
+}
+
+model DurationDiscount {
+  id          String   @id @default(cuid())
+  minHours    Int
+  discountPct Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("duration_discounts")
+  @@index([roomId])
+}
+
+model EarlyBirdDiscount {
+  id          String   @id @default(cuid())
+  cutoffStart String
+  cutoffEnd   String
+  discountPct Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("early_bird_discounts")
+  @@index([roomId])
+}
+
+model ExtensionRate {
+  id        String   @id @default(cuid())
+  minHours  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("extension_rates")
+  @@index([roomId])
+}
+
+model MinimumPerson {
+  id        String   @id @default(cuid())
+  minPeople Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("minimum_persons")
+  @@index([roomId])
+}
+
+model EntryFee {
+  id           String   @id @default(cuid())
+  feePerPerson Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  roomId       String
+  room         Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("entry_fees")
+  @@index([roomId])
 }

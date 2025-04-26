@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import { isWeekend } from '@/lib/utils'
 
 interface Option {
   id: string
@@ -19,6 +20,7 @@ interface Room {
   name: string
   pricePerHour: number
   options: Option[]
+  hourlyPricesHoliday: { startTime: string; endTime: string; pricePerHour: number }[]
 }
 
 const getUnitText = (unit: string): string => {
@@ -157,7 +159,13 @@ export default function ReservationRequestPage() {
     if (!room || !startTime || !endTime) return 0
 
     const duration = calculateDuration(startTime, endTime)
-    const basePrice = room.pricePerHour * duration
+    const selectedDate = date ? new Date(date) : null
+    const isHoliday = selectedDate ? isWeekend(selectedDate) : false
+
+    // 土日かつ時間帯別料金が設定されている場合のみ、時間帯別料金を使用
+    const basePrice = isHoliday && room.hourlyPricesHoliday.length > 0
+      ? calculateHolidayPrice(room, startTime, endTime)
+      : room.pricePerHour * duration
 
     const optionsPrice = room.options
       .filter(option => selectedOptions[option.id])
@@ -166,6 +174,25 @@ export default function ReservationRequestPage() {
       }, 0)
 
     return basePrice + optionsPrice
+  }
+
+  // 土日の時間帯別料金を計算する関数
+  const calculateHolidayPrice = (room: Room, startTime: string, endTime: string): number => {
+    const start = new Date(`2000-01-01T${startTime}`)
+    const end = new Date(`2000-01-01T${endTime}`)
+    let total = 0
+
+    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 30)) {
+      const hour = t.getHours()
+      const price = room.hourlyPricesHoliday.find(p => {
+        const [sHour] = p.startTime.split(':').map(Number)
+        const [eHour] = p.endTime.split(':').map(Number)
+        return hour >= sHour && hour < eHour
+      })?.pricePerHour ?? room.pricePerHour
+      total += price / 2
+    }
+
+    return total
   }
 
   if (isLoading) {
