@@ -10,6 +10,7 @@ import { Navigation, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import './RoomCard.css'
 
 type RoomWithReviews = {
   id: string
@@ -44,8 +45,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
         <div className="relative h-48">
           <Swiper
-            modules={[Navigation, Pagination]}
-            navigation
+            modules={[Pagination]}
             pagination={{ clickable: true }}
             className="h-full"
           >
