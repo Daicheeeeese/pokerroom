@@ -91,7 +91,7 @@ export default function SearchBar() {
           {/* 日付選択 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              日付
+              利用日
             </label>
             <button
               onClick={() => setShowDatePicker(!showDatePicker)}
@@ -99,7 +99,7 @@ export default function SearchBar() {
             >
               {searchParams.date
                 ? format(searchParams.date, 'yyyy年M月d日(E)', { locale: ja })
-                : '日付を選択'}
+                : '利用日を選択'}
             </button>
             {showDatePicker && (
               <div className="absolute left-0 right-0 mt-2 px-4">

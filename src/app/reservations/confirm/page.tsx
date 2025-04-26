@@ -203,9 +203,9 @@ export default function ReservationConfirmPage() {
         <p>ポーカールーム: {room.name}</p>
         <p>住所: {room.address}</p>
         <p>最寄駅: {room.nearestStation}</p>
-        <p>日付: {formattedDate}</p>
-        <p>時間: {startTime} ~ {endTime}</p>
-        <p>人数: {numberOfPeople}人</p>
+        <p>利用日: {formattedDate}</p>
+        <p>利用時間: {startTime} ~ {endTime}</p>
+        <p>利用人数: {numberOfPeople}人</p>
         <p>ルーム料金: ¥{roomPrice.toLocaleString()}</p>
         {selectedOptions.length > 0 && (
           <div className="mt-4">

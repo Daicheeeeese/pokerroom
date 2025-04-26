@@ -41,9 +41,9 @@ async function sendAdminNotification({
       <ul>
         <li>予約者：${userName}</li>
         <li>ルーム：${roomName}</li>
-        <li>日付：${date}</li>
-        <li>時間：${startTime} 〜 ${endTime}</li>
-        <li>料金：¥${totalPrice.toLocaleString()}</li>
+        <li>利用日：${date}</li>
+        <li>利用時間：${startTime} 〜 ${endTime}</li>
+        <li>合計金額：¥${totalPrice.toLocaleString()}</li>
       </ul>
       
       <p>予約の詳細は<a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/reservations">管理画面</a>から確認できます。</p>

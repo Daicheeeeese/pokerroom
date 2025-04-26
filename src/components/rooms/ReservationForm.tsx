@@ -68,7 +68,7 @@ export function ReservationForm({ room }: Props) {
           selected={date}
           onChange={setDate}
           minDate={new Date()}
-          placeholderText="日付を選択"
+          placeholderText="利用日を選択"
           className="w-full p-2 border rounded-md"
         />
       </div>

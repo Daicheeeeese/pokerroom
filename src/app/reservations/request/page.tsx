@@ -141,7 +141,7 @@ export default function ReservationRequestPage() {
     setError('')
 
     if (!date || !startTime || !endTime) {
-      setError('日付と時間を選択してください')
+      setError('利用日と利用時間を選択してください')
       return
     }
 
@@ -240,7 +240,7 @@ export default function ReservationRequestPage() {
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">日付</label>
+            <label className="block text-sm font-medium text-gray-700">利用日</label>
             <DatePicker
               selected={date ? new Date(date) : null}
               onChange={(date) => {
@@ -252,7 +252,7 @@ export default function ReservationRequestPage() {
               dateFormat="yyyy年MM月dd日(EEE)"
               locale={ja}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholderText="日付を選択"
+              placeholderText="利用日を選択"
             />
           </div>
 

@@ -28,7 +28,7 @@ export function ReservationForm({ room }: Props) {
     }
 
     if (!selectedDate) {
-      alert("日付を選択してください")
+      alert("利用日を選択してください")
       return
     }
 

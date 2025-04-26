@@ -84,7 +84,7 @@ export default function ReservationForm({ room }: Props) {
       return
     }
     if (!date || !startTime || !endTime) {
-      setError('日付と時間を選択してください')
+      setError('利用日と利用時間を選択してください')
       return
     }
     setIsSubmitting(true)

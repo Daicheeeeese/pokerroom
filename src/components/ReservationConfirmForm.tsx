@@ -66,7 +66,7 @@ export default function ReservationConfirmForm({
             <h3 className="text-lg font-semibold mb-4">予約内容</h3>
             <div className="space-y-2">
               <p>
-                <span className="font-medium">日付:</span>{" "}
+                <span className="font-medium">利用日:</span>{" "}
                 {new Date(date).toLocaleDateString("ja-JP")}
               </p>
               <p>
