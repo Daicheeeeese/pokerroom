@@ -11,15 +11,14 @@ export async function GET(
       include: {
         hourlyPricesWeekday: true,
         hourlyPricesHoliday: true,
-        options: {
-          select: {
-            id: true,
-            option: true,
-            price: true,
-            unit: true,
-            isRequired: true,
+        options: true,
+        images: {
+          orderBy: {
+            order: 'asc'
           }
         },
+        nearestStations: true,
+        businessHours: true
       },
     })
 
