@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import NextAuth from 'next-auth'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -16,5 +17,23 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  // ... 他の設定
-} 
+  pages: {
+    error: '/api/auth/error',
+  },
+  callbacks: {
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        return true
+      }
+      return false
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    }
+  }
+}
+
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST } 

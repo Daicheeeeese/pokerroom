@@ -117,16 +117,6 @@ export function RoomDetailSection({ room }: Props) {
             </p>
           </div>
 
-
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">地図</h3>
-            <RoomMap
-              address={room.address}
-              latitude={room.latitude}
-              longitude={room.longitude}
-            />
-          </div>
-
           <div>
             <h3 className="text-lg font-medium text-gray-900">住所</h3>
             <p className="mt-2 text-gray-600 whitespace-pre-line">{room.address}</p>
@@ -142,6 +132,15 @@ export function RoomDetailSection({ room }: Props) {
               ))}
           </div>
         </div>
+
+        <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">地図</h3>
+            <RoomMap
+              address={room.address}
+              latitude={room.latitude}
+              longitude={room.longitude}
+            />
+          </div>
 
         <div className="lg:col-span-1">
           <div className="sticky top-8 hidden lg:block">
@@ -183,10 +182,10 @@ export function RoomDetailSection({ room }: Props) {
           </div>
           {session ? (
             <button
-              onClick={handleReservationClick}
+              onClick={() => router.push(`/reservations/request?roomId=${room.id}`)}
               className="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-lg"
             >
-              予約
+              予約する
             </button>
           ) : (
             <Link

@@ -89,9 +89,6 @@ export default function RoomCard({ room, selectedDate }: Props) {
               </div>
             )}
           </div>
-          <p className="text-gray-500">
-            最大{room.capacity}人
-          </p>
         </div>
       </Link>
     </div>
