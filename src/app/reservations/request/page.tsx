@@ -9,16 +9,15 @@ import { ja } from 'date-fns/locale'
 interface Option {
   id: string
   name: string
-  description: string | null
   price: number
+  unit: string
+  isRequired: boolean
 }
 
 interface Room {
   id: string
   name: string
-  options: Array<{
-    option: Option
-  }>
+  options: Option[]
 }
 
 export default function ReservationRequestPage() {
@@ -203,13 +202,10 @@ export default function ReservationRequestPage() {
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">オプション</h3>
               <div className="space-y-4">
-                {room.options.map(({ option }) => (
+                {room.options.map((option) => (
                   <div key={option.id} className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{option.name}</p>
-                      {option.description && (
-                        <p className="text-sm text-gray-500">{option.description}</p>
-                      )}
                       <p className="text-sm">¥{option.price.toLocaleString()}</p>
                     </div>
                     <input
