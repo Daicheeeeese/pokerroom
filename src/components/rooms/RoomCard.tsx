@@ -47,6 +47,7 @@ export default function RoomCard({ room, selectedDate }: Props) {
           <Swiper
             modules={[Pagination]}
             pagination={{ clickable: true }}
+            loop={true}
             className="h-full"
           >
             {images.map((image, index) => (
