@@ -108,18 +108,15 @@ export function RoomDetailSection({ room }: Props) {
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-gray-900">料金</h3>
-            <p className="mt-2 text-gray-600">
-              {(room.pricePerHour || 0).toLocaleString()}円/時間
-            </p>
-            <p className="mt-1 text-sm text-gray-500">
-              ※土日祝日や時間帯により料金が変動する場合があります
-            </p>
+            <h3 className="text-lg font-medium text-gray-900">住所</h3>
+            <p className="mt-2 text-gray-600 whitespace-pre-line">{room.address}</p>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-gray-900">住所</h3>
-            <p className="mt-2 text-gray-600 whitespace-pre-line">{room.address}</p>
+            <h3 className="text-lg font-medium text-gray-900">最寄駅</h3>
+            <p className="mt-2 text-gray-600 whitespace-pre-line">
+              {room.nearestStations.map(station => station.name).join('、')}
+            </p>
           </div>
 
           <div>
@@ -129,6 +126,8 @@ export function RoomDetailSection({ room }: Props) {
             </p>
           </div>
         </div>
+
+
 
         <div className="lg:col-span-1">
           <div className="sticky top-8">
