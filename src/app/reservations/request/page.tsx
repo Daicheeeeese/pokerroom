@@ -17,6 +17,7 @@ interface Option {
 interface Room {
   id: string
   name: string
+  pricePerHour: number
   options: Option[]
 }
 
@@ -32,6 +33,30 @@ const getUnitText = (unit: string): string => {
       return '1人1時間あたり'
     default:
       return ''
+  }
+}
+
+const calculateDuration = (startTime: string, endTime: string): number => {
+  if (!startTime || !endTime) return 0
+  
+  const start = new Date(`2000-01-01T${startTime}`)
+  const end = new Date(`2000-01-01T${endTime}`)
+  const diffInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+  return diffInHours
+}
+
+const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: number): number => {
+  switch (option.unit) {
+    case 'per_hour':
+      return option.price * duration
+    case 'per_hour_person':
+      return option.price * duration * numberOfPeople
+    case 'per_halfHour':
+      return option.price * duration * 2
+    case 'booking':
+      return option.price
+    default:
+      return 0
   }
 }
 
@@ -126,6 +151,21 @@ export default function ReservationRequestPage() {
     })
 
     router.push(`/reservations/confirm?${queryParams.toString()}`)
+  }
+
+  const calculateTotalPrice = (): number => {
+    if (!room || !startTime || !endTime) return 0
+
+    const duration = calculateDuration(startTime, endTime)
+    const basePrice = room.pricePerHour * duration
+
+    const optionsPrice = room.options
+      .filter(option => selectedOptions[option.id])
+      .reduce((total, option) => {
+        return total + calculateOptionPrice(option, duration, numberOfPeople)
+      }, 0)
+
+    return basePrice + optionsPrice
   }
 
   if (isLoading) {
@@ -239,6 +279,15 @@ export default function ReservationRequestPage() {
               </div>
             </div>
           )}
+
+          <div className="border-t pt-4">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">合計金額</span>
+              <span className="text-xl font-bold">
+                ¥{calculateTotalPrice().toLocaleString()}
+              </span>
+            </div>
+          </div>
 
           {error && (
             <div className="text-red-600 text-sm">{error}</div>
