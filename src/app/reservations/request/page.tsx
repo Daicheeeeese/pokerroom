@@ -143,7 +143,7 @@ export default function ReservationRequestPage() {
     e.preventDefault()
     setError('')
 
-    if (!date || !startHour || !startMinute || !endHour || !endMinute) {
+    if (!selectedDate || !startHour || !startMinute || !endHour || !endMinute) {
       setError('利用日と利用時間を選択してください')
       return
     }
@@ -162,7 +162,7 @@ export default function ReservationRequestPage() {
 
     const queryParams = new URLSearchParams({
       roomId,
-      date,
+      date: selectedDate.toISOString().split('T')[0],
       startTime,
       endTime,
       numberOfPeople: numberOfPeople.toString(),
