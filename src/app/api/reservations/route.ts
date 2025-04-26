@@ -86,6 +86,22 @@ export async function POST(request: Request) {
       },
     })
 
+    // メール送信
+    try {
+      await sendReservationConfirmationEmail({
+        userEmail: user.email,
+        userName: user.name || 'ゲスト',
+        roomName: room.name,
+        date,
+        startTime,
+        endTime,
+        totalPrice,
+      })
+    } catch (error) {
+      console.error('メール送信エラー:', error)
+      // メール送信エラーは予約プロセスを中断しない
+    }
+
     return NextResponse.json(reservation)
   } catch (error) {
     console.error('Error creating reservation:', error)
