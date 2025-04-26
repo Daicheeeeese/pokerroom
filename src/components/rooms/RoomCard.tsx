@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import type { Review } from "@prisma/client"
 import { MapPinIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 
@@ -27,6 +27,8 @@ type Props = {
 
 export default function RoomCard({ room, selectedDate }: Props) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const touchStartX = useRef<number>(0)
+  const touchEndX = useRef<number>(0)
   
   // 画像の取得
   const images = room.images?.length 
@@ -47,10 +49,44 @@ export default function RoomCard({ room, selectedDate }: Props) {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
   }
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !touchEndX.current) return
+
+    const diff = touchStartX.current - touchEndX.current
+    const minSwipeDistance = 50 // 最小スワイプ距離
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        // 左スワイプ
+        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+      } else {
+        // 右スワイプ
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+      }
+    }
+
+    // リセット
+    touchStartX.current = 0
+    touchEndX.current = 0
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
-        <div className="relative h-48 group">
+        <div 
+          className="relative h-48 group"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <Image
             src={images[currentImageIndex]}
             alt={room.name}
