@@ -54,13 +54,13 @@ export default function SearchBar() {
       <div
         onClick={() => setIsExpanded(true)}
         className={`
-          bg-white rounded-full shadow-md flex items-center justify-between
+          bg-white rounded-full shadow-md flex items-center justify-center
           border border-gray-200 cursor-pointer transition-all relative z-40
           ${isExpanded ? 'hidden' : 'block'}
         `}
       >
-        <div className="flex items-center flex-1 px-6 py-3">
-          <span className="text-gray-800">
+        <div className="flex items-center justify-center flex-1 px-6 py-3">
+          <span className="text-gray-800 text-center">
             {getSearchBarText()}
           </span>
         </div>
