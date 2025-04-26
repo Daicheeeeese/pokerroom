@@ -5,7 +5,21 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  console.log('API Route: GET /api/rooms/[id] started')
+  console.log('Room ID:', params.id)
+  console.log('Environment:', process.env.NODE_ENV)
+  console.log('Database URL:', process.env.DATABASE_URL?.slice(0, 30) + '...')
+
   try {
+    // データベース接続テスト
+    try {
+      await prisma.$connect()
+      console.log('Database connection successful')
+    } catch (error) {
+      console.error('Database connection failed:', error)
+      throw error
+    }
+
     const room = await prisma.room.findUnique({
       where: { id: params.id },
       include: {
@@ -22,6 +36,8 @@ export async function GET(
         },
       },
     })
+
+    console.log('Room found:', room ? 'Yes' : 'No')
 
     if (!room) {
       return NextResponse.json(
@@ -45,9 +61,23 @@ export async function GET(
     return NextResponse.json(flattenedRoom)
   } catch (error) {
     console.error("Error fetching room:", error)
+    
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      })
+    }
+
     return NextResponse.json(
-      { error: "ルームの取得に失敗しました" },
+      { 
+        error: "ルームの取得に失敗しました",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }

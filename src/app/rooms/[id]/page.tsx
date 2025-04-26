@@ -60,70 +60,70 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function RoomPage({ params }: Props) {
-  const { id } = params
+export async function generateStaticParams() {
+  try {
+    const rooms = await prisma.room.findMany({
+      select: { id: true }
+    })
+    return rooms.map((room) => ({ id: room.id }))
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error)
+    return []
+  }
+}
+
+export default async function RoomDetailPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  console.log('RoomDetailPage: Fetching room with ID:', params.id)
+
   try {
     const room = await prisma.room.findUnique({
-      where: {
-        id: String(id),
-      },
+      where: { id: params.id },
       include: {
-        reviews: true,
+        hourlyPricesWeekday: true,
+        hourlyPricesHoliday: true,
+        options: {
+          select: {
+            id: true,
+            option: true,
+            price: true,
+            unit: true,
+            isRequired: true,
+          }
+        },
+        businessHours: true,
         images: {
           orderBy: {
             order: 'asc'
           }
         },
-        hourlyPricesWeekday: true,
-        hourlyPricesHoliday: true,
+        reviews: true,
         nearestStations: true,
-        businessHours: true,
-        options: true
-      }
-    }) as RoomWithDetails | null
+      },
+    })
+
+    console.log('RoomDetailPage: Room found:', room ? 'Yes' : 'No')
 
     if (!room) {
+      console.log('RoomDetailPage: Room not found, redirecting to 404')
       notFound()
     }
 
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <ImageGallery mainImage={room.images.length > 0 ? room.images[0].url : ''} images={room.images} />
-          <div className="mt-6 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
-                <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <RoomDetailSection room={room} />
-            </div>
-            <div className="lg:col-span-1">
-              {/* 予約フォームやその他の情報をここに配置 */}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <RoomDetailSection room={room} />
   } catch (error) {
-    console.error('Error fetching room details:', error)
-    // エラーの種類に応じて適切なメッセージを表示
-    const errorMessage = error instanceof Error 
-      ? `データの取得中にエラーが発生しました: ${error.message}`
-      : 'データの取得中にエラーが発生しました。しばらく時間をおいて再度お試しください。'
+    console.error("Error in RoomDetailPage:", error)
+    
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      })
+    }
 
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-            {errorMessage}
-          </div>
-        </div>
-      </div>
-    )
+    throw new Error(`ルームの取得に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 } 

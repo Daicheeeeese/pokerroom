@@ -20,7 +20,15 @@ type RoomWithDetails = Prisma.RoomGetPayload<{
     hourlyPricesHoliday: true;
     nearestStations: true;
     businessHours: true;
-    options: true;
+    options: {
+      select: {
+        id: true;
+        option: true;
+        price: true;
+        unit: true;
+        isRequired: true;
+      }
+    };
   };
 }> & {
   nextAvailableDate: Date | null;
