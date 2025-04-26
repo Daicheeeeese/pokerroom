@@ -162,25 +162,25 @@ export function RoomDetailSection({ room }: Props) {
       </div>
 
       {/* スマホ用の固定予約ボタン */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-5 lg:hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900">
               ¥{(room.pricePerHour || 0).toLocaleString()}
-              <span className="text-sm font-normal text-gray-500">/時間</span>
+              <span className="text-base font-normal text-gray-500">/時間</span>
             </p>
           </div>
           {session ? (
             <button
               onClick={handleReservationClick}
-              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-lg"
             >
               予約
             </button>
           ) : (
             <Link
               href="/login"
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 hover:underline text-lg"
             >
               ログインして予約
             </Link>
