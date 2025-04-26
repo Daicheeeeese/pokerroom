@@ -202,7 +202,6 @@ export default function ReservationConfirmPage() {
       <Card className="p-6 mb-8">
         <p>ポーカールーム: {room.name}</p>
         <p>住所: {room.address}</p>
-        <p>最寄駅: {room.nearestStation}</p>
         <p>利用日: {formattedDate}</p>
         <p>利用時間: {startTime} ~ {endTime}</p>
         <p>利用人数: {numberOfPeople}人</p>
@@ -237,6 +236,9 @@ export default function ReservationConfirmPage() {
           >
             {isSubmitting ? '予約処理中...' : '予約する'}
           </button>
+          <p className="text-sm text-gray-500 text-center mt-2">
+            お支払いは予約確定後、または現地での対応となります。
+          </p>
         </form>
       </Card>
     </div>
