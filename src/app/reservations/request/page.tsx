@@ -124,10 +124,15 @@ export default function ReservationRequestPage() {
     if (!startHour) return generateTimeOptions()
 
     const startHourNum = parseInt(startHour)
-    return generateTimeOptions().filter(time => {
+    const availableTimes = generateTimeOptions().filter(time => {
       const [hour] = time.split(':')
       return parseInt(hour) > startHourNum
     })
+
+    // 重複を除去
+    return availableTimes.filter((time, index, self) => 
+      self.findIndex(t => t === time) === index
+    )
   }
 
   const handleOptionChange = (optionId: string, checked: boolean) => {
