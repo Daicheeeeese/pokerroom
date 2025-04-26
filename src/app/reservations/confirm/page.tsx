@@ -9,8 +9,13 @@ import { ja } from 'date-fns/locale'
 interface Option {
   id: string
   name: string
-  description: string | null
+  description?: string | null
   price: number
+}
+
+interface SelectedOption {
+  optionId: string
+  quantity: number
 }
 
 interface Room {
@@ -28,14 +33,7 @@ interface Room {
     endTime: string
     pricePerHour: number
   }>
-  options: Array<{
-    option: Option
-  }>
-}
-
-interface SelectedOption {
-  optionId: string
-  quantity: number
+  options: Option[]
 }
 
 export default function ReservationConfirmPage() {
@@ -61,7 +59,7 @@ export default function ReservationConfirmPage() {
         if (!response.ok) {
           throw new Error('ルームの取得に失敗しました')
         }
-        const data = await response.json()
+        const data: Room = await response.json()
         setRoom(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'エラーが発生しました')
@@ -82,9 +80,7 @@ export default function ReservationConfirmPage() {
     try {
       const response = await fetch('/api/reservations', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomId,
           date,
@@ -151,8 +147,9 @@ export default function ReservationConfirmPage() {
     )
   }
 
+  // 日付・時間計算
   const formattedDate = format(new Date(date), 'yyyy年MM月dd日', { locale: ja })
-  const isHoliday = new Date(date).getDay() === 0 || new Date(date).getDay() === 6
+  const isHoliday = [0, 6].includes(new Date(date).getDay())
   const hourlyPrices = isHoliday ? room.hourlyPricesHoliday : room.hourlyPricesWeekday
 
   const calculateRoomPrice = () => {
@@ -160,25 +157,25 @@ export default function ReservationConfirmPage() {
     const end = new Date(`2000-01-01T${endTime}`)
     let totalPrice = 0
 
-    for (let time = start; time < end; time.setMinutes(time.getMinutes() + 30)) {
-      const hour = time.getHours()
-      const price = hourlyPrices.find(p => {
-        const start = parseInt(p.startTime.split(':')[0])
-        const end = parseInt(p.endTime.split(':')[0])
-        return hour >= start && hour < end
-      })?.pricePerHour || room.pricePerHour
+    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 30)) {
+      const hour = t.getHours()
+      const price =
+        hourlyPrices.find(p => {
+          const startHour = parseInt(p.startTime.split(':')[0])
+          const endHour = parseInt(p.endTime.split(':')[0])
+          return hour >= startHour && hour < endHour
+        })?.pricePerHour ?? room.pricePerHour
       totalPrice += price / 2
     }
 
     return totalPrice
   }
 
-  const calculateOptionsPrice = () => {
-    return selectedOptions.reduce((total, { optionId, quantity }) => {
-      const option = room.options.find(o => o.option.id === optionId)?.option
-      return total + (option ? option.price * quantity : 0)
+  const calculateOptionsPrice = () =>
+    selectedOptions.reduce((total, { optionId, quantity }) => {
+      const opt = room.options.find(o => o.id === optionId)
+      return total + (opt ? opt.price * quantity : 0)
     }, 0)
-  }
 
   const roomPrice = calculateRoomPrice()
   const optionsPrice = calculateOptionsPrice()
@@ -187,50 +184,42 @@ export default function ReservationConfirmPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-2xl font-bold mb-8">予約内容の確認</h1>
-      
+
       <Card className="p-6 mb-8">
         <div className="space-y-4">
-          <div>
-            <h2 className="text-lg font-medium text-gray-900">予約内容</h2>
-            <div className="mt-2 space-y-2">
-              <p>ポーカールーム: {room.name}</p>
-              <p>住所: {room.address}</p>
-              <p>日付: {formattedDate}</p>
-              <p>時間: {startTime} ~ {endTime}</p>
-              <p>人数: {numberOfPeople}人</p>
-              <p>ルーム料金: ¥{roomPrice.toLocaleString()}</p>
-              
-              {selectedOptions.length > 0 && (
-                <div className="mt-4">
-                  <h3 className="text-md font-medium text-gray-900">選択されたオプション</h3>
-                  <div className="mt-2 space-y-2">
-                    {selectedOptions.map(({ optionId, quantity }) => {
-                      const option = room.options.find(o => o.option.id === optionId)?.option
-                      if (!option) return null
-                      return (
-                        <div key={optionId} className="flex justify-between">
-                          <span>{option.name} × {quantity}</span>
-                          <span>¥{(option.price * quantity).toLocaleString()}</span>
-                        </div>
-                      )
-                    })}
-                    <p className="text-right">オプション料金: ¥{optionsPrice.toLocaleString()}</p>
-                  </div>
-                </div>
-              )}
-              
-              <p className="text-lg font-bold mt-4">合計金額: ¥{totalPrice.toLocaleString()}</p>
+          <p>ポーカールーム: {room.name}</p>
+          <p>住所: {room.address}</p>
+          <p>日付: {formattedDate}</p>
+          <p>時間: {startTime} ~ {endTime}</p>
+          <p>人数: {numberOfPeople}人</p>
+          <p>ルーム料金: ¥{roomPrice.toLocaleString()}</p>
+
+          {selectedOptions.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-md font-medium text-gray-900">選択されたオプション</h3>
+              <div className="mt-2 space-y-2">
+                {selectedOptions.map(({ optionId, quantity }) => {
+                  const opt = room.options.find(o => o.id === optionId)
+                  if (!opt) return null
+                  return (
+                    <div key={optionId} className="flex justify-between">
+                      <span>{opt.name} × {quantity}</span>
+                      <span>¥{(opt.price * quantity).toLocaleString()}</span>
+                    </div>
+                  )
+                })}
+                <p className="text-right">オプション料金: ¥{optionsPrice.toLocaleString()}</p>
+              </div>
             </div>
-          </div>
+          )}
+
+          <p className="text-lg font-bold mt-4">合計金額: ¥{totalPrice.toLocaleString()}</p>
         </div>
       </Card>
 
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="text-red-600 text-sm">{error}</div>
-          )}
-
+          {error && <div className="text-red-600 text-sm">{error}</div>}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -242,4 +231,4 @@ export default function ReservationConfirmPage() {
       </Card>
     </div>
   )
-} 
+}
