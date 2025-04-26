@@ -9,8 +9,9 @@ import { ja } from 'date-fns/locale'
 interface Option {
   id: string
   name: string
-  description?: string | null
   price: number
+  unit: string
+  isRequired: boolean
 }
 
 interface SelectedOption {
@@ -34,6 +35,30 @@ interface Room {
     pricePerHour: number
   }[]
   options: Option[]
+}
+
+const calculateDuration = (startTime: string, endTime: string): number => {
+  if (!startTime || !endTime) return 0
+  
+  const start = new Date(`2000-01-01T${startTime}`)
+  const end = new Date(`2000-01-01T${endTime}`)
+  const diffInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+  return diffInHours
+}
+
+const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: number): number => {
+  switch (option.unit) {
+    case 'per_hour':
+      return option.price * duration
+    case 'per_hour_person':
+      return option.price * duration * numberOfPeople
+    case 'per_halfHour':
+      return option.price * duration * 2
+    case 'booking':
+      return option.price
+    default:
+      return 0
+  }
 }
 
 export default function ReservationConfirmPage() {
@@ -95,16 +120,25 @@ export default function ReservationConfirmPage() {
   }
 
   const calculateOptionsPrice = () => {
-    if (!room) return 0
-    return selectedOptions.reduce((sum, { optionId, quantity }) => {
-      const opt = room.options.find(o => o.id === optionId)
-      return sum + (opt ? opt.price * quantity : 0)
+    if (!room || !startTime || !endTime || !numberOfPeople) return 0
+
+    const duration = calculateDuration(startTime, endTime)
+    const peopleCount = parseInt(numberOfPeople)
+
+    return selectedOptions.reduce((sum, { optionId }) => {
+      const option = room.options.find(o => o.id === optionId)
+      if (!option) return sum
+      return sum + calculateOptionPrice(option, duration, peopleCount)
     }, 0)
+  }
+
+  const calculateTotalPrice = () => {
+    return calculateRoomPrice() + calculateOptionsPrice()
   }
 
   const roomPrice = calculateRoomPrice()
   const optionsPrice = calculateOptionsPrice()
-  const totalPrice = roomPrice + optionsPrice
+  const totalPrice = calculateTotalPrice()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
