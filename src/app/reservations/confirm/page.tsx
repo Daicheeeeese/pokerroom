@@ -236,7 +236,7 @@ export default function ReservationConfirmPage() {
                 if (!opt) return null
                 return (
                   <div key={optionId} className="flex justify-between">
-                    <span>{opt.name} {getUnitText(opt.unit)}</span>
+                    <span>{opt.name}</span>
                     <span>¥{opt.price.toLocaleString()}/{opt.unit === 'per_hour' || opt.unit === 'per_hour_person' ? '時間' : '予約'}</span>
                   </div>
                 )
