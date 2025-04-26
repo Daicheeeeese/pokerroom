@@ -276,12 +276,12 @@ export default function ReservationRequestPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">開始時間</label>
-            <div className="flex gap-2 mt-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">開始時間</label>
+            <div className="flex gap-2">
               <select
                 value={startHour}
                 onChange={(e) => setStartHour(e.target.value)}
-                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">時</option>
                 {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
@@ -293,7 +293,7 @@ export default function ReservationRequestPage() {
               <select
                 value={startMinute}
                 onChange={(e) => setStartMinute(e.target.value)}
-                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="00">00分</option>
                 <option value="30">30分</option>
@@ -302,12 +302,12 @@ export default function ReservationRequestPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">終了時間</label>
-            <div className="flex gap-2 mt-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">終了時間</label>
+            <div className="flex gap-2">
               <select
                 value={endHour}
                 onChange={(e) => setEndHour(e.target.value)}
-                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">時</option>
                 {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
@@ -319,7 +319,7 @@ export default function ReservationRequestPage() {
               <select
                 value={endMinute}
                 onChange={(e) => setEndMinute(e.target.value)}
-                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="00">00分</option>
                 <option value="30">30分</option>
@@ -328,11 +328,11 @@ export default function ReservationRequestPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">人数</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">利用人数</label>
             <select
               value={numberOfPeople}
               onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               {Array.from({ length: 19 }, (_, i) => i + 1).map((num) => (
                 <option key={num} value={num}>
