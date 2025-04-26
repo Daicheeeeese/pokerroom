@@ -27,6 +27,7 @@ type Props = {
 
 export default function RoomCard({ room, selectedDate }: Props) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null)
   const touchStartX = useRef<number>(0)
   const touchEndX = useRef<number>(0)
   
@@ -41,11 +42,13 @@ export default function RoomCard({ room, selectedDate }: Props) {
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.preventDefault()
+    setSlideDirection('right')
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
   }
 
   const handleNextImage = (e: React.MouseEvent) => {
     e.preventDefault()
+    setSlideDirection('left')
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
   }
 
@@ -66,9 +69,11 @@ export default function RoomCard({ room, selectedDate }: Props) {
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
         // 左スワイプ
+        setSlideDirection('left')
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
       } else {
         // 右スワイプ
+        setSlideDirection('right')
         setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
       }
     }
@@ -78,37 +83,50 @@ export default function RoomCard({ room, selectedDate }: Props) {
     touchEndX.current = 0
   }
 
+  const handleAnimationEnd = () => {
+    setSlideDirection(null)
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
         <div 
-          className="relative h-48 group"
+          className="relative h-48 group overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <Image
-            src={images[currentImageIndex]}
-            alt={room.name}
-            fill
-            priority
-            className="object-cover"
-          />
+          <div 
+            className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+              slideDirection === 'left' ? 'translate-x-[-100%]' : 
+              slideDirection === 'right' ? 'translate-x-[100%]' : 
+              'translate-x-0'
+            }`}
+            onTransitionEnd={handleAnimationEnd}
+          >
+            <Image
+              src={images[currentImageIndex]}
+              alt={room.name}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
           {images.length > 1 && (
             <>
               <button
                 onClick={handlePrevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
                 <ChevronLeftIcon className="h-6 w-6" />
               </button>
               <button
                 onClick={handleNextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
                 <ChevronRightIcon className="h-6 w-6" />
               </button>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {images.map((_, index) => (
                   <div
                     key={index}
