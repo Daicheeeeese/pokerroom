@@ -88,18 +88,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // ルーム情報を取得
-    const room = await prisma.room.findUnique({
-      where: { id: roomId },
-    })
-
-    if (!room) {
-      return NextResponse.json(
-        { error: 'ルームが見つかりません' },
-        { status: 404 }
-      )
-    }
-
     const reservation = await prisma.reservation.create({
       data: {
         roomId,
@@ -125,6 +113,18 @@ export async function POST(request: Request) {
         },
       },
     })
+
+    // ルーム情報を取得
+    const room = await prisma.room.findUnique({
+      where: { id: roomId },
+    })
+
+    if (!room) {
+      return NextResponse.json(
+        { error: 'ルームが見つかりません' },
+        { status: 404 }
+      )
+    }
 
     // メール送信
     try {
