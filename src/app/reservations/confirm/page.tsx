@@ -237,7 +237,7 @@ export default function ReservationConfirmPage() {
             {isSubmitting ? '予約処理中...' : '予約する'}
           </button>
           <p className="text-sm text-gray-500 text-center mt-2">
-            お支払いは予約確定後、または現地での対応となります。
+            お支払いは予約確定後、オンラインまたは現地での対応となります。
           </p>
         </form>
       </Card>
