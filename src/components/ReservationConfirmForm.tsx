@@ -31,10 +31,20 @@ export default function ReservationConfirmForm({
     setError("")
 
     try {
-      const formData = new FormData(e.currentTarget)
       const response = await fetch("/api/reservations", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: room.id,
+          date,
+          startTime,
+          endTime,
+          people: 1,
+          options: [],
+          totalPrice,
+        }),
       })
 
       if (!response.ok) {
@@ -85,12 +95,6 @@ export default function ReservationConfirmForm({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="hidden" name="roomId" value={room.id} />
-        <input type="hidden" name="date" value={date} />
-        <input type="hidden" name="startTime" value={startTime} />
-        <input type="hidden" name="endTime" value={endTime} />
-        <input type="hidden" name="totalPrice" value={totalPrice} />
-
         <button
           type="submit"
           disabled={isSubmitting}
