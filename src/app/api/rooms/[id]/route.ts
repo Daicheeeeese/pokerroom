@@ -35,7 +35,7 @@ export async function GET(
       ...room,
       options: room.options.map(opt => ({
         id: opt.id,
-        name: opt.option,
+        name: opt.name,
         price: opt.price,
         unit: opt.unit,
         isRequired: opt.isRequired,
