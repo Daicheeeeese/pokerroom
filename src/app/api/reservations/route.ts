@@ -60,6 +60,18 @@ export async function POST(request: Request) {
       )
     }
 
+    // ルーム情報を取得
+    const room = await prisma.room.findUnique({
+      where: { id: roomId },
+    })
+
+    if (!room) {
+      return NextResponse.json(
+        { error: 'ルームが見つかりません' },
+        { status: 404 }
+      )
+    }
+
     const reservation = await prisma.reservation.create({
       data: {
         roomId,
@@ -124,7 +136,7 @@ export async function GET(request: Request) {
       } : null
     })
 
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       console.log("API - 認証エラー: ユーザーIDが見つかりません")
       return corsResponse(
         { error: "認証が必要です" },
