@@ -302,20 +302,20 @@ export default function ReservationRequestPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">終了時間</label>
             <div className="flex gap-2">
               <select
-                value={startHour}
-                onChange={(e) => setStartHour(e.target.value)}
+                value={endHour}
+                onChange={(e) => setEndHour(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">時</option>
-                {Array.from({ length: 28 }, (_, i) => i).map((hour) => (
-                  <option key={hour} value={hour.toString().padStart(2, '0')}>
+                {getAvailableEndTimes().map((hour) => (
+                  <option key={hour} value={hour}>
                     {hour}時
                   </option>
                 ))}
               </select>
               <select
-                value={startMinute}
-                onChange={(e) => setStartMinute(e.target.value)}
+                value={endMinute}
+                onChange={(e) => setEndMinute(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="00">00分</option>
