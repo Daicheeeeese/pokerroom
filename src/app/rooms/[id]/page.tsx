@@ -9,8 +9,6 @@ type RoomWithDetails = Prisma.RoomGetPayload<{
   include: {
     reviews: true;
     images: true;
-    hourlyPricesWeekday: true;
-    hourlyPricesHoliday: true;
     nearestStations: true;
     businessHours: true;
     options: true;
@@ -74,8 +72,6 @@ export default async function RoomPage({ params }: Props) {
             order: 'asc'
           }
         },
-        hourlyPricesWeekday: true,
-        hourlyPricesHoliday: true,
         nearestStations: true,
         businessHours: true,
         options: true
