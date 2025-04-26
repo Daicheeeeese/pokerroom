@@ -7,6 +7,14 @@ const transporter = nodemailer.createTransport({
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
+  // メールの信頼性を向上させるための設定
+  tls: {
+    rejectUnauthorized: false
+  },
+  // メールの送信元を明確にする
+  from: process.env.GMAIL_USER,
+  // メールの優先度を設定
+  priority: 'high' as const,
 })
 
 // トランスポーターの接続を確認
@@ -37,8 +45,11 @@ async function sendAdminNotification({
   endTime,
   totalPrice,
 }: Omit<ReservationEmailData, 'userEmail'>) {
-  const mailOptions = {
-    from: process.env.GMAIL_USER,
+  const mailOptions: nodemailer.SendMailOptions = {
+    from: {
+      name: 'PokerRoom 予約システム',
+      address: process.env.GMAIL_USER || ''
+    },
     to: 'pokerroom.reservation@gmail.com',
     subject: '【PokerRoom】新規予約が入りました',
     html: `
@@ -56,6 +67,15 @@ async function sendAdminNotification({
       
       <p>予約の詳細は<a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/reservations">管理画面</a>から確認できます。</p>
     `,
+    // メールの優先度を設定
+    priority: 'high' as const,
+    // メールの分類を設定
+    headers: {
+      'X-Priority': '1',
+      'X-MSMail-Priority': 'High',
+      'Importance': 'high',
+      'List-Unsubscribe': `<mailto:${process.env.GMAIL_USER}?subject=unsubscribe>`,
+    },
   }
 
   try {
@@ -81,28 +101,44 @@ export async function sendReservationConfirmationEmail({
   endTime,
   totalPrice,
 }: ReservationEmailData) {
-  const mailOptions = {
-    from: process.env.GMAIL_USER,
+  const mailOptions: nodemailer.SendMailOptions = {
+    from: {
+      name: 'PokerRoom 予約システム',
+      address: process.env.GMAIL_USER || ''
+    },
     to: userEmail,
     subject: '【PokerRoom】ご予約を受け付けました',
     html: `
-      <h2>${userName}様</h2>
-      <p>PokerRoomをご利用いただき、ありがとうございます。<br>
-      以下の内容で予約を受け付けました。</p>
-      
-      <h3>予約内容</h3>
-      <ul>
-        <li>ルーム：${roomName}</li>
-        <li>日付：${date}</li>
-        <li>時間：${startTime} 〜 ${endTime}</li>
-        <li>料金：¥${totalPrice.toLocaleString()}</li>
-      </ul>
-      
-      <p>ご予約内容の確認・キャンセルは<a href="${process.env.NEXT_PUBLIC_BASE_URL}/reservations">マイページ</a>から行えます。</p>
-      
-      <hr>
-      <p>※このメールは送信専用です。返信いただいてもお答えできません。</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">${userName}様</h2>
+        <p style="color: #666;">PokerRoomをご利用いただき、ありがとうございます。<br>
+        以下の内容で予約を受け付けました。</p>
+        
+        <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">予約内容</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><strong>ルーム：</strong>${roomName}</li>
+            <li style="margin-bottom: 10px;"><strong>日付：</strong>${date}</li>
+            <li style="margin-bottom: 10px;"><strong>時間：</strong>${startTime} 〜 ${endTime}</li>
+            <li style="margin-bottom: 10px;"><strong>料金：</strong>¥${totalPrice.toLocaleString()}</li>
+          </ul>
+        </div>
+        
+        <p style="color: #666;">ご予約内容の確認・キャンセルは<a href="${process.env.NEXT_PUBLIC_BASE_URL}/reservations" style="color: #0066cc;">マイページ</a>から行えます。</p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #999; font-size: 12px;">※このメールは送信専用です。返信いただいてもお答えできません。</p>
+      </div>
     `,
+    // メールの優先度を設定
+    priority: 'high' as const,
+    // メールの分類を設定
+    headers: {
+      'X-Priority': '1',
+      'X-MSMail-Priority': 'High',
+      'Importance': 'high',
+      'List-Unsubscribe': `<mailto:${process.env.GMAIL_USER}?subject=unsubscribe>`,
+    },
   }
 
   try {
