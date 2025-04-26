@@ -252,6 +252,12 @@ export default function ReservationRequestPage() {
                   setDate(date.toISOString().split('T')[0])
                 }
               }}
+              onSelect={() => {
+                const datePicker = document.querySelector('.react-datepicker')
+                if (datePicker) {
+                  datePicker.classList.add('react-datepicker--closed')
+                }
+              }}
               minDate={new Date()}
               dateFormat="yyyy年MM月dd日(EEE)"
               locale={ja}
