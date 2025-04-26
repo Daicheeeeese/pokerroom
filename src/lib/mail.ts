@@ -2,25 +2,25 @@ import nodemailer from 'nodemailer'
 
 // メール送信用のトランスポーターを作成
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
-  // メールの信頼性を向上させるための設定
   tls: {
     rejectUnauthorized: false
   },
-  // メールの送信元を明確にする
-  from: process.env.GMAIL_USER,
-  // メールの優先度を設定
-  priority: 'high' as const,
 })
 
 // トランスポーターの接続を確認
 transporter.verify(function(error, success) {
   if (error) {
     console.error('メールサーバー接続エラー:', error)
+    if ('code' in error && error.code === 'EAUTH') {
+      console.error('認証エラー: SMTPの認証情報が正しく設定されているか確認してください')
+    }
   } else {
     console.log('メールサーバーに接続しました')
   }
@@ -45,11 +45,13 @@ async function sendAdminNotification({
   endTime,
   totalPrice,
 }: Omit<ReservationEmailData, 'userEmail'>) {
+  if (!process.env.SMTP_FROM) {
+    console.error('SMTP_FROMが設定されていません')
+    return
+  }
+
   const mailOptions: nodemailer.SendMailOptions = {
-    from: {
-      name: 'PokerRoom 予約システム',
-      address: process.env.GMAIL_USER || ''
-    },
+    from: process.env.SMTP_FROM,
     to: 'pokerroom.reservation@gmail.com',
     subject: '【PokerRoom】新規予約が入りました',
     html: `
@@ -67,19 +69,21 @@ async function sendAdminNotification({
       
       <p>予約の詳細は<a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/reservations">管理画面</a>から確認できます。</p>
     `,
-    // メールの優先度を設定
     priority: 'high' as const,
-    // メールの分類を設定
     headers: {
       'X-Priority': '1',
       'X-MSMail-Priority': 'High',
       'Importance': 'high',
-      'List-Unsubscribe': `<mailto:${process.env.GMAIL_USER}?subject=unsubscribe>`,
+      'List-Unsubscribe': `<mailto:${process.env.SMTP_USER}?subject=unsubscribe>`,
     },
   }
 
   try {
-    console.log('管理者向けメールを送信します:', mailOptions)
+    console.log('管理者向けメールを送信します:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+    })
     const info = await transporter.sendMail(mailOptions)
     console.log('管理者向けメール送信完了:', info.messageId)
   } catch (error) {
@@ -87,8 +91,10 @@ async function sendAdminNotification({
     if (error instanceof Error) {
       console.error('エラーメッセージ:', error.message)
       console.error('エラースタック:', error.stack)
+      if ('code' in error && error.code === 'EAUTH') {
+        console.error('認証エラー: SMTPの認証情報が正しく設定されているか確認してください')
+      }
     }
-    // 管理者向けメールの失敗は予約プロセスを中断しない
   }
 }
 
@@ -101,11 +107,13 @@ export async function sendReservationConfirmationEmail({
   endTime,
   totalPrice,
 }: ReservationEmailData) {
+  if (!process.env.SMTP_FROM) {
+    console.error('SMTP_FROMが設定されていません')
+    throw new Error('メール送信に必要な設定が不足しています')
+  }
+
   const mailOptions: nodemailer.SendMailOptions = {
-    from: {
-      name: 'PokerRoom 予約システム',
-      address: process.env.GMAIL_USER || ''
-    },
+    from: process.env.SMTP_FROM,
     to: userEmail,
     subject: '【PokerRoom】ご予約を受け付けました',
     html: `
@@ -130,19 +138,21 @@ export async function sendReservationConfirmationEmail({
         <p style="color: #999; font-size: 12px;">※このメールは送信専用です。返信いただいてもお答えできません。</p>
       </div>
     `,
-    // メールの優先度を設定
     priority: 'high' as const,
-    // メールの分類を設定
     headers: {
       'X-Priority': '1',
       'X-MSMail-Priority': 'High',
       'Importance': 'high',
-      'List-Unsubscribe': `<mailto:${process.env.GMAIL_USER}?subject=unsubscribe>`,
+      'List-Unsubscribe': `<mailto:${process.env.SMTP_USER}?subject=unsubscribe>`,
     },
   }
 
   try {
-    console.log('ユーザー向けメールを送信します:', mailOptions)
+    console.log('ユーザー向けメールを送信します:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+    })
     const info = await transporter.sendMail(mailOptions)
     console.log('ユーザー向けメール送信完了:', info.messageId)
     
@@ -160,6 +170,9 @@ export async function sendReservationConfirmationEmail({
     if (error instanceof Error) {
       console.error('エラーメッセージ:', error.message)
       console.error('エラースタック:', error.stack)
+      if ('code' in error && error.code === 'EAUTH') {
+        console.error('認証エラー: SMTPの認証情報が正しく設定されているか確認してください')
+      }
     }
     throw new Error('予約確認メールの送信に失敗しました')
   }
