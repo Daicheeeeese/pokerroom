@@ -76,8 +76,10 @@ export default function ReservationRequestPage() {
   const roomId = searchParams.get('roomId')
 
   const [date, setDate] = useState<string>('')
-  const [startTime, setStartTime] = useState<string>('')
-  const [endTime, setEndTime] = useState<string>('')
+  const [startHour, setStartHour] = useState<string>('')
+  const [startMinute, setStartMinute] = useState<string>('00')
+  const [endHour, setEndHour] = useState<string>('')
+  const [endMinute, setEndMinute] = useState<string>('00')
   const [numberOfPeople, setNumberOfPeople] = useState<number>(1)
   const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: boolean }>({})
   const [room, setRoom] = useState<Room | null>(null)
@@ -117,10 +119,9 @@ export default function ReservationRequestPage() {
   }
 
   const getAvailableEndTimes = () => {
-    if (!startTime) return generateTimeOptions()
+    if (!startHour || !startMinute) return generateTimeOptions()
 
-    const [startHour, startMinute] = startTime.split(':').map(Number)
-    const startTotalMinutes = startHour * 60 + startMinute
+    const startTotalMinutes = parseInt(startHour) * 60 + parseInt(startMinute)
     
     return generateTimeOptions().filter(time => {
       const [endHour, endMinute] = time.split(':').map(Number)
@@ -140,7 +141,7 @@ export default function ReservationRequestPage() {
     e.preventDefault()
     setError('')
 
-    if (!date || !startTime || !endTime) {
+    if (!date || !startHour || !startMinute || !endHour || !endMinute) {
       setError('利用日と利用時間を選択してください')
       return
     }
@@ -149,6 +150,9 @@ export default function ReservationRequestPage() {
       setError('ルームIDが指定されていません')
       return
     }
+
+    const startTime = `${startHour}:${startMinute}`
+    const endTime = `${endHour}:${endMinute}`
 
     const selectedOptionsList = Object.entries(selectedOptions)
       .filter(([_, isSelected]) => isSelected)
@@ -167,15 +171,15 @@ export default function ReservationRequestPage() {
   }
 
   const calculateTotalPrice = (): number => {
-    if (!room || !startTime || !endTime) return 0
+    if (!room || !startHour || !startMinute || !endHour || !endMinute) return 0
 
-    const duration = calculateDuration(startTime, endTime)
+    const duration = calculateDuration(`${startHour}:${startMinute}`, `${endHour}:${endMinute}`)
     const selectedDate = date ? new Date(date) : null
     const isHoliday = selectedDate ? isWeekend(selectedDate) : false
 
     // 土日かつ時間帯別料金が設定されている場合のみ、時間帯別料金を使用
     const basePrice = isHoliday && room.hourlyPricesHoliday.length > 0
-      ? calculateHolidayPrice(room, startTime, endTime)
+      ? calculateHolidayPrice(room, `${startHour}:${startMinute}`, `${endHour}:${endMinute}`)
       : room.pricePerHour * duration
 
     const optionsPrice = room.options
@@ -258,40 +262,54 @@ export default function ReservationRequestPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">開始時間</label>
-            <select
-              value={startTime}
-              onChange={(e) => {
-                setStartTime(e.target.value)
-                if (endTime && new Date(`2000-01-01T${endTime}`) <= new Date(`2000-01-01T${e.target.value}`)) {
-                  setEndTime('')
-                }
-              }}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="">選択してください</option>
-              {generateTimeOptions().map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2 mt-1">
+              <select
+                value={startHour}
+                onChange={(e) => setStartHour(e.target.value)}
+                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="">時</option>
+                {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                  <option key={hour} value={hour.toString().padStart(2, '0')}>
+                    {hour}時
+                  </option>
+                ))}
+              </select>
+              <select
+                value={startMinute}
+                onChange={(e) => setStartMinute(e.target.value)}
+                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="00">00分</option>
+                <option value="30">30分</option>
+              </select>
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">終了時間</label>
-            <select
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              disabled={!startTime}
-            >
-              <option value="">選択してください</option>
-              {getAvailableEndTimes().map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2 mt-1">
+              <select
+                value={endHour}
+                onChange={(e) => setEndHour(e.target.value)}
+                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="">時</option>
+                {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                  <option key={hour} value={hour.toString().padStart(2, '0')}>
+                    {hour}時
+                  </option>
+                ))}
+              </select>
+              <select
+                value={endMinute}
+                onChange={(e) => setEndMinute(e.target.value)}
+                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="00">00分</option>
+                <option value="30">30分</option>
+              </select>
+            </div>
           </div>
 
           <div>
