@@ -41,10 +41,15 @@ const getUnitText = (unit: string): string => {
 const calculateDuration = (startTime: string, endTime: string): number => {
   if (!startTime || !endTime) return 0
   
-  const start = new Date(`2000-01-01T${startTime}`)
-  const end = new Date(`2000-01-01T${endTime}`)
-  const diffInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
-  return diffInHours
+  const [startHour, startMinute] = startTime.split(':').map(Number)
+  const [endHour, endMinute] = endTime.split(':').map(Number)
+  
+  // 24時間を超える時間を考慮
+  const startTotalMinutes = startHour * 60 + startMinute
+  const endTotalMinutes = endHour * 60 + endMinute
+  const diffInMinutes = endTotalMinutes - startTotalMinutes
+  
+  return diffInMinutes / 60
 }
 
 const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: number): number => {
@@ -182,16 +187,24 @@ export default function ReservationRequestPage() {
 
   // 土日の時間帯別料金を計算する関数
   const calculateHolidayPrice = (room: Room, startTime: string, endTime: string): number => {
-    const start = new Date(`2000-01-01T${startTime}`)
-    const end = new Date(`2000-01-01T${endTime}`)
+    const [startHour, startMinute] = startTime.split(':').map(Number)
+    const [endHour, endMinute] = endTime.split(':').map(Number)
     let total = 0
 
-    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 30)) {
-      const hour = t.getHours()
+    // 30分刻みで時間を進める
+    for (let hour = startHour, minute = startMinute; 
+         hour < endHour || (hour === endHour && minute < endMinute); 
+         minute += 30) {
+      if (minute >= 60) {
+        hour += 1
+        minute = 0
+      }
+
+      const currentHour = hour % 24 // 24時間を超える時間を考慮
       const price = room.hourlyPricesHoliday.find(p => {
         const [sHour] = p.startTime.split(':').map(Number)
         const [eHour] = p.endTime.split(':').map(Number)
-        return hour >= sHour && hour < eHour
+        return currentHour >= sHour && currentHour < eHour
       })?.pricePerHour ?? room.pricePerHour
       total += price / 2
     }
