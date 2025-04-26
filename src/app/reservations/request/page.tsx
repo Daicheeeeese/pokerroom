@@ -20,6 +20,21 @@ interface Room {
   options: Option[]
 }
 
+const getUnitText = (unit: string): string => {
+  switch (unit) {
+    case 'per_halfHour':
+      return '30分あたり'
+    case 'booking':
+      return '予約あたり'
+    case 'per_hour':
+      return '1時間あたり'
+    case 'per_hour_person':
+      return '1人1時間あたり'
+    default:
+      return ''
+  }
+}
+
 export default function ReservationRequestPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -214,7 +229,9 @@ export default function ReservationRequestPage() {
                       />
                       <label htmlFor={`option-${option.id}`} className="ml-3">
                         <p className="font-medium">{option.name}</p>
-                        <p className="text-sm text-gray-500">¥{option.price.toLocaleString()}</p>
+                        <p className="text-sm text-gray-500">
+                          ¥{option.price.toLocaleString()}（{getUnitText(option.unit)}）
+                        </p>
                       </label>
                     </div>
                   </div>
