@@ -36,8 +36,8 @@ export async function GET(
         price: opt.price,
         unit: opt.unit,
         isRequired: opt.isRequired,
-      })),
-      // hourlyPricesWeekdayがnullの場合は空配列を返す    }
+      }))
+    }
 
     return NextResponse.json(flattenedRoom)
   } catch (error) {
