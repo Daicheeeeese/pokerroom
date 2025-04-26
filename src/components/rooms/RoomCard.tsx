@@ -2,9 +2,14 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import type { Review } from "@prisma/client"
-import { MapPinIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
+import { MapPinIcon } from "@heroicons/react/24/outline"
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
 type RoomWithReviews = {
   id: string
@@ -26,12 +31,6 @@ type Props = {
 }
 
 export default function RoomCard({ room, selectedDate }: Props) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null)
-  const touchStartX = useRef<number>(0)
-  const touchEndX = useRef<number>(0)
-  
-  // 画像の取得
   const images = room.images?.length 
     ? room.images.map(img => img.url)
     : [room.image || '/placeholder.png']
@@ -40,104 +39,30 @@ export default function RoomCard({ room, selectedDate }: Props) {
     ? room.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0) / room.reviews.length
     : null
 
-  const handlePrevImage = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setSlideDirection('right')
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-  }
-
-  const handleNextImage = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setSlideDirection('left')
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-  }
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX
-  }
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStartX.current || !touchEndX.current) return
-
-    const diff = touchStartX.current - touchEndX.current
-    const minSwipeDistance = 50 // 最小スワイプ距離
-
-    if (Math.abs(diff) > minSwipeDistance) {
-      if (diff > 0) {
-        // 左スワイプ
-        setSlideDirection('left')
-        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-      } else {
-        // 右スワイプ
-        setSlideDirection('right')
-        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-      }
-    }
-
-    // リセット
-    touchStartX.current = 0
-    touchEndX.current = 0
-  }
-
-  const handleAnimationEnd = () => {
-    setSlideDirection(null)
-  }
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
       <Link href={`/rooms/${room.id}${selectedDate ? `?date=${selectedDate.toISOString().split('T')[0]}` : ''}`}>
-        <div 
-          className="relative h-48 group overflow-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div 
-            className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
-              slideDirection === 'left' ? 'translate-x-[-100%]' : 
-              slideDirection === 'right' ? 'translate-x-[100%]' : 
-              'translate-x-0'
-            }`}
-            onTransitionEnd={handleAnimationEnd}
+        <div className="relative h-48">
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            className="h-full"
           >
-            <Image
-              src={images[currentImageIndex]}
-              alt={room.name}
-              fill
-              priority
-              className="object-cover"
-            />
-          </div>
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={handlePrevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              >
-                <ChevronLeftIcon className="h-6 w-6" />
-              </button>
-              <button
-                onClick={handleNextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              >
-                <ChevronRightIcon className="h-6 w-6" />
-              </button>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                {images.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                    }`}
+            {images.map((image, index) => (
+              <SwiperSlide key={index}>
+                <div className="relative h-full">
+                  <Image
+                    src={image}
+                    alt={`${room.name} - 画像${index + 1}`}
+                    fill
+                    priority
+                    className="object-cover"
                   />
-                ))}
-              </div>
-            </>
-          )}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
