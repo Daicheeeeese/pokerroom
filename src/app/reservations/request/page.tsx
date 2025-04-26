@@ -116,14 +116,13 @@ export default function ReservationRequestPage() {
   const getAvailableEndTimes = () => {
     if (!startTime) return generateTimeOptions()
 
-    const start = new Date(`2000-01-01T${startTime}`)
-    const endTimes = generateTimeOptions()
+    const [startHour, startMinute] = startTime.split(':').map(Number)
+    const startTotalMinutes = startHour * 60 + startMinute
     
-    // 開始時間より後の時間のみをフィルタリング
-    return endTimes.filter(time => {
-      const end = new Date(`2000-01-01T${time}`)
-      // 27:00までの時間を許可
-      return end > start
+    return generateTimeOptions().filter(time => {
+      const [endHour, endMinute] = time.split(':').map(Number)
+      const endTotalMinutes = endHour * 60 + endMinute
+      return endTotalMinutes > startTotalMinutes
     })
   }
 
