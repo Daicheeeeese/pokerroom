@@ -259,6 +259,20 @@ export default function ReservationRequestPage() {
                 placeholder="利用日を選択"
               />
             </div>
+            {isOpen && (
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => {
+                  setSelectedDate(date);
+                  setIsOpen(false);
+                }}
+                minDate={new Date()}
+                inline
+                open={isOpen}
+                onInputClick={() => setIsOpen(true)}
+                onClickOutside={() => setIsOpen(false)}
+              />
+            )}
           </div>
 
           <div>
