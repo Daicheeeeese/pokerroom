@@ -38,7 +38,9 @@ export async function GET(
         price: opt.price,
         unit: opt.unit,
         isRequired: opt.isRequired,
-      }))
+      })),
+      // hourlyPricesHolidayがnullの場合は空配列を返す
+      hourlyPricesHoliday: room.hourlyPricesHoliday || []
     }
 
     return NextResponse.json(flattenedRoom)
