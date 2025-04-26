@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import NextAuth from 'next-auth'
+import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,7 +24,29 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ account, profile }) {
       if (account?.provider === "google") {
-        return true
+        try {
+          // ユーザーが存在するか確認
+          const existingUser = await prisma.user.findUnique({
+            where: { email: profile?.email }
+          })
+
+          // ユーザーが存在しない場合は作成
+          if (!existingUser) {
+            await prisma.user.create({
+              data: {
+                email: profile?.email!,
+                name: profile?.name || 'ゲスト',
+                password: '', // パスワードは不要だが必須フィールドなので空文字を設定
+                image: profile?.image || null
+              }
+            })
+          }
+
+          return true
+        } catch (error) {
+          console.error('ユーザー作成エラー:', error)
+          return false
+        }
       }
       return false
     },
