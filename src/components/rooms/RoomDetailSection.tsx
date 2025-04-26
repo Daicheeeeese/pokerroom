@@ -99,9 +99,19 @@ export function RoomDetailSection({ room }: Props) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-8">
+          <div className="w-full">
+            <Image
+              src={room.images[0]?.url || '/placeholder.jpg'}
+              alt={room.name}
+              width={800}
+              height={600}
+              className="w-full h-auto object-cover"
+              priority
+            />
+          </div>
           <div>
             <h3 className="text-lg font-medium text-gray-900">収容人数</h3>
             <p className="mt-2 text-gray-600">{room.capacity}人</p>
