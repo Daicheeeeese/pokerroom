@@ -6,6 +6,9 @@ import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { isWeekend } from '@/lib/utils'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import './datepicker.css'
 
 interface Option {
   id: string
@@ -238,12 +241,18 @@ export default function ReservationRequestPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">日付</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
+            <DatePicker
+              selected={date ? new Date(date) : null}
+              onChange={(date) => {
+                if (date) {
+                  setDate(date.toISOString().split('T')[0])
+                }
+              }}
+              minDate={new Date()}
+              dateFormat="yyyy年MM月dd日(EEE)"
+              locale={ja}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholderText="日付を選択"
             />
           </div>
 
