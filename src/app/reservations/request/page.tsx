@@ -121,14 +121,12 @@ export default function ReservationRequestPage() {
   }
 
   const getAvailableEndTimes = () => {
-    if (!startHour || !startMinute) return generateTimeOptions()
+    if (!startHour) return generateTimeOptions()
 
-    const startTotalMinutes = parseInt(startHour) * 60 + parseInt(startMinute)
-    
+    const startHourNum = parseInt(startHour)
     return generateTimeOptions().filter(time => {
-      const [endHour, endMinute] = time.split(':').map(Number)
-      const endTotalMinutes = endHour * 60 + endMinute
-      return endTotalMinutes > startTotalMinutes
+      const [hour] = time.split(':')
+      return parseInt(hour) > startHourNum
     })
   }
 
