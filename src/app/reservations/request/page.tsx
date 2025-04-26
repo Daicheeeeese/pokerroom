@@ -296,13 +296,18 @@ export default function ReservationRequestPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">人数</label>
-            <input
-              type="number"
-              min="1"
+            <select
               value={numberOfPeople}
               onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
+            >
+              {Array.from({ length: 19 }, (_, i) => i + 1).map((num) => (
+                <option key={num} value={num}>
+                  {num}名
+                </option>
+              ))}
+              <option value={20}>20名以上</option>
+            </select>
           </div>
 
           {room?.options && room.options.length > 0 && (
