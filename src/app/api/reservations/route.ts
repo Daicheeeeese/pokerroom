@@ -26,7 +26,14 @@ function corsResponse(data: any, status: number = 200) {
 
 // OPTIONSリクエストのハンドラー
 export async function OPTIONS() {
-  return corsResponse({}, 200)
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
 }
 
 export async function POST(request: Request) {
@@ -35,7 +42,14 @@ export async function POST(request: Request) {
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'ログインが必要です' },
-        { status: 401 }
+        { 
+          status: 401,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
       )
     }
 
@@ -46,7 +60,14 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },
-        { status: 404 }
+        { 
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
       )
     }
 
@@ -55,8 +76,15 @@ export async function POST(request: Request) {
 
     if (!roomId || !date || !startTime || !endTime || !people || !totalPrice) {
       return NextResponse.json(
-        { error: '必要な情報が不足しています' },
-        { status: 400 }
+        { error: '必要な情報が不足しています', details: { roomId, date, startTime, endTime, people, totalPrice } },
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
       )
     }
 
