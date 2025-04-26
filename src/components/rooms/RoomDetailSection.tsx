@@ -11,6 +11,7 @@ import { formatPricePerHour } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { RoomMap } from './RoomMap'
 
 type RoomWithDetails = Prisma.RoomGetPayload<{
   include: {
@@ -24,6 +25,8 @@ type RoomWithDetails = Prisma.RoomGetPayload<{
   };
 }> & {
   nextAvailableDate: Date | null;
+  latitude: number;
+  longitude: number;
 }
 
 interface Props {
@@ -129,6 +132,15 @@ export function RoomDetailSection({ room }: Props) {
             <p className="mt-2 text-gray-600 whitespace-pre-line">
               {getBusinessHours().join('\n')}
             </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">地図</h3>
+            <RoomMap
+              address={room.address}
+              latitude={room.latitude}
+              longitude={room.longitude}
+            />
           </div>
         </div>
 

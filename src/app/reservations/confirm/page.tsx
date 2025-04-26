@@ -25,6 +25,7 @@ interface Room {
   address: string
   pricePerHour: number
   options: Option[]
+  nearestStation: string
 }
 
 const calculateDuration = (startTime: string, endTime: string): number => {
@@ -201,6 +202,7 @@ export default function ReservationConfirmPage() {
       <Card className="p-6 mb-8">
         <p>ポーカールーム: {room.name}</p>
         <p>住所: {room.address}</p>
+        <p>最寄駅: {room.nearestStation}</p>
         <p>日付: {formattedDate}</p>
         <p>時間: {startTime} ~ {endTime}</p>
         <p>人数: {numberOfPeople}人</p>
