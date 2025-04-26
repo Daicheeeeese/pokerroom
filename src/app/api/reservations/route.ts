@@ -127,46 +127,28 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)
-    console.log("API - セッション情報:", {
-      authenticated: !!session,
-      user: session?.user ? {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name
-      } : null
-    })
 
     if (!session?.user?.email) {
-      console.log("API - 認証エラー: ユーザーIDが見つかりません")
       return corsResponse(
         { error: "認証が必要です" },
         401
       )
     }
 
-    // データベースから正しいユーザーIDを取得
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     })
 
     if (!user) {
-      console.log("API - エラー: ユーザーが見つかりません")
       return corsResponse(
         { error: "ユーザーが見つかりません" },
         404
       )
     }
 
-    console.log("API - データベースのユーザー情報:", {
-      id: user.id,
-      email: user.email,
-      name: user.name
-    })
-
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status') as ReservationStatus | null
 
-    // 予約の取得
     const reservations = await prisma.reservation.findMany({
       where: {
         userId: user.id,
@@ -188,16 +170,6 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: 'desc'
       }
-    })
-
-    console.log("API - 取得した予約データ:", {
-      count: reservations.length,
-      reservations: reservations.map(r => ({
-        id: r.id,
-        date: r.date,
-        status: r.status,
-        roomName: r.room.name
-      }))
     })
 
     return corsResponse({ reservations })
