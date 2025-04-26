@@ -9,6 +9,15 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+// トランスポーターの接続を確認
+transporter.verify(function(error, success) {
+  if (error) {
+    console.error('メールサーバー接続エラー:', error)
+  } else {
+    console.log('メールサーバーに接続しました')
+  }
+})
+
 type ReservationEmailData = {
   userEmail: string
   userName: string
@@ -50,9 +59,15 @@ async function sendAdminNotification({
   }
 
   try {
-    await transporter.sendMail(mailOptions)
+    console.log('管理者向けメールを送信します:', mailOptions)
+    const info = await transporter.sendMail(mailOptions)
+    console.log('管理者向けメール送信完了:', info.messageId)
   } catch (error) {
     console.error('管理者向けメール送信エラー:', error)
+    if (error instanceof Error) {
+      console.error('エラーメッセージ:', error.message)
+      console.error('エラースタック:', error.stack)
+    }
     // 管理者向けメールの失敗は予約プロセスを中断しない
   }
 }
@@ -91,8 +106,9 @@ export async function sendReservationConfirmationEmail({
   }
 
   try {
-    // ユーザー向けメール送信
-    await transporter.sendMail(mailOptions)
+    console.log('ユーザー向けメールを送信します:', mailOptions)
+    const info = await transporter.sendMail(mailOptions)
+    console.log('ユーザー向けメール送信完了:', info.messageId)
     
     // 管理者向けメール送信
     await sendAdminNotification({
@@ -105,6 +121,10 @@ export async function sendReservationConfirmationEmail({
     })
   } catch (error) {
     console.error('メール送信エラー:', error)
+    if (error instanceof Error) {
+      console.error('エラーメッセージ:', error.message)
+      console.error('エラースタック:', error.stack)
+    }
     throw new Error('予約確認メールの送信に失敗しました')
   }
 } 
