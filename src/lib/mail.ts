@@ -4,11 +4,18 @@ import nodemailer from 'nodemailer'
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
+  secure: false, // TLSを使用
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-})
+  // SPF、DKIM、DMARCの設定
+  dkim: {
+    domainName: process.env.MAIL_DOMAIN,
+    keySelector: 'default',
+    privateKey: process.env.DKIM_PRIVATE_KEY,
+  },
+} as nodemailer.TransportOptions)
 
 type ReservationEmailData = {
   userEmail: string
@@ -67,7 +74,7 @@ export async function sendReservationConfirmationEmail({
   endTime,
   totalPrice,
 }: ReservationEmailData) {
-  const mailOptions = {
+  const mailOptions: nodemailer.SendMailOptions = {
     from: process.env.SMTP_FROM,
     to: userEmail,
     subject: '【PokerRoom】ご予約を受け付けました',
@@ -89,6 +96,14 @@ export async function sendReservationConfirmationEmail({
       <hr>
       <p>※このメールは送信専用です。返信いただいてもお答えできません。</p>
     `,
+    // メールの優先度を設定
+    priority: 'high' as const,
+    // メールの分類を設定
+    headers: {
+      'X-Priority': '1',
+      'X-MSMail-Priority': 'High',
+      'Importance': 'high',
+    },
   }
 
   try {
