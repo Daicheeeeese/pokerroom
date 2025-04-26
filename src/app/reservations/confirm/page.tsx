@@ -61,6 +61,21 @@ const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: 
   }
 }
 
+const getUnitText = (unit: string): string => {
+  switch (unit) {
+    case 'per_halfHour':
+      return '30分あたり'
+    case 'booking':
+      return '予約あたり'
+    case 'per_hour':
+      return '1時間あたり'
+    case 'per_hour_person':
+      return '1人1時間あたり'
+    default:
+      return ''
+  }
+}
+
 export default function ReservationConfirmPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -216,13 +231,13 @@ export default function ReservationConfirmPage() {
           <div className="mt-4">
             <h3 className="text-lg font-medium text-gray-900">選択されたオプション</h3>
             <div className="mt-2 space-y-2">
-              {selectedOptions.map(({ optionId, quantity }) => {
+              {selectedOptions.map(({ optionId }) => {
                 const opt = room.options.find(o => o.id === optionId)
                 if (!opt) return null
                 return (
                   <div key={optionId} className="flex justify-between">
-                    <span>{opt.name} × {quantity}</span>
-                    <span>¥{(opt.price * quantity).toLocaleString()}</span>
+                    <span>{opt.name} {getUnitText(opt.unit)}</span>
+                    <span>¥{calculateOptionPrice(opt, calculateDuration(startTime!, endTime!), parseInt(numberOfPeople!)).toLocaleString()}</span>
                   </div>
                 )
               })}
