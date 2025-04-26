@@ -2,8 +2,13 @@
   font-family: inherit;
   border: none;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 0.5rem;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 50;
   background-color: white;
 }
 
@@ -97,4 +102,35 @@
 
 .react-datepicker__triangle {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .react-datepicker {
+    width: 90vw !important;
+    max-width: 320px;
+  }
+  
+  .react-datepicker__month-container {
+    width: 100% !important;
+  }
+  
+  .react-datepicker__day {
+    width: 2.5rem !important;
+    line-height: 2.5rem !important;
+    margin: 0.1rem !important;
+  }
+  
+  .react-datepicker__day-name {
+    width: 2.5rem !important;
+    line-height: 2.5rem !important;
+    margin: 0.1rem !important;
+  }
+  
+  .react-datepicker__current-month {
+    font-size: 1rem !important;
+  }
+  
+  .react-datepicker__navigation {
+    top: 0.5rem !important;
+  }
 } 
