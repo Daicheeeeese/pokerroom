@@ -24,16 +24,6 @@ interface Room {
   name: string
   address: string
   pricePerHour: number
-  hourlyPricesWeekday: {
-    startTime: string
-    endTime: string
-    pricePerHour: number
-  }[]
-  hourlyPricesHoliday: {
-    startTime: string
-    endTime: string
-    pricePerHour: number
-  }[]
   options: Option[]
 }
 
@@ -110,28 +100,11 @@ export default function ReservationConfirmPage() {
 
   // 日付・時間計算
   const formattedDate = date ? format(new Date(date), 'yyyy年MM月dd日', { locale: ja }) : ''
-  const isHoliday = date ? [0, 6].includes(new Date(date).getDay()) : false
-  const hourlyPrices = room
-    ? isHoliday
-      ? room.hourlyPricesHoliday
-      : room.hourlyPricesWeekday
-    : []
 
   const calculateRoomPrice = () => {
     if (!startTime || !endTime || !room) return 0
-    const start = new Date(`2000-01-01T${startTime}`)
-    const end = new Date(`2000-01-01T${endTime}`)
-    let total = 0
-    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 30)) {
-      const hour = t.getHours()
-      const price = hourlyPrices.find(p => {
-        const [sHour] = p.startTime.split(':').map(Number)
-        const [eHour] = p.endTime.split(':').map(Number)
-        return hour >= sHour && hour < eHour
-      })?.pricePerHour ?? room.pricePerHour
-      total += price / 2
-    }
-    return total
+    const duration = calculateDuration(startTime, endTime)
+    return room.pricePerHour * duration
   }
 
   const calculateOptionsPrice = () => {
