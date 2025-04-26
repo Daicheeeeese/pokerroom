@@ -29,7 +29,7 @@ export default function ReservationRequestPage() {
   const [startTime, setStartTime] = useState<string>('')
   const [endTime, setEndTime] = useState<string>('')
   const [numberOfPeople, setNumberOfPeople] = useState<number>(1)
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: number }>({})
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: boolean }>({})
   const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
@@ -76,10 +76,10 @@ export default function ReservationRequestPage() {
     })
   }
 
-  const handleOptionChange = (optionId: string, quantity: number) => {
+  const handleOptionChange = (optionId: string, checked: boolean) => {
     setSelectedOptions(prev => ({
       ...prev,
-      [optionId]: quantity,
+      [optionId]: checked,
     }))
   }
 
@@ -98,8 +98,8 @@ export default function ReservationRequestPage() {
     }
 
     const selectedOptionsList = Object.entries(selectedOptions)
-      .filter(([_, quantity]) => quantity > 0)
-      .map(([optionId, quantity]) => ({ optionId, quantity }))
+      .filter(([_, isSelected]) => isSelected)
+      .map(([optionId]) => ({ optionId, quantity: 1 }))
 
     const queryParams = new URLSearchParams({
       roomId,
@@ -204,17 +204,19 @@ export default function ReservationRequestPage() {
               <div className="space-y-4">
                 {room.options.map((option) => (
                   <div key={option.id} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{option.name}</p>
-                      <p className="text-sm">¥{option.price.toLocaleString()}</p>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`option-${option.id}`}
+                        checked={selectedOptions[option.id] || false}
+                        onChange={(e) => handleOptionChange(option.id, e.target.checked)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor={`option-${option.id}`} className="ml-3">
+                        <p className="font-medium">{option.name}</p>
+                        <p className="text-sm text-gray-500">¥{option.price.toLocaleString()}</p>
+                      </label>
                     </div>
-                    <input
-                      type="number"
-                      min="0"
-                      value={selectedOptions[option.id] || 0}
-                      onChange={(e) => handleOptionChange(option.id, parseInt(e.target.value))}
-                      className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
                   </div>
                 ))}
               </div>
