@@ -2,20 +2,12 @@ import nodemailer from 'nodemailer'
 
 // メール送信用のトランスポーターを作成
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false, // TLSを使用
+  service: 'gmail',
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
   },
-  // SPF、DKIM、DMARCの設定
-  dkim: {
-    domainName: process.env.MAIL_DOMAIN,
-    keySelector: 'default',
-    privateKey: process.env.DKIM_PRIVATE_KEY,
-  },
-} as nodemailer.TransportOptions)
+})
 
 type ReservationEmailData = {
   userEmail: string
@@ -37,7 +29,7 @@ async function sendAdminNotification({
   totalPrice,
 }: Omit<ReservationEmailData, 'userEmail'>) {
   const mailOptions = {
-    from: process.env.SMTP_FROM,
+    from: process.env.GMAIL_USER,
     to: 'pokerroom.reservation@gmail.com',
     subject: '【PokerRoom】新規予約が入りました',
     html: `
@@ -74,8 +66,8 @@ export async function sendReservationConfirmationEmail({
   endTime,
   totalPrice,
 }: ReservationEmailData) {
-  const mailOptions: nodemailer.SendMailOptions = {
-    from: process.env.SMTP_FROM,
+  const mailOptions = {
+    from: process.env.GMAIL_USER,
     to: userEmail,
     subject: '【PokerRoom】ご予約を受け付けました',
     html: `
@@ -96,14 +88,6 @@ export async function sendReservationConfirmationEmail({
       <hr>
       <p>※このメールは送信専用です。返信いただいてもお答えできません。</p>
     `,
-    // メールの優先度を設定
-    priority: 'high' as const,
-    // メールの分類を設定
-    headers: {
-      'X-Priority': '1',
-      'X-MSMail-Priority': 'High',
-      'Importance': 'high',
-    },
   }
 
   try {
