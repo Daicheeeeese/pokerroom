@@ -111,6 +111,13 @@ export function RoomDetailSection({ room }: Props) {
           </div>
 
           <div>
+            <h3 className="text-lg font-medium text-gray-900">営業時間</h3>
+            <p className="mt-2 text-gray-600 whitespace-pre-line">
+              {getBusinessHours().join('\n')}
+            </p>
+          </div>
+
+          <div>
             <h3 className="text-lg font-medium text-gray-900">住所</h3>
             <p className="mt-2 text-gray-600 whitespace-pre-line">{room.address}</p>
           </div>
@@ -127,12 +134,7 @@ export function RoomDetailSection({ room }: Props) {
             </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-medium text-gray-900">営業時間</h3>
-            <p className="mt-2 text-gray-600 whitespace-pre-line">
-              {getBusinessHours().join('\n')}
-            </p>
-          </div>
+
 
           <div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">地図</h3>
@@ -141,6 +143,13 @@ export function RoomDetailSection({ room }: Props) {
               latitude={room.latitude}
               longitude={room.longitude}
             />
+　　　　　　　<p className="mt-2 text-gray-600 whitespace-pre-line">{room.address}</p>
+　　　　　　　<div className="mt-2 text-gray-600">
+              {room.nearestStations.map((station) => (
+                <div key={station.id} className="flex items-center gap-1">
+                  <Train className="w-4 h-4" />
+                  {`${station.name}${station.transport}${station.minutes}分`}
+                </div>
           </div>
         </div>
 
