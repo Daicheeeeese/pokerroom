@@ -112,8 +112,12 @@ export default function ReservationRequestPage() {
     if (!startTime) return generateTimeOptions()
 
     const start = new Date(`2000-01-01T${startTime}`)
-    return generateTimeOptions().filter(time => {
+    const endTimes = generateTimeOptions()
+    
+    // 開始時間より後の時間のみをフィルタリング
+    return endTimes.filter(time => {
       const end = new Date(`2000-01-01T${time}`)
+      // 27:00までの時間を許可
       return end > start
     })
   }
