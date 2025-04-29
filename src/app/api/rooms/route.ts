@@ -59,7 +59,6 @@ export async function GET(request: Request) {
     const rooms = await prisma.room.findMany({
       where,
       include: {
-        reviews: true,
         images: {
           orderBy: {
             order: 'asc'

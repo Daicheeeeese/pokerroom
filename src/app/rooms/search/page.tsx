@@ -5,12 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import RoomCard from '@/components/rooms/RoomCard'
 import SearchBar from '@/components/SearchBar'
 import SortSelect from '@/components/rooms/SortSelect'
-import { Room, Review, Tag } from '@prisma/client'
-
-type RoomWithReviews = Room & {
-  reviews: Review[]
-  tags: Tag[]
-}
+import { Room } from '@prisma/client'
 
 type PaginationData = {
   currentPage: number
@@ -22,7 +17,7 @@ type PaginationData = {
 
 export default function RoomSearchPage() {
   const searchParams = useSearchParams()
-  const [rooms, setRooms] = useState<RoomWithReviews[]>([])
+  const [rooms, setRooms] = useState<(Room & { images: { url: string }[] })[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState('recommended')
@@ -117,10 +112,6 @@ export default function RoomSearchPage() {
         return a.pricePerHour - b.pricePerHour
       case 'priceDesc':
         return b.pricePerHour - a.pricePerHour
-      case 'ratingDesc':
-        const aRating = a.reviews.reduce((acc, review) => acc + review.rating, 0) / (a.reviews.length || 1)
-        const bRating = b.reviews.reduce((acc, review) => acc + review.rating, 0) / (b.reviews.length || 1)
-        return bRating - aRating
       case 'newest':
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       default:

@@ -3,23 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Room, Review } from '@prisma/client'
+import { Room } from '@prisma/client'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { MapPinIcon } from "@heroicons/react/24/outline"
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import './RoomCard.css'
-
-type RoomWithReviews = Room & {
-  reviews: Review[]
-}
 
 interface RoomCardProps {
-  room: RoomWithReviews
+  room: Room & {
+    images: { url: string }[]
+  }
   selectedDate: Date | null
 }
 
@@ -49,11 +40,6 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
     }
   }, [])
 
-  // 平均評価を計算
-  const averageRating = room.reviews.length > 0
-    ? (room.reviews.reduce((acc, review) => acc + review.rating, 0) / room.reviews.length).toFixed(1)
-    : '0.0'
-
   return (
     <Link href={`/rooms/${room.id}${selectedDate ? `?date=${format(selectedDate, 'yyyy-MM-dd')}` : ''}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -76,11 +62,6 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
 
         <div className="p-4">
           <h3 className="text-lg font-semibold mb-2">{room.name}</h3>
-          <div className="flex items-center mb-2">
-            <span className="text-yellow-400">★</span>
-            <span className="ml-1 text-gray-600">{averageRating}</span>
-            <span className="ml-2 text-gray-500">({room.reviews.length}件のレビュー)</span>
-          </div>
           <p className="text-gray-600 mb-2">{room.address}</p>
           <p className="text-lg font-semibold text-primary">
             ¥{room.pricePerHour.toLocaleString()}/時間
