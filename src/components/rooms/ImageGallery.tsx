@@ -22,7 +22,7 @@ export default function ImageGallery({ mainImage, images }: Props) {
   const allImages = [mainImage, ...images.map(img => img.url)]
 
   return (
-    <div className="relative h-[60vh] rounded-xl overflow-hidden">
+    <div className="relative h-[50vh] rounded-xl overflow-hidden">
       <Swiper
         modules={[Pagination]}
         pagination={{ clickable: true }}
