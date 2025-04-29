@@ -53,10 +53,6 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
               modules={[Autoplay, Pagination]}
               spaceBetween={0}
               slidesPerView={1}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
               pagination={{
                 clickable: true,
                 bulletClass: 'swiper-pagination-bullet',

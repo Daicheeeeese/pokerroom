@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return {
-      title: `${room.name} | PokerRoom`,
+      title: `${room.name} | PokerBase`,
       description: room.description || `${room.name}の詳細ページです。`
     }
   } catch (error) {

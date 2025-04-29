@@ -1,8 +1,8 @@
 import ContactForm from '@/components/ContactForm'
 
 export const metadata = {
-  title: 'お問い合わせ | PokerRoom',
-  description: 'PokerRoomへのお問い合わせはこちらから',
+  title: 'お問い合わせ | PokerBase',
+  description: 'PokerBaseへのお問い合わせはこちらから',
 }
 
 export default function ContactPage() {

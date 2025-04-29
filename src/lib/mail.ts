@@ -53,7 +53,7 @@ async function sendAdminNotification({
   const mailOptions: nodemailer.SendMailOptions = {
     from: process.env.SMTP_FROM,
     to: 'pokerroom.reservation@gmail.com',
-    subject: '【PokerRoom】新規予約が入りました',
+    subject: '【PokerBase】新規予約が入りました',
     html: `
       <h2>新規予約通知</h2>
       <p>以下の予約が入りました。</p>
@@ -115,11 +115,11 @@ export async function sendReservationConfirmationEmail({
   const mailOptions: nodemailer.SendMailOptions = {
     from: process.env.SMTP_FROM,
     to: userEmail,
-    subject: '【PokerRoom】ご予約を受け付けました',
+    subject: '【PokerBase】ご予約を受け付けました',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #333;">${userName}様</h2>
-        <p style="color: #666;">PokerRoomをご利用いただき、ありがとうございます。<br>
+        <p style="color: #666;">PokerBaseをご利用いただき、ありがとうございます。<br>
         以下の内容で予約を受け付けました。</p>
         
         <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">

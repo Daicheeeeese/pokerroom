@@ -1,6 +1,6 @@
 export const metadata = {
-  title: '利用規約 | PokerRoom',
-  description: 'PokerRoomの利用規約です',
+  title: '利用規約 | PokerBase',
+  description: 'PokerBaseの利用規約です',
 }
 
 export default function TermsPage() {

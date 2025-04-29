@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'プライバシーポリシー | PokerRoom',
-  description: 'PokerRoomのプライバシーポリシーです',
+  title: 'プライバシーポリシー | PokerBase',
+  description: 'PokerBaseのプライバシーポリシーです',
 }
 
 export default function PrivacyPage() {
