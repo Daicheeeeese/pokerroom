@@ -97,9 +97,9 @@ export function RoomDetailSection({ room }: Props) {
                 {room.tags.map((roomTag) => (
                   <div
                     key={roomTag.tag.id}
-                    className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full"
+                    className="flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-full"
                   >
-                    <BadgeCheck className="w-4 h-4 text-blue-500" />
+                    <BadgeCheck className="w-4 h-4 text-gray-900" />
                     <span className="text-sm text-gray-700">{roomTag.tag.name}</span>
                   </div>
                 ))}
