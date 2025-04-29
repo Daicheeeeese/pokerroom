@@ -180,15 +180,15 @@ export function RoomDetailSection({ room }: Props) {
             </div>
           </div>
 
-          <div>
+          <div className="py-6">
             <h3 className="text-lg font-medium text-gray-900">オプション</h3>
-            <div className="flex flex-col gap-2 mt-4">
+            <div className="flex flex-col gap-4 mt-4">
               {room.options.map((option) => (
-                <div key={option.id} className="flex justify-between items-center">
-                  <span className="text-gray-700">{option.name}</span>
-                  <span className="text-gray-700">
+                <div key={option.id} className="bg-gray-50 p-4 rounded-lg">
+                  <div className="text-gray-900 font-medium">{option.name}</div>
+                  <div className="text-gray-700 mt-1">
                     ¥{option.price.toLocaleString()}{getUnitDisplay(option.unit)}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
