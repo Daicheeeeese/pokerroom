@@ -47,6 +47,7 @@ model Room {
   extensionRates      ExtensionRate[]
   minimumPersons      MinimumPerson[]
   entryFees           EntryFee[]
+  tags                RoomTag[]
 
   @@map("rooms")
 }
@@ -241,4 +242,28 @@ model EntryFee {
 
   @@map("entry_fees")
   @@index([roomId])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  rooms     RoomTag[]
+
+  @@map("tags")
+}
+
+model RoomTag {
+  roomId    String
+  tagId     String
+  room      Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tag       Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@id([roomId, tagId])
+  @@index([roomId])
+  @@index([tagId])
+  @@map("room_tags")
 }
