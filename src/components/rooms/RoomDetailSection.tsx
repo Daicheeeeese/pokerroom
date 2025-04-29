@@ -114,7 +114,7 @@ export function RoomDetailSection({ room }: Props) {
         <div className="space-y-8">
           {/* 設備タグ */}
           {room.tags && room.tags.length > 0 && (
-            <div>
+            <div className="border-t border-b border-gray-200 py-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">提供可能な設備</h3>
               <div className="flex flex-wrap gap-3">
                 {room.tags.map((roomTag) => (
@@ -130,19 +130,19 @@ export function RoomDetailSection({ room }: Props) {
             </div>
           )}
 
-          <div>
+          <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-medium text-gray-900">収容人数</h3>
             <p className="mt-2 text-gray-600">{room.capacity}人</p>
           </div>
 
-          <div>
+          <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-medium text-gray-900">営業時間</h3>
             <p className="mt-2 text-gray-600 whitespace-pre-line">
               {getBusinessHours().join('\n')}
             </p>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-medium text-gray-900">住所・アクセス</h3>
             {room.latitude && room.longitude && (
               <div className="mt-2">
@@ -153,7 +153,7 @@ export function RoomDetailSection({ room }: Props) {
                 />
               </div>
             )}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-4">
               <div className="text-gray-700">{room.address}</div>
               <div className="flex flex-col gap-1">
                 {room.nearestStations.map((station) => (
