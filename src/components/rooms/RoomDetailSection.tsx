@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import { Train, Clock, BadgeCheck, Shuffle, UserPlus, Utensils, Nfc, Cigarette, Webcam, BatteryCharging, Wifi, GlassWater} from "lucide-react"
+import { Train, Clock, BadgeCheck, Shuffle, UserPlus, Utensils, Nfc, Cigarette, Webcam, BatteryCharging, Wifi, GlassWater, Rabbit} from "lucide-react"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
@@ -97,6 +97,8 @@ export function RoomDetailSection({ room }: Props) {
         return <BatteryCharging className="w-4 h-4 text-gray-900" />;
       case 'wifi':
         return <Wifi className="w-4 h-4 text-gray-900" />;
+      case 'beginner':
+        return <Rabbit className="w-4 h-4 text-gray-900" />;        
       default:
         return <BadgeCheck className="w-4 h-4 text-gray-900" />;
     }
