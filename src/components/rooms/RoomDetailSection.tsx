@@ -180,19 +180,21 @@ export function RoomDetailSection({ room }: Props) {
             </div>
           </div>
 
-          <div className="py-6">
-            <h3 className="text-lg font-medium text-gray-900">オプション</h3>
-            <div className="flex flex-col gap-4 mt-4">
-              {room.options.map((option) => (
-                <div key={option.id} className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-gray-900 font-medium">{option.name}</div>
-                  <div className="text-gray-700 mt-1">
-                    ¥{option.price.toLocaleString()}{getUnitDisplay(option.unit)}
+          {room.options && room.options.length > 0 && (
+            <div className="py-6">
+              <h3 className="text-lg font-medium text-gray-900">オプション</h3>
+              <div className="flex flex-col gap-4 mt-4">
+                {room.options.map((option) => (
+                  <div key={option.id} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="text-gray-900 font-medium">{option.name}</div>
+                    <div className="text-gray-700 mt-1">
+                      ¥{option.price.toLocaleString()}{getUnitDisplay(option.unit)}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="lg:col-span-1">
