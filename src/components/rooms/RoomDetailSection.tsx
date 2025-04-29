@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import { Train, Clock } from "lucide-react"
+import { Train, Clock, BadgeCheck } from "lucide-react"
 import type { Prisma } from "@prisma/client"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
@@ -22,6 +22,11 @@ type RoomWithDetails = Prisma.RoomGetPayload<{
     nearestStations: true;
     businessHours: true;
     options: true;
+    tags: {
+      include: {
+        tag: true;
+      };
+    };
   };
 }> & {
   nextAvailableDate: Date | null;
@@ -105,6 +110,24 @@ export function RoomDetailSection({ room }: Props) {
     <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-8">
+          {/* 設備タグ */}
+          {room.tags && room.tags.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">提供可能な設備</h3>
+              <div className="flex flex-wrap gap-3">
+                {room.tags.map((roomTag) => (
+                  <div
+                    key={roomTag.tag.id}
+                    className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full"
+                  >
+                    <BadgeCheck className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm text-gray-700">{roomTag.tag.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <h3 className="text-lg font-medium text-gray-900">収容人数</h3>
             <p className="mt-2 text-gray-600">{room.capacity}人</p>
