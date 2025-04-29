@@ -100,6 +100,21 @@ export function RoomDetailSection({ room }: Props) {
     }
   };
 
+  const getUnitDisplay = (unit: string) => {
+    switch (unit) {
+      case 'per_half_hour':
+        return '/30分';
+      case 'booking':
+        return '/予約';
+      case 'per_hour':
+        return '/1時間';
+      case 'per_hour_person':
+        return '/1時間/人';  
+      default:
+        return `/${unit}`;
+    }
+  };
+
   const handleReservationClick = () => {
     if (!session) {
       router.push('/login')
@@ -162,6 +177,20 @@ export function RoomDetailSection({ room }: Props) {
                   </span>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium text-gray-900">オプション</h3>
+            <div className="flex flex-col gap-2 mt-4">
+              {room.options.map((option) => (
+                <div key={option.id} className="flex justify-between items-center">
+                  <span className="text-gray-700">{option.name}</span>
+                  <span className="text-gray-700">
+                    ¥{option.price.toLocaleString()}{getUnitDisplay(option.unit)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
