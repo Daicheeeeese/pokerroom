@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
-import { Train, Clock, BadgeCheck } from "lucide-react"
+import { Train, Clock, BadgeCheck, Shuffle, UserPlus, Utensils, Nfc, Cigarette, Webcam, BatteryCharging, Wifi } from "lucide-react"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
@@ -77,6 +77,29 @@ export function RoomDetailSection({ room }: Props) {
     });
   };
 
+  const getTagIcon = (tagId: string) => {
+    switch (tagId) {
+      case 'autoshuffle':
+        return <Shuffle className="w-4 h-4 text-gray-900" />;
+      case 'dealer':
+        return <UserPlus className="w-4 h-4 text-gray-900" />;
+      case 'foods':
+        return <Utensils className="w-4 h-4 text-gray-900" />;
+      case 'rfidtable':
+        return <Nfc className="w-4 h-4 text-gray-900" />;
+      case 'smoking':
+        return <Cigarette className="w-4 h-4 text-gray-900" />;
+      case 'streaming':
+        return <Webcam className="w-4 h-4 text-gray-900" />;
+      case 'usbport':
+        return <BatteryCharging className="w-4 h-4 text-gray-900" />;
+      case 'wifi':
+        return <Wifi className="w-4 h-4 text-gray-900" />;
+      default:
+        return <BadgeCheck className="w-4 h-4 text-gray-900" />;
+    }
+  };
+
   const handleReservationClick = () => {
     if (!session) {
       router.push('/login')
@@ -99,7 +122,7 @@ export function RoomDetailSection({ room }: Props) {
                     key={roomTag.tag.id}
                     className="flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-full"
                   >
-                    <BadgeCheck className="w-4 h-4 text-gray-900" />
+                    {getTagIcon(roomTag.tag.id)}
                     <span className="text-sm text-gray-700">{roomTag.tag.name}</span>
                   </div>
                 ))}
