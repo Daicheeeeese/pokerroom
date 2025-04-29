@@ -33,3 +33,29 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Swiper styles */
+.swiper-pagination {
+  position: absolute;
+  bottom: 8px !important;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  z-index: 10;
+}
+
+.swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: white;
+  transform: scale(1.2);
+}

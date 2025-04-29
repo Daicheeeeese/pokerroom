@@ -6,6 +6,10 @@ import Link from 'next/link'
 import { Room } from '@prisma/client'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 interface RoomCardProps {
   room: Room & {
@@ -15,11 +19,9 @@ interface RoomCardProps {
 }
 
 export default function RoomCard({ room, selectedDate }: RoomCardProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
-  const intervalRef = useRef<NodeJS.Timeout>()
 
   // 画像の遅延読み込み
   useEffect(() => {
@@ -42,61 +44,43 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
     }
   }, [])
 
-  // 自動スライド
-  useEffect(() => {
-    if (isVisible && room.images.length > 1) {
-      intervalRef.current = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % room.images.length)
-      }, 3000)
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [isVisible, room.images.length])
-
-  const handleDotClick = (index: number) => {
-    setCurrentImageIndex(index)
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-    }
-  }
-
   return (
     <Link href={`/rooms/${room.id}${selectedDate ? `?date=${format(selectedDate, 'yyyy-MM-dd')}` : ''}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <div ref={imageRef} className="relative aspect-video">
           {isVisible && (
-            <Image
-              src={room.images[currentImageIndex]?.url || '/images/placeholder.jpg'}
-              alt={room.name}
-              fill
-              className={`object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={false}
-              onLoad={() => setIsImageLoaded(true)}
-            />
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={0}
+              slidesPerView={1}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              pagination={{
+                clickable: true,
+                bulletClass: 'swiper-pagination-bullet',
+                bulletActiveClass: 'swiper-pagination-bullet-active',
+              }}
+              className="h-full"
+            >
+              {room.images.map((image, index) => (
+                <SwiperSlide key={index}>
+                  <Image
+                    src={image.url || '/images/placeholder.jpg'}
+                    alt={`${room.name} - 画像${index + 1}`}
+                    fill
+                    className={`object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={index === 0}
+                    onLoad={() => setIsImageLoaded(true)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           )}
           {!isImageLoaded && (
             <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-          )}
-          {room.images.length > 1 && (
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-              {room.images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handleDotClick(index)
-                  }}
-                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                    index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                  }`}
-                />
-              ))}
-            </div>
           )}
         </div>
 
