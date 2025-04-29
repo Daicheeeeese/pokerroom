@@ -27,26 +27,26 @@ export function RoomDetailSection({ room }: Props) {
 
   const getDayName = (day: string) => {
     const days: { [key: string]: string } = {
-      monday: '月曜日',
-      tuesday: '火曜日',
-      wednesday: '水曜日',
-      thursday: '木曜日',
-      friday: '金曜日',
-      saturday: '土曜日',
-      sunday: '日曜日',
+      monday: '月',
+      tuesday: '火',
+      wednesday: '水',
+      thursday: '木',
+      friday: '金',
+      saturday: '土',
+      sunday: '日',
     };
     return days[day] || day;
   };
 
   const getBusinessHours = () => {
     const dayMapping: { [key: string]: string } = {
-      monday: '月曜日',
-      tuesday: '火曜日',
-      wednesday: '水曜日',
-      thursday: '木曜日',
-      friday: '金曜日',
-      saturday: '土曜日',
-      sunday: '日曜日'
+      monday: '月',
+      tuesday: '火',
+      wednesday: '水',
+      thursday: '木',
+      friday: '金',
+      saturday: '土',
+      sunday: '日'
     };
 
     const businessHoursByDay = new Map<string, typeof room.businessHours[0][]>();
