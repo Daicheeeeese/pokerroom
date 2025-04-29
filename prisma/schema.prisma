@@ -48,7 +48,6 @@ model Room {
   minimumPersons      MinimumPerson[]
   entryFees           EntryFee[]
   tags                RoomTag[]
-
   @@map("rooms")
 }
 
