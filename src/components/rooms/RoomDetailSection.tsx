@@ -120,7 +120,7 @@ export function RoomDetailSection({ room }: Props) {
                 {room.tags.map((roomTag) => (
                   <div
                     key={roomTag.tag.id}
-                    className="flex items-center gap-1 px-3 py-1 bg-white"
+                    className="flex items-center gap-1 bg-white"
                   >
                     {getTagIcon(roomTag.tag.id)}
                     <span className="text-sm text-gray-700">{roomTag.tag.name}</span>
