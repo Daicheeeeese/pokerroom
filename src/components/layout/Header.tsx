@@ -18,7 +18,7 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="text-xl font-bold text-blue-600">
-            PokerRoom
+            PokerBase<span className="text-sm">(β版)</span>
           </Link>
 
           <nav className="hidden md:flex space-x-8 items-center">
