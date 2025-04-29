@@ -143,31 +143,31 @@ export function RoomDetailSection({ room }: Props) {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <MapPinIcon className="w-5 h-5 text-gray-500" />
-              <span className="text-gray-700">{room.address}</span>
-            </div>
+            <h3 className="text-lg font-medium text-gray-900">住所、アクセス</h3>
+            {room.latitude && room.longitude && (
+              <div className="mt-2">
+                <RoomMap
+                  address={room.address}
+                  latitude={room.latitude}
+                  longitude={room.longitude}
+                />
+              </div>
+            )}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
+                <MapPinIcon className="w-5 h-5 text-gray-500" />
+                <span className="text-gray-700">{room.address}</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <Train className="w-5 h-5 text-gray-500" />
-                <div className="flex flex-wrap gap-1">
-                  {room.nearestStations.map((station, index) => (
+                <div className="flex flex-col gap-1">
+                  {room.nearestStations.map((station) => (
                     <span key={station.id} className="text-gray-700">
-                      {station.name}
-                      {index < room.nearestStations.length - 1 && "、"}
+                      {station.name} 徒歩{station.minutes}分
                     </span>
                   ))}
                 </div>
               </div>
-              {room.latitude && room.longitude && (
-                <div className="mt-2">
-                  <RoomMap
-                    address={room.address}
-                    latitude={room.latitude}
-                    longitude={room.longitude}
-                  />
-                </div>
-              )}
             </div>
           </div>
         </div>
