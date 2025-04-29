@@ -5,6 +5,9 @@ import { Prisma } from '@prisma/client'
 // このルートを動的に設定
 export const dynamic = 'force-dynamic'
 
+// 1ページあたりの表示件数
+const ITEMS_PER_PAGE = 6
+
 export async function GET(request: Request) {
   console.log('API Route: GET /api/rooms started')
   console.log('Environment:', process.env.NODE_ENV)
@@ -15,8 +18,10 @@ export async function GET(request: Request) {
     const area = searchParams.get('area')
     const date = searchParams.get('date')
     const guests = searchParams.get('guests')
+    const page = parseInt(searchParams.get('page') || '1')
+    const skip = (page - 1) * ITEMS_PER_PAGE
 
-    console.log('Search params:', { area, date, guests })
+    console.log('Search params:', { area, date, guests, page })
 
     // 検索条件を構築
     const where: Prisma.RoomWhereInput = {}
@@ -44,6 +49,10 @@ export async function GET(request: Request) {
       throw error
     }
 
+    // 総件数を取得
+    const totalCount = await prisma.room.count({ where })
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+
     // Prismaクエリ
     console.log('Executing Prisma query with conditions:', JSON.stringify(where, null, 2))
     
@@ -56,7 +65,9 @@ export async function GET(request: Request) {
             order: 'asc'
           }
         }
-      }
+      },
+      skip,
+      take: ITEMS_PER_PAGE
     })
 
     console.log('Found rooms count:', rooms.length)
@@ -108,13 +119,16 @@ export async function GET(request: Request) {
       name: room.name
     })))
     
-    const response = availableRooms.map(({ hasReservation, ...room }) => room)
-    console.log('Final response count:', response.length)
-    console.log('Final response:', response.map(room => ({
-      id: room.id,
-      name: room.name,
-      image: room.image
-    })))
+    const response = {
+      rooms: availableRooms.map(({ hasReservation, ...room }) => room),
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      }
+    }
     
     return NextResponse.json(response)
   } catch (error) {
