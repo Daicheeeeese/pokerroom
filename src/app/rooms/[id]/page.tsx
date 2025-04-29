@@ -3,19 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
-import type { Prisma } from '@prisma/client'
-
-type RoomWithDetails = Prisma.RoomGetPayload<{
-  include: {
-    reviews: true;
-    images: true;
-    nearestStations: true;
-    businessHours: true;
-    options: true;
-  };
-}> & {
-  nextAvailableDate: Date | null;
-}
+import { RoomWithDetails } from '@/types/room'
 
 interface Props {
   params: {
@@ -74,7 +62,12 @@ export default async function RoomPage({ params }: Props) {
         },
         nearestStations: true,
         businessHours: true,
-        options: true
+        options: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        }
       }
     }) as RoomWithDetails | null
 

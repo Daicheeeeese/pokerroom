@@ -4,7 +4,6 @@ import { useState } from "react"
 import Image from "next/image"
 import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock, BadgeCheck } from "lucide-react"
-import type { Prisma } from "@prisma/client"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
 import { formatPricePerHour } from '@/lib/format'
@@ -12,27 +11,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { RoomMap } from './RoomMap'
-
-type RoomWithDetails = Prisma.RoomGetPayload<{
-  include: {
-    reviews: true;
-    images: true;
-    hourlyPricesWeekday: true;
-    hourlyPricesHoliday: true;
-    nearestStations: true;
-    businessHours: true;
-    options: true;
-    tags: {
-      include: {
-        tag: true;
-      };
-    };
-  };
-}> & {
-  nextAvailableDate: Date | null;
-  latitude: number;
-  longitude: number;
-}
+import { RoomWithDetails } from '@/types/room'
 
 interface Props {
   room: RoomWithDetails;

@@ -1,71 +1,27 @@
-import { Room as PrismaRoom } from '@prisma/client'
+import { Room as PrismaRoom, RoomImage as PrismaRoomImage, Tag as PrismaTag } from '@prisma/client'
 
-export type Room = PrismaRoom & {
-  images: {
-    id: string
-    url: string
-    order: number
-    roomId: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
-  hourlyPrices: {
-    id: string
-    hour: number
-    price: number
-    roomId: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
-  hourlyPricesHoliday: {
-    id: string
-    hour: number
-    price: number
-    roomId: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
-  availability: {
-    id: string
-    date: Date
-    isAvailable: boolean
-    roomId: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
-  reviews: {
-    id: string
-    rating: number
-    comment: string
-    userId: string
-    roomId: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
-  tags: {
-    id: string
-    name: string
-    rooms: Room[]
-  }[]
-}
+export type RoomImage = PrismaRoomImage
 
-export type RoomWithDetails = Room & {
-  averageRating: number
-  totalReviews: number
-  isAvailable: boolean
-  nextAvailableDate: Date | null
-}
-
-export type RoomImage = {
+export type RoomOption = {
   id: string
-  url: string
-  order: number
-  roomId: string
+  name: string
+  price: number
+  unit: string
+  isRequired: boolean
   createdAt: Date
   updatedAt: Date
 }
 
 export type HourlyPrice = {
+  id: string
+  hour: number
+  price: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type HourlyPriceWeekday = {
   id: string
   hour: number
   price: number
@@ -81,6 +37,107 @@ export type HourlyPriceHoliday = {
   roomId: string
   createdAt: Date
   updatedAt: Date
+}
+
+export type Holiday = {
+  id: string
+  date: Date
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type DurationDiscount = {
+  id: string
+  minHours: number
+  discountPct: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type EarlyBirdDiscount = {
+  id: string
+  cutoffStart: string
+  cutoffEnd: string
+  discountPct: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type MinimumReservationTime = {
+  id: string
+  time: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type MinimumUtilizationNumber = {
+  id: string
+  number: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type EntryFee = {
+  id: string
+  feePerPerson: number
+  roomId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type Room = PrismaRoom & {
+  images: RoomImage[]
+  options: RoomOption[]
+  hourlyPrices: HourlyPrice[]
+  hourlyPricesWeekday: HourlyPriceWeekday[]
+  hourlyPricesHoliday: HourlyPriceHoliday[]
+  holidays: Holiday[]
+  durationDiscounts: DurationDiscount[]
+  earlyBirdDiscounts: EarlyBirdDiscount[]
+  minimumReservationTimes: MinimumReservationTime[]
+  minimumUtilizationNumbers: MinimumUtilizationNumber[]
+  entryFees: EntryFee[]
+  tags: {
+    tag: PrismaTag
+  }[]
+  reviews: {
+    id: string
+    userId: string
+    rating: number
+    comment: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  nearestStations: {
+    id: string
+    name: string
+    transport: string
+    minutes: number
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  businessHours: {
+    id: string
+    dayType: string
+    openTime: string
+    closeTime: string
+    day: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
+  averageRating: number
+  totalReviews: number
+  latitude: number
+  longitude: number
+}
+
+export type RoomWithDetails = Room & {
+  nextAvailableDate: Date | null
 }
 
 export type RoomAvailability = {
