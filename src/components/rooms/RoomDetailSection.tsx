@@ -130,7 +130,7 @@ export function RoomDetailSection({ room }: Props) {
           {/* 設備タグ */}
           {room.tags && room.tags.length > 0 && (
             <div className="border-b border-gray-200 py-6">
-              <h3 className="text-lg font-large text-gray-900 mb-4">提供可能な設備</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">提供可能な設備</h3>
               <div className="flex flex-col gap-3">
                 {room.tags.map((roomTag) => (
                   <div
@@ -146,19 +146,19 @@ export function RoomDetailSection({ room }: Props) {
           )}
 
           <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-large text-gray-900">収容人数</h3>
+            <h3 className="text-lg font-bold text-gray-900">収容人数</h3>
             <p className="mt-2 text-medium text-gray-600">{room.capacity}人</p>
           </div>
 
           <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-large text-gray-900">営業時間</h3>
+            <h3 className="text-lg font-bold text-gray-900">営業時間</h3>
             <p className="mt-2 font-medium text-gray-600 whitespace-pre-line">
               {getBusinessHours().join('\n')}
             </p>
           </div>
 
           <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-large text-gray-900">住所・アクセス</h3>
+            <h3 className="text-lg font-bold text-gray-900">住所・アクセス</h3>
             {room.latitude && room.longitude && (
               <div className="mt-2">
                 <RoomMap
@@ -182,7 +182,7 @@ export function RoomDetailSection({ room }: Props) {
 
           {room.options && room.options.length > 0 && (
             <div className="py-6">
-              <h3 className="text-lg font-large text-gray-900">オプション</h3>
+              <h3 className="text-lg font-bold text-gray-900">オプション</h3>
               <div className="flex flex-col gap-4 mt-4">
                 {room.options.map((option) => (
                   <div key={option.id} className="bg-gray-50 p-4 rounded-lg">
