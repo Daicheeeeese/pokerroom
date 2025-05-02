@@ -150,18 +150,6 @@ export function RoomDetailSection({ room }: Props) {
           )}
 
           <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-bold text-gray-900">収容人数</h3>
-            <p className="mt-2 text-medium text-gray-600">{room.capacity}人</p>
-          </div>
-
-          <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-bold text-gray-900">営業時間</h3>
-            <p className="mt-2 font-medium text-gray-600 whitespace-pre-line">
-              {getBusinessHours().join('\n')}
-            </p>
-          </div>
-
-          <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-bold text-gray-900">住所・アクセス</h3>
             {room.latitude && room.longitude && (
               <div className="mt-2">
@@ -182,6 +170,18 @@ export function RoomDetailSection({ room }: Props) {
                 ))}
               </div>
             </div>
+          </div>
+
+          <div className="border-b border-gray-200 py-6">
+            <h3 className="text-lg font-bold text-gray-900">収容人数</h3>
+            <p className="mt-2 text-medium text-gray-600">{room.capacity}人</p>
+          </div>
+
+          <div className="border-b border-gray-200 py-6">
+            <h3 className="text-lg font-bold text-gray-900">営業時間</h3>
+            <p className="mt-2 font-medium text-gray-600 whitespace-pre-line">
+              {getBusinessHours().join('\n')}
+            </p>
           </div>
 
           {room.options && room.options.length > 0 && (
