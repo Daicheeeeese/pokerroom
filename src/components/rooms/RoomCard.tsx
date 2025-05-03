@@ -14,7 +14,15 @@ import 'swiper/css/pagination'
 interface RoomCardProps {
   room: Room & {
     images: { url: string }[]
-    nearestStations: { name: string; minutes: number }[]
+    nearestStations: {
+      id: string
+      name: string
+      transport: string
+      minutes: number
+      createdAt: Date
+      updatedAt: Date
+      roomId: string
+    }[]
   }
   selectedDate: Date | null
 }
