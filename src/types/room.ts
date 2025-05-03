@@ -137,7 +137,17 @@ export type Room = PrismaRoom & {
 }
 
 export type RoomWithDetails = Room & {
-  nextAvailableDate: Date | null
+  images: RoomImage[]
+  reviews: Review[]
+  nearestStations: NearestStation[]
+  businessHours: BusinessHour[]
+  options: RoomOption[]
+  tags: {
+    tag: Tag
+  }[]
+  score?: {
+    rating: number
+  }
 }
 
 export type RoomAvailability = {

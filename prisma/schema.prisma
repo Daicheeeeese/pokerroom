@@ -48,6 +48,7 @@ model Room {
   minimumPersons      MinimumPerson[]
   entryFees           EntryFee[]
   tags                RoomTag[]
+  score               Score?
   @@map("rooms")
 }
 
@@ -265,4 +266,17 @@ model RoomTag {
   @@index([roomId])
   @@index([tagId])
   @@map("room_tags")
+}
+
+
+
+model Score {
+  id          String   @id @default(cuid())
+  rating      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  room        Room?    @relation(fields: [roomId], references: [id])
+  roomId      String?  @unique
+
+  @@index([roomId])
 }
