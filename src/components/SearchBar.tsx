@@ -92,13 +92,13 @@ export default function SearchBar() {
               onChange={(e) => setSearchParams({ ...searchParams, area: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="mt-2 flex flex-wrap gap-2">
-              <span className="text-sm text-gray-500">人気エリア：</span>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="text-sm text-gray-700">人気エリア：</span>
               {popularAreas.map((area) => (
                 <button
                   key={area}
                   onClick={() => handleAreaClick(area)}
-                  className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                  className="px-3 py-1 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
                 >
                   {area}
                 </button>
