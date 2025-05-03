@@ -23,11 +23,7 @@ export default async function RoomsPage() {
             order: 'asc'
           }
         },
-        nearestStations: {
-          orderBy: {
-            minutes: 'asc'
-          }
-        }
+        nearestStations: true
       },
     })
 
