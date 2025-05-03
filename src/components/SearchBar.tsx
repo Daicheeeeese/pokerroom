@@ -22,6 +22,12 @@ export default function SearchBar() {
   })
   const [showDatePicker, setShowDatePicker] = useState(false)
 
+  const popularAreas = ['新宿', '渋谷', '六本木']
+
+  const handleAreaClick = (area: string) => {
+    setSearchParams({ ...searchParams, area })
+  }
+
   const handleSearch = () => {
     const params = new URLSearchParams()
     if (searchParams.area) params.append('area', searchParams.area)
@@ -79,13 +85,26 @@ export default function SearchBar() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               エリア
             </label>
-            <input
-              type="text"
-              placeholder="エリアを入力"
-              value={searchParams.area}
-              onChange={(e) => setSearchParams({ ...searchParams, area: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="エリアを入力"
+                value={searchParams.area}
+                onChange={(e) => setSearchParams({ ...searchParams, area: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="mt-2 flex flex-wrap gap-2">
+                {popularAreas.map((area) => (
+                  <button
+                    key={area}
+                    onClick={() => handleAreaClick(area)}
+                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    {area}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* 日付選択 */}
