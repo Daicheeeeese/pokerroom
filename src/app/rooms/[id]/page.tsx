@@ -80,7 +80,7 @@ export default async function RoomPage({ params }: Props) {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           <ImageGallery mainImage={room.images.length > 0 ? room.images[0].url : ''} images={room.images} />
-          <div className="mt-6 mb-4">
+          <div className="mt-6 mb-1">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>

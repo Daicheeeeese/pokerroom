@@ -133,8 +133,8 @@ export function RoomDetailSection({ room }: Props) {
         <div className="space-y-0">
           {/* 設備タグ */}
           {room.tags && room.tags.length > 0 && (
-            <div className="border-b border-gray-200 py-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">提供可能な設備</h3>
+            <div className="border-t border-b border-gray-200 py-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">提供可能なサービス・設備</h3>
               <div className="flex flex-col gap-3">
                 {room.tags.map((roomTag) => (
                   <div
