@@ -106,7 +106,7 @@ export function RoomDetailSection({ room }: Props) {
 
   const getUnitDisplay = (unit: string) => {
     switch (unit) {
-      case 'per_half_hour':
+      case 'per_halfHour':
         return '/30分';
       case 'booking':
         return '/予約';
