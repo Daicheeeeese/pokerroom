@@ -26,6 +26,10 @@ export default async function RoomsPage() {
         nearestStations: {
           orderBy: {
             minutes: 'asc'
+          },
+          select: {
+            name: true,
+            minutes: true
           }
         }
       },
