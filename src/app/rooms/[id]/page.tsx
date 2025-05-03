@@ -62,7 +62,11 @@ export default async function RoomPage({ params }: Props) {
         },
         nearestStations: true,
         businessHours: true,
-        options: true,
+        options: {
+          orderBy: {
+            id: 'asc'
+          }
+        },
         tags: {
           include: {
             tag: true
