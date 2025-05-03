@@ -8,6 +8,8 @@ export const dynamic = "force-dynamic"
 
 type RoomWithReviews = Room & {
   reviews: Review[]
+  images: { url: string }[]
+  nearestStations: { name: string; minutes: number }[]
 }
 
 export default async function RoomsPage() {
@@ -19,6 +21,11 @@ export default async function RoomsPage() {
         images: {
           orderBy: {
             order: 'asc'
+          }
+        },
+        nearestStations: {
+          orderBy: {
+            minutes: 'asc'
           }
         }
       },

@@ -14,6 +14,7 @@ import 'swiper/css/pagination'
 interface RoomCardProps {
   room: Room & {
     images: { url: string }[]
+    nearestStations: { name: string; minutes: number }[]
   }
   selectedDate: Date | null
 }
@@ -83,6 +84,11 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
         <div className="p-4">
           <h3 className="text-lg font-semibold mb-2">{room.name}</h3>
           <p className="text-gray-600 mb-2">{room.address}</p>
+          {room.nearestStations.length > 0 && (
+            <p className="text-gray-600 mb-2">
+              {room.nearestStations[0].name}駅徒歩{room.nearestStations[0].minutes}分
+            </p>
+          )}
           <p className="text-lg font-semibold text-primary">
             ¥{room.pricePerHour.toLocaleString()}/時間
           </p>
