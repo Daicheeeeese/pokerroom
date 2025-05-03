@@ -24,6 +24,15 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
   const [isVisible, setIsVisible] = useState(false)
   const imageRef = useRef<HTMLDivElement>(null)
 
+  // デバッグ用のログを追加
+  useEffect(() => {
+    console.log('RoomCard received room:', {
+      id: room.id,
+      name: room.name,
+      nearestStations: room.nearestStations
+    })
+  }, [room])
+
   // 画像の遅延読み込み
   useEffect(() => {
     const observer = new IntersectionObserver(
