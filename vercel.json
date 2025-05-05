@@ -1,5 +1,12 @@
 {
   "buildCommand": "prisma generate && prisma migrate deploy && next build",
   "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://pokerbase.jp",
+      "permanent": true
+    }
+  ]
 } 
