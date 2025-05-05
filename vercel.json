@@ -5,8 +5,14 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "pokerroom-mauve.vercel.app"
+        }
+      ],
       "destination": "https://pokerbase.jp/$1",
       "permanent": true
     }
   ]
-} 
+}
