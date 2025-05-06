@@ -21,7 +21,8 @@ interface Option {
 interface Room {
   id: string
   name: string
-  pricePerHour: number
+  baseprice: number
+  unit: string
   options: Option[]
   hourlyPricesHoliday: { startTime: string; endTime: string; pricePerHour: number }[]
 }
@@ -183,7 +184,9 @@ export default function ReservationRequestPage() {
     // 土日かつ時間帯別料金が設定されている場合のみ、時間帯別料金を使用
     const basePrice = isHoliday && room.hourlyPricesHoliday.length > 0
       ? calculateHolidayPrice(room, `${startHour}:${startMinute}`, `${endHour}:${endMinute}`)
-      : room.pricePerHour * duration
+      : room.unit === 'hour'
+        ? room.baseprice * duration
+        : room.baseprice * duration * numberOfPeople
 
     const optionsPrice = room.options
       .filter(option => selectedOptions[option.id])
@@ -214,7 +217,7 @@ export default function ReservationRequestPage() {
         const [sHour] = p.startTime.split(':').map(Number)
         const [eHour] = p.endTime.split(':').map(Number)
         return currentHour >= sHour && currentHour < eHour
-      })?.pricePerHour ?? room.pricePerHour
+      })?.pricePerHour ?? room.baseprice
       total += price / 2
     }
 
