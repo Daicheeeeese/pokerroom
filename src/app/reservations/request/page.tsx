@@ -369,7 +369,7 @@ export default function ReservationRequestPage() {
                         checked={selectedOptions[option.id] || false}
                         onChange={(e) => handleOptionChange(option.id, e.target.checked, option.isRequired)}
                         disabled={option.isRequired}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:bg-blue-600 disabled:border-blue-600"
                       />
                       <label htmlFor={`option-${option.id}`} className="ml-3">
                         <p className="font-medium">
