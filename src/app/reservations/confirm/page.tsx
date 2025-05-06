@@ -23,7 +23,8 @@ interface Room {
   id: string
   name: string
   address: string
-  pricePerHour: number
+  baseprice: number
+  unit: string
   options: Option[]
   nearestStation: string
 }
@@ -112,9 +113,12 @@ export default function ReservationConfirmPage() {
   const formattedDate = date ? format(new Date(date), 'yyyy年MM月dd日', { locale: ja }) : ''
 
   const calculateRoomPrice = () => {
-    if (!startTime || !endTime || !room) return 0
+    if (!startTime || !endTime || !room || !numberOfPeople) return 0
     const duration = calculateDuration(startTime, endTime)
-    return room.pricePerHour * duration
+    const peopleCount = parseInt(numberOfPeople)
+    return room.unit === 'hour'
+      ? room.baseprice * duration
+      : room.baseprice * duration * peopleCount
   }
 
   const calculateOptionsPrice = () => {
