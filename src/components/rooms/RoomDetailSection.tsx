@@ -66,7 +66,7 @@ export function RoomDetailSection({ room }: Props) {
 
     return Object.values(dayMapping).map((day) => {
       const hours = businessHoursByDay.get(day) || [];
-      if (hours.length === 0) return `${day}: 定休日`;
+      if (hours.length === 0) return `${day}: 予約不可`;
 
       // 同じ曜日の営業時間を結合
       const timeRanges = hours
@@ -180,7 +180,7 @@ export function RoomDetailSection({ room }: Props) {
           </div>
 
           <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-bold text-gray-900">営業時間</h3>
+            <h3 className="text-lg font-bold text-gray-900">予約可能時間</h3>
             <p className="mt-2 font-medium text-gray-600 whitespace-pre-line">
               {getBusinessHours().join('\n')}
             </p>
@@ -196,7 +196,10 @@ export function RoomDetailSection({ room }: Props) {
               <div className="flex flex-col gap-4 mt-4">
                 {room.options.map((option) => (
                   <div key={option.id} className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-gray-900 font-medium">{option.name}</div>
+                    <div className="text-gray-900 font-medium">
+                      {option.name}
+                      {option.isRequired && <span className="text-red-600 ml-2">（必須）</span>}
+                    </div>
                     <div className="font-mediumtext-gray-700 mt-1">
                       ¥{option.price.toLocaleString()}{getUnitDisplay(option.unit)}
                     </div>
