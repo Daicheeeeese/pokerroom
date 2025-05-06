@@ -87,6 +87,8 @@ export default async function RoomPage({ params }: Props) {
       'streaming',
       'usbport',
       'wifi',
+      'private',
+      'smoking',
       'foods',
       'beverages',
       'beginner'

@@ -6,7 +6,7 @@ import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock, BadgeCheck, Shuffle, UserPlus, Utensils, Nfc, Cigarette, Webcam, BatteryCharging, Wifi, GlassWater, Rabbit} from "lucide-react"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
-import { formatPricePerHour } from '@/lib/format'
+import { formatBasePrice } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -114,6 +114,8 @@ export function RoomDetailSection({ room }: Props) {
         return '/1時間';
       case 'per_hour_person':
         return '/1時間/人';  
+        case 'per_person':
+          return '/人';  
       default:
         return `/${unit}`;
     }
@@ -212,7 +214,7 @@ export function RoomDetailSection({ room }: Props) {
               <div className="space-y-4">
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    ¥{(room.pricePerHour || 0).toLocaleString()}
+                    ¥{(room.basePrice || 0).toLocaleString()}
                     <span className="text-lg font-normal text-gray-500">/時間</span>
                   </p>
                 </div>
@@ -239,7 +241,7 @@ export function RoomDetailSection({ room }: Props) {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <p className="text-xl font-bold text-gray-900">
-              ¥{(room.pricePerHour || 0).toLocaleString()}
+              ¥{(room.basePrice || 0).toLocaleString()}
               <span className="text-base font-normal text-gray-500">/時間</span>
             </p>
           </div>

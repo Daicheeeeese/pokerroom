@@ -52,6 +52,8 @@ const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: 
       return option.price * duration * 2
     case 'booking':
       return option.price
+    case 'per_person':
+      return option.price * numberOfPeople
     default:
       return 0
   }
@@ -67,6 +69,8 @@ const getUnitText = (unit: string): string => {
       return '1時間毎'
     case 'per_hour_person':
       return '1人1時間毎'
+          case 'per_person':
+      return '1人毎'
     default:
       return ''
   }
