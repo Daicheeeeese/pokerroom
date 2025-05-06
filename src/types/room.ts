@@ -149,6 +149,7 @@ export type RoomWithDetails = Room & {
   score?: {
     rating: number
   }
+  unit: string
 }
 
 export type RoomAvailability = {
