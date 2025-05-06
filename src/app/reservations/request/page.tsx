@@ -29,13 +29,15 @@ interface Room {
 const getUnitText = (unit: string): string => {
   switch (unit) {
     case 'per_halfHour':
-      return '30分あたり'
+      return '30分毎'
     case 'booking':
-      return '予約あたり'
+      return '予約毎'
     case 'per_hour':
-      return '1時間あたり'
+      return '1時間毎'
     case 'per_hour_person':
-      return '1人1時間あたり'
+      return '1人1時間毎'
+      case 'per_person':
+        return '1人毎'      
     default:
       return ''
   }
@@ -65,6 +67,8 @@ const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: 
       return option.price * duration * 2
     case 'booking':
       return option.price
+      case 'per_person':
+        return option.price * numberOfPeople
     default:
       return 0
   }
