@@ -60,13 +60,13 @@ const calculateOptionPrice = (option: Option, duration: number, numberOfPeople: 
 const getUnitText = (unit: string): string => {
   switch (unit) {
     case 'per_halfHour':
-      return '30分あたり'
+      return '30分毎'
     case 'booking':
-      return '予約あたり'
+      return '予約毎'
     case 'per_hour':
-      return '1時間あたり'
+      return '1時間毎'
     case 'per_hour_person':
-      return '1人1時間あたり'
+      return '1人1時間毎'
     default:
       return ''
   }
@@ -237,7 +237,7 @@ export default function ReservationConfirmPage() {
             {isSubmitting ? '予約処理中...' : '予約する'}
           </button>
           <p className="text-sm text-gray-500 text-center mt-2">
-            お支払いは予約確定後、オンラインまたは現地での対応となります。
+            お支払いは現地決済となります。
           </p>
         </form>
       </Card>
