@@ -102,6 +102,14 @@ export default function ReservationRequestPage() {
         }
         const data = await response.json()
         setRoom(data)
+        // 必須オプションを初期状態でチェック済みにする
+        const requiredOptions = data.options
+          .filter((option: Option) => option.isRequired)
+          .reduce((acc: { [key: string]: boolean }, option: Option) => {
+            acc[option.id] = true
+            return acc
+          }, {})
+        setSelectedOptions(requiredOptions)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'エラーが発生しました')
       } finally {
@@ -134,7 +142,8 @@ export default function ReservationRequestPage() {
       .map(hour => hour.toString().padStart(2, '0'))
   }
 
-  const handleOptionChange = (optionId: string, checked: boolean) => {
+  const handleOptionChange = (optionId: string, checked: boolean, isRequired: boolean) => {
+    if (isRequired) return // 必須オプションは変更できない
     setSelectedOptions(prev => ({
       ...prev,
       [optionId]: checked,
@@ -358,11 +367,15 @@ export default function ReservationRequestPage() {
                         type="checkbox"
                         id={`option-${option.id}`}
                         checked={selectedOptions[option.id] || false}
-                        onChange={(e) => handleOptionChange(option.id, e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        onChange={(e) => handleOptionChange(option.id, e.target.checked, option.isRequired)}
+                        disabled={option.isRequired}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
                       />
                       <label htmlFor={`option-${option.id}`} className="ml-3">
-                        <p className="font-medium">{option.name}</p>
+                        <p className="font-medium">
+                          {option.name}
+                          {option.isRequired && <span className="text-red-600 ml-2">（必須）</span>}
+                        </p>
                         <p className="text-sm text-gray-500">
                           ¥{option.price.toLocaleString()}（{getUnitText(option.unit)}）
                         </p>
