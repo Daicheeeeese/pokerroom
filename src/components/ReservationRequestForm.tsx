@@ -12,6 +12,7 @@ type RoomOption = {
 type RoomWithDetails = {
   id: string
   options?: RoomOption[] | null
+  entryFees?: { feePerPerson: number }[]
 }
 
 interface Props {
@@ -38,6 +39,15 @@ export function ReservationRequestForm({ room }: Props) {
   return (
     <div className="max-w-2xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* 入場料が存在する場合のみ表示 */}
+        {room.entryFees && room.entryFees.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">入場料</h3>
+            <p className="text-gray-600">
+              ¥{room.entryFees[0].feePerPerson.toLocaleString()} × {numberOfPeople}人 = ¥{(room.entryFees[0].feePerPerson * numberOfPeople).toLocaleString()}
+            </p>
+          </div>
+        )}
         {/* オプションが存在する場合のみ表示 */}
         {options.length > 0 && (
           <div className="space-y-4">
