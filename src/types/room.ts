@@ -91,7 +91,7 @@ export type EntryFee = {
 }
 
 export type Room = Omit<PrismaRoom, 'pricePerHour'> & {
-  basePrice: number
+  baseprice: number
   images: RoomImage[]
   options: RoomOption[]
   hourlyPrices: HourlyPrice[]
