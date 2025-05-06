@@ -23,6 +23,7 @@ interface RoomCardProps {
       updatedAt: Date
       roomId: string
     }[]
+    unit: string
   }
   selectedDate: Date | null
 }
@@ -107,7 +108,7 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
             </p>
           )}
           <p className="text-lg font-semibold text-primary">
-            ¥{room.baseprice.toLocaleString()}/時間
+            ¥{room.baseprice.toLocaleString()}/{room.unit === 'hour' ? '時間' : '人'}
           </p>
         </div>
       </div>
