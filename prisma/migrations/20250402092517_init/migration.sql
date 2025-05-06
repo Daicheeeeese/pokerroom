@@ -24,7 +24,7 @@ CREATE TABLE "rooms" (
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
     "image" TEXT,
-    "basePrice" INTEGER NOT NULL,
+    "baseprice" INTEGER NOT NULL,
     "capacity" INTEGER NOT NULL,
     "prefecture" TEXT,
     "city" TEXT,

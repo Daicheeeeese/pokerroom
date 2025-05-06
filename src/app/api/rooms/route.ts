@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     console.log('Found rooms:', rooms.map(room => ({
       id: room.id,
       name: room.name,
-      basePrice: room.basePrice,
+      baseprice: room.baseprice,
       image: room.images[0]?.url
     })))
 
