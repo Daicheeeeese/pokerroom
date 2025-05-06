@@ -80,6 +80,27 @@ export default async function RoomPage({ params }: Props) {
       notFound()
     }
 
+    const tagOrder = [
+      'dealer',
+      'autoshuffle',
+      'rfidtable',
+      'streaming',
+      'usbport',
+      'wifi',
+      'foods',
+      'beverages',
+      'beginner'
+    ]
+
+    // タグを指定された順序でソート
+    const sortedTags = tagOrder
+      .filter(tagName => room.tags.some(t => t.tag.name === tagName))
+      .map(tagName => {
+        const tagData = room.tags.find(t => t.tag.name === tagName)
+        return tagData?.tag
+      })
+      .filter((tag): tag is { name: string; id: string; createdAt: Date; updatedAt: Date } => tag !== undefined)
+
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
@@ -106,6 +127,16 @@ export default async function RoomPage({ params }: Props) {
             <div className="lg:col-span-1">
               {/* 予約フォームやその他の情報をここに配置 */}
             </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {sortedTags.map((tag) => (
+              <span
+                key={tag.id}
+                className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
+              >
+                {tag.name}
+              </span>
+            ))}
           </div>
         </div>
       </div>
