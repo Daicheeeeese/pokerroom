@@ -107,7 +107,7 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
             </p>
           )}
           <p className="text-lg font-semibold text-primary">
-            ¥{room.pricePerHour.toLocaleString()}/時間
+            ¥{room.basePrice.toLocaleString()}/時間
           </p>
         </div>
       </div>

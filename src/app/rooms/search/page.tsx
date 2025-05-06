@@ -109,9 +109,9 @@ export default function RoomSearchPage() {
   const sortedRooms = [...rooms].sort((a, b) => {
     switch (sortBy) {
       case 'priceAsc':
-        return a.pricePerHour - b.pricePerHour
+        return a.basePrice - b.basePrice
       case 'priceDesc':
-        return b.pricePerHour - a.pricePerHour
+        return b.basePrice - a.basePrice
       case 'newest':
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       default:

@@ -90,7 +90,8 @@ export type EntryFee = {
   updatedAt: Date
 }
 
-export type Room = PrismaRoom & {
+export type Room = Omit<PrismaRoom, 'pricePerHour'> & {
+  basePrice: number
   images: RoomImage[]
   options: RoomOption[]
   hourlyPrices: HourlyPrice[]
