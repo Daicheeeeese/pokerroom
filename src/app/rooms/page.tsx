@@ -38,9 +38,6 @@ export default async function RoomsPage({
 }) {
   try {
     const sort = searchParams.sort || 'price_asc'
-    const orderBy: Prisma.RoomOrderByWithRelationInput = sort === 'price_asc' 
-      ? { baseprice: 'asc' } 
-      : { baseprice: 'desc' }
 
     // 全ルームを取得（サーバーサイドで直接Prismaを使用）
     const allRooms = await prisma.room.findMany({
@@ -52,12 +49,20 @@ export default async function RoomsPage({
           }
         },
         nearestStations: true
-      },
-      orderBy,
+      }
     }) as RoomWithReviews[]
 
+    // JavaScriptで並び替え
+    const sortedRooms = [...allRooms].sort((a, b) => {
+      if (sort === 'price_asc') {
+        return a.baseprice - b.baseprice
+      } else {
+        return b.baseprice - a.baseprice
+      }
+    })
+
     // 最初の6件を表示
-    const rooms = allRooms.slice(0, 6)
+    const rooms = sortedRooms.slice(0, 6)
 
     // デバッグ用のログを追加
     console.log('Fetched rooms with nearest stations:', rooms.map(room => ({
