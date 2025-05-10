@@ -72,7 +72,8 @@ export default async function RoomPage({ params }: Props) {
             tag: true
           }
         },
-        score: true
+        score: true,
+        notes: true
       }
     }) as RoomWithDetails | null
 
