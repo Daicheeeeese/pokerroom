@@ -74,7 +74,11 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
   }
 
   return (
-    <Link href={`/rooms/${room.id}${selectedDate ? `?date=${format(selectedDate, 'yyyy-MM-dd')}` : ''}`}>
+    <Link 
+      href={`/rooms/${room.id}${selectedDate ? `?date=${format(selectedDate, 'yyyy-MM-dd')}` : ''}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <div ref={imageRef} className="relative aspect-video">
           {isVisible && (
