@@ -189,13 +189,6 @@ export function RoomDetailSection({ room }: Props) {
             <h3 className="text-lg font-bold text-gray-900">支払い方法</h3>
             <p className="mt-2 text-medium text-gray-600">現地決済</p>
           </div>
-          {/* デバッグ用の表示 */}
-          <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-bold text-gray-900">デバッグ情報</h3>
-            <pre className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">
-              {JSON.stringify(room.notes, null, 2)}
-            </pre>
-          </div>
           {room.options && room.options.length > 0 && (
             <div className="py-6">
               <h3 className="text-lg font-bold text-gray-900">オプション</h3>
