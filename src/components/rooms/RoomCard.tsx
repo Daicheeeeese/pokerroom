@@ -31,7 +31,9 @@ interface RoomCardProps {
 export default function RoomCard({ room, selectedDate }: RoomCardProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [loadedImages, setLoadedImages] = useState<number[]>([0]) // 最初は1枚目の画像のみ
   const imageRef = useRef<HTMLDivElement>(null)
+  const swiperRef = useRef<any>(null)
 
   // デバッグ用のログを追加
   useEffect(() => {
@@ -63,6 +65,14 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
     }
   }, [])
 
+  // スライド変更時の処理
+  const handleSlideChange = (swiper: any) => {
+    const currentIndex = swiper.realIndex
+    if (!loadedImages.includes(currentIndex)) {
+      setLoadedImages(prev => [...prev, currentIndex])
+    }
+  }
+
   return (
     <Link href={`/rooms/${room.id}${selectedDate ? `?date=${format(selectedDate, 'yyyy-MM-dd')}` : ''}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -78,19 +88,27 @@ export default function RoomCard({ room, selectedDate }: RoomCardProps) {
                 bulletClass: 'swiper-pagination-bullet',
                 bulletActiveClass: 'swiper-pagination-bullet-active',
               }}
+              onSlideChange={handleSlideChange}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper
+              }}
               className="h-full"
             >
               {room.images.map((image, index) => (
                 <SwiperSlide key={index}>
-                  <Image
-                    src={image.url || '/images/placeholder.jpg'}
-                    alt={`${room.name} - 画像${index + 1}`}
-                    fill
-                    className={`object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={index === 0}
-                    onLoad={() => setIsImageLoaded(true)}
-                  />
+                  {loadedImages.includes(index) ? (
+                    <Image
+                      src={image.url || '/images/placeholder.jpg'}
+                      alt={`${room.name} - 画像${index + 1}`}
+                      fill
+                      className={`object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index === 0}
+                      onLoad={() => setIsImageLoaded(true)}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                  )}
                 </SwiperSlide>
               ))}
             </Swiper>
