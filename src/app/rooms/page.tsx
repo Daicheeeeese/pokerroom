@@ -1,19 +1,47 @@
 import { prisma } from "@/lib/prisma"
 import RoomCard from '@/components/rooms/RoomCard'
 import Link from "next/link"
-import type { Room, Review } from '@prisma/client'
+import type { Room, Review, Prisma } from '@prisma/client'
 import Image from "next/image"
+import SortSelect from '@/components/rooms/SortSelect'
 
 export const dynamic = "force-dynamic"
 
 type RoomWithReviews = Room & {
   reviews: Review[]
-  images: { url: string }[]
-  nearestStations: { name: string; minutes: number }[]
+  images: {
+    id: string
+    url: string
+    order: number
+    createdAt: Date
+    updatedAt: Date
+    roomId: string
+  }[]
+  nearestStations: {
+    id: string
+    name: string
+    transport: string
+    minutes: number
+    createdAt: Date
+    updatedAt: Date
+    roomId: string
+  }[]
+  unit: string
 }
 
-export default async function RoomsPage() {
+type SortType = 'price_asc' | 'price_desc'
+
+export default async function RoomsPage({
+  searchParams,
+}: {
+  searchParams: { sort?: SortType }
+}) {
   try {
+    const sort = searchParams.sort || 'price_asc'
+    const orderBy: Prisma.RoomOrderByWithRelationInput = sort === 'price_asc' 
+      ? { baseprice: 'asc' } 
+      : { baseprice: 'desc' }
+
     // ルーム一覧を取得（サーバーサイドで直接Prismaを使用）
     const rooms = await prisma.room.findMany({
       include: {
@@ -25,25 +53,31 @@ export default async function RoomsPage() {
         },
         nearestStations: true
       },
-    })
+      orderBy,
+      take: 6
+    }) as RoomWithReviews[]
 
     // デバッグ用のログを追加
     console.log('Fetched rooms with nearest stations:', rooms.map(room => ({
       id: room.id,
       name: room.name,
-      nearestStations: room.nearestStations
+      nearestStations: room.nearestStations,
+      baseprice: room.baseprice
     })))
 
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">ポーカールーム一覧</h1>
-          <Link
-            href="/rooms/search"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
-          >
-            利用日で検索
-          </Link>
+          <div className="flex items-center gap-4">
+            <SortSelect />
+            <Link
+              href="/rooms/search"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              利用日で検索
+            </Link>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

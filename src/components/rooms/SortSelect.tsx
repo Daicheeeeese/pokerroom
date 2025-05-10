@@ -1,34 +1,28 @@
 'use client'
 
-type SortOption = {
-  value: string
-  label: string
-}
+import { useRouter, useSearchParams } from 'next/navigation'
 
-const sortOptions: SortOption[] = [
-  { value: 'recommended', label: 'おすすめ順' },
-  { value: 'priceAsc', label: '料金が安い順' },
-  { value: 'priceDesc', label: '料金が高い順' },
-  { value: 'newest', label: '新着順' }
-]
+type SortType = 'price_asc' | 'price_desc'
 
-type Props = {
-  value: string
-  onChange: (value: string) => void
-}
+export default function SortSelect() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const currentSort = (searchParams.get('sort') as SortType) || 'price_asc'
 
-export default function SortSelect({ value, onChange }: Props) {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', e.target.value)
+    router.push(url.toString())
+  }
+
   return (
     <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+      className="border rounded-md px-2 py-1"
+      value={currentSort}
+      onChange={handleSortChange}
     >
-      {sortOptions.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
+      <option value="price_asc">料金が安い順</option>
+      <option value="price_desc">料金が高い順</option>
     </select>
   )
 } 
