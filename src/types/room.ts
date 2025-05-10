@@ -1,4 +1,5 @@
 import { Room as PrismaRoom, RoomImage as PrismaRoomImage, Tag as PrismaTag } from '@prisma/client'
+import { Note } from '@prisma/client'
 
 export type RoomImage = PrismaRoomImage
 
@@ -150,12 +151,7 @@ export type RoomWithDetails = Room & {
     rating: number
   }
   unit: string
-  notes: {
-    id: string
-    extra: string
-    createdAt: Date
-    updatedAt: Date
-  }[]
+  notes: Note[]
 }
 
 export type RoomAvailability = {

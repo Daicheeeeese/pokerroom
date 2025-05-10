@@ -50,6 +50,7 @@ model Room {
   entryFees           EntryFee[]
   tags                RoomTag[]
   score               Score?
+  notes               Note[]
   @@map("rooms")
 }
 
@@ -280,4 +281,16 @@ model Score {
   roomId      String?  @unique
 
   @@index([roomId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  roomId    String
+  extra     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@map("notes")
 }
