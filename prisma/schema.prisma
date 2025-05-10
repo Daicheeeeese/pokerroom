@@ -188,6 +188,7 @@ model DurationDiscount {
   minHours    Int
   discountPct Int
   unit        String   @default("hour")
+  discountType String  @default("total") // "total" or "time"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   roomId      String
