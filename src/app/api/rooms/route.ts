@@ -108,26 +108,16 @@ export async function GET(request: Request) {
           image: room.images[0]?.url || null
         }))
 
-    console.log('Filtered rooms count:', filteredRooms.length)
-    console.log('Filtered rooms:', filteredRooms.map(room => ({
-      id: room.id,
-      name: room.name,
-      hasReservation: room.hasReservation
-    })))
-
     // 予約済みのルームをフィルタリング
     const availableRooms = date
       ? filteredRooms.filter(room => !room.hasReservation)
       : filteredRooms
 
-    console.log('Available rooms count:', availableRooms.length)
-    console.log('Available rooms:', availableRooms.map(room => ({
-      id: room.id,
-      name: room.name
-    })))
+    // 重複を排除
+    const uniqueRooms = Array.from(new Map(availableRooms.map(room => [room.id, room])).values())
     
     const response = {
-      rooms: availableRooms.map(({ hasReservation, ...room }) => room),
+      rooms: uniqueRooms.map(({ hasReservation, ...room }) => room),
       pagination: {
         currentPage: page,
         totalPages,
