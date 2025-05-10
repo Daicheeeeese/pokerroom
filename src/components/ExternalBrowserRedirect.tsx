@@ -9,13 +9,21 @@ function ExternalBrowserRedirectContent() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    try {
+      if (typeof window === 'undefined') return
 
-    const userAgent = window.navigator.userAgent
-    if (isInAppBrowser(userAgent)) {
-      const currentUrl = window.location.href
-      const externalUrl = getExternalBrowserUrl(currentUrl)
-      window.location.href = externalUrl
+      const userAgent = window.navigator.userAgent
+      if (isInAppBrowser(userAgent)) {
+        const currentUrl = window.location.href
+        const externalUrl = getExternalBrowserUrl(currentUrl)
+        
+        // リダイレクト前に少し遅延を入れる
+        setTimeout(() => {
+          window.location.href = externalUrl
+        }, 100)
+      }
+    } catch (error) {
+      console.error('External browser redirect error:', error)
     }
   }, [pathname, searchParams])
 

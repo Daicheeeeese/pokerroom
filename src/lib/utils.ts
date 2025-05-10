@@ -57,8 +57,10 @@ export function isInAppBrowser(userAgent: string): boolean {
 }
 
 export function getExternalBrowserUrl(url: string): string {
+  if (typeof window === 'undefined') return url
+
   // iOSの場合
-  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+  if (/iPhone|iPad|iPod/.test(window.navigator.userAgent)) {
     return `googlechrome://${url.replace(/^https?:\/\//, '')}`
   }
   // Androidの場合
