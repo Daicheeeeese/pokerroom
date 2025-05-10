@@ -40,9 +40,14 @@ export async function GET(request: Request) {
     }
 
     // ソート条件を構築
-    const orderBy: Prisma.RoomOrderByWithRelationInput = {
-      baseprice: sort === 'price_desc' ? 'desc' : 'asc'
-    }
+    const orderBy: Prisma.RoomOrderByWithRelationInput[] = [
+      {
+        baseprice: sort === 'price_desc' ? 'desc' : 'asc'
+      },
+      {
+        id: 'asc'  // 同じ価格の場合はidでソート
+      }
+    ]
 
     console.log('Search conditions:', JSON.stringify(where))
     console.log('Sort conditions:', JSON.stringify(orderBy))
