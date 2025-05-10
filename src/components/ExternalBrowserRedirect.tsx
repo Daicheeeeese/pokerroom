@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { isInAppBrowser, getExternalBrowserUrl } from '@/lib/utils'
 
-export default function ExternalBrowserRedirect() {
+function ExternalBrowserRedirectContent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -20,4 +20,12 @@ export default function ExternalBrowserRedirect() {
   }, [pathname, searchParams])
 
   return null
+}
+
+export default function ExternalBrowserRedirect() {
+  return (
+    <Suspense fallback={null}>
+      <ExternalBrowserRedirectContent />
+    </Suspense>
+  )
 } 
