@@ -34,10 +34,12 @@ type SortType = 'price_asc' | 'price_desc'
 export default async function RoomsPage({
   searchParams,
 }: {
-  searchParams: { sort?: SortType }
+  searchParams: { sort?: SortType; page?: string }
 }) {
   try {
     const sort = searchParams.sort || 'price_asc'
+    const currentPage = Number(searchParams.page) || 1
+    const roomsPerPage = 6
 
     // 全ルームを取得（サーバーサイドで直接Prismaを使用）
     const allRooms = await prisma.room.findMany({
@@ -65,20 +67,19 @@ export default async function RoomsPage({
       }
     })
 
-    console.log('並び替え後の最初の3件:', sortedRooms.slice(0, 3).map(room => ({
+    // ページネーション用の計算
+    const totalPages = Math.ceil(sortedRooms.length / roomsPerPage)
+    const startIndex = (currentPage - 1) * roomsPerPage
+    const endIndex = startIndex + roomsPerPage
+
+    // 現在のページのルームを取得
+    const rooms = sortedRooms.slice(startIndex, endIndex)
+
+    console.log('現在のページ:', currentPage)
+    console.log('総ページ数:', totalPages)
+    console.log('表示するルーム:', rooms.map(room => ({
       id: room.id,
       name: room.name,
-      baseprice: room.baseprice
-    })))
-
-    // 並び替え後の最初の6件を表示
-    const rooms = sortedRooms.slice(0, 6)
-
-    // デバッグ用のログを追加
-    console.log('Fetched rooms with nearest stations:', rooms.map(room => ({
-      id: room.id,
-      name: room.name,
-      nearestStations: room.nearestStations,
       baseprice: room.baseprice
     })))
 
@@ -100,6 +101,23 @@ export default async function RoomsPage({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rooms.map((room: RoomWithReviews) => (
             <RoomCard key={room.id} room={room} selectedDate={null} />
+          ))}
+        </div>
+
+        {/* ページネーション */}
+        <div className="flex justify-center mt-8 gap-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <Link
+              key={page}
+              href={`/rooms?sort=${sort}&page=${page}`}
+              className={`px-4 py-2 rounded-md ${
+                currentPage === page
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300'
+              }`}
+            >
+              {page}
+            </Link>
           ))}
         </div>
       </div>
