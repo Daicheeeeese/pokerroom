@@ -186,7 +186,7 @@ model Holiday {
 model DurationDiscount {
   id          String   @id @default(cuid())
   minHours    Int
-  discountPct Float
+  discountPct Int
   unit        String   @default("hour")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
