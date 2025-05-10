@@ -41,47 +41,28 @@ export default async function RoomsPage({
     const currentPage = Number(searchParams.page) || 1
     const roomsPerPage = 6
 
-    // 全ルームを取得（サーバーサイドで直接Prismaを使用）
-    const allRooms = await prisma.room.findMany({
+    const orderBy: Prisma.RoomOrderByWithRelationInput = {
+      baseprice: sort === 'price_desc' ? 'desc' : 'asc',
+    }
+
+    const rooms = await prisma.room.findMany({
+      orderBy,
+      skip: (currentPage - 1) * roomsPerPage,
+      take: roomsPerPage,
       include: {
         reviews: true,
         images: {
           orderBy: {
-            order: 'asc'
-          }
+            order: 'asc',
+          },
         },
-        nearestStations: true
-      }
+        nearestStations: true,
+      },
     }) as RoomWithReviews[]
 
-    console.log('取得した全ルーム数:', allRooms.length)
-
-    // 全ルームを価格で並び替え
-    const sortedRooms = [...allRooms].sort((a, b) => {
-      if (sort === 'price_asc') {
-        // 価格が安い順
-        return a.baseprice - b.baseprice
-      } else {
-        // 価格が高い順
-        return b.baseprice - a.baseprice
-      }
-    })
-
-    // ページネーション用の計算
-    const totalPages = Math.ceil(sortedRooms.length / roomsPerPage)
-    const startIndex = (currentPage - 1) * roomsPerPage
-    const endIndex = startIndex + roomsPerPage
-
-    // 現在のページのルームを取得
-    const rooms = sortedRooms.slice(startIndex, endIndex)
-
-    console.log('現在のページ:', currentPage)
-    console.log('総ページ数:', totalPages)
-    console.log('表示するルーム:', rooms.map(room => ({
-      id: room.id,
-      name: room.name,
-      baseprice: room.baseprice
-    })))
+    // 総件数（ページネーション用）
+    const totalCount = await prisma.room.count()
+    const totalPages = Math.ceil(totalCount / roomsPerPage)
 
     return (
       <div className="container mx-auto px-4 py-8">
