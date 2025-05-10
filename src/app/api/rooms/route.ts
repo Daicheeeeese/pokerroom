@@ -19,9 +19,10 @@ export async function GET(request: Request) {
     const date = searchParams.get('date')
     const guests = searchParams.get('guests')
     const page = parseInt(searchParams.get('page') || '1')
+    const sort = searchParams.get('sort') || 'price_asc'
     const skip = (page - 1) * ITEMS_PER_PAGE
 
-    console.log('Search params:', { area, date, guests, page })
+    console.log('Search params:', { area, date, guests, page, sort })
 
     // 検索条件を構築
     const where: Prisma.RoomWhereInput = {}
@@ -38,7 +39,13 @@ export async function GET(request: Request) {
       where.capacity = { gte: parseInt(guests) }
     }
 
+    // ソート条件を構築
+    const orderBy: Prisma.RoomOrderByWithRelationInput = {
+      baseprice: sort === 'price_desc' ? 'desc' : 'asc'
+    }
+
     console.log('Search conditions:', JSON.stringify(where))
+    console.log('Sort conditions:', JSON.stringify(orderBy))
 
     // データベース接続テスト
     try {
@@ -58,6 +65,7 @@ export async function GET(request: Request) {
     
     const rooms = await prisma.room.findMany({
       where,
+      orderBy,
       include: {
         images: {
           orderBy: {

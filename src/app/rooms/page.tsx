@@ -39,30 +39,19 @@ export default async function RoomsPage({
   try {
     const sort = searchParams.sort || 'price_asc'
     const currentPage = Number(searchParams.page) || 1
-    const roomsPerPage = 6
 
-    const orderBy: Prisma.RoomOrderByWithRelationInput = {
-      baseprice: sort === 'price_desc' ? 'desc' : 'asc',
+    // APIからルームデータを取得
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/rooms?sort=${sort}&page=${currentPage}`,
+      { cache: 'no-store' }
+    )
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch rooms')
     }
 
-    const rooms = await prisma.room.findMany({
-      orderBy,
-      skip: (currentPage - 1) * roomsPerPage,
-      take: roomsPerPage,
-      include: {
-        reviews: true,
-        images: {
-          orderBy: {
-            order: 'asc',
-          },
-        },
-        nearestStations: true,
-      },
-    }) as RoomWithReviews[]
-
-    // 総件数（ページネーション用）
-    const totalCount = await prisma.room.count()
-    const totalPages = Math.ceil(totalCount / roomsPerPage)
+    const data = await response.json()
+    const { rooms, pagination } = data
 
     return (
       <div className="container mx-auto px-4 py-8">
@@ -87,7 +76,7 @@ export default async function RoomsPage({
 
         {/* ページネーション */}
         <div className="flex justify-center mt-8 gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
             <Link
               key={page}
               href={`/rooms?sort=${sort}&page=${page}`}
