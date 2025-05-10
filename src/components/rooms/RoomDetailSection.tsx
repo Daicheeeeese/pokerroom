@@ -6,7 +6,6 @@ import { MapPinIcon } from "@heroicons/react/24/outline"
 import { Train, Clock, BadgeCheck, Shuffle, UserPlus, Utensils, Nfc, Cigarette, Webcam, BatteryCharging, Wifi, GlassWater, Rabbit} from "lucide-react"
 import { Card } from '@/components/ui/card'
 import { Users } from 'lucide-react'
-import { formatbaseprice } from '@/lib/format'
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -189,6 +188,13 @@ export function RoomDetailSection({ room }: Props) {
           <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-bold text-gray-900">支払い方法</h3>
             <p className="mt-2 text-medium text-gray-600">現地決済</p>
+          </div>
+          {/* デバッグ用の表示 */}
+          <div className="border-b border-gray-200 py-6">
+            <h3 className="text-lg font-bold text-gray-900">デバッグ情報</h3>
+            <pre className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">
+              {JSON.stringify(room.notes, null, 2)}
+            </pre>
           </div>
           {room.options && room.options.length > 0 && (
             <div className="py-6">
