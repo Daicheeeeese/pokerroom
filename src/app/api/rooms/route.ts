@@ -113,8 +113,15 @@ export async function GET(request: Request) {
       ? filteredRooms.filter(room => !room.hasReservation)
       : filteredRooms
 
-    // 重複を排除
-    const uniqueRooms = Array.from(new Map(availableRooms.map(room => [room.id, room])).values())
+    // room.idを使用して重複を排除
+    const uniqueRooms = availableRooms.reduce((acc, current) => {
+      const x = acc.find(item => item.id === current.id);
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, [] as typeof availableRooms);
     
     const response = {
       rooms: uniqueRooms.map(({ hasReservation, ...room }) => room),
