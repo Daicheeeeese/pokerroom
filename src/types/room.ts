@@ -150,6 +150,12 @@ export type RoomWithDetails = Room & {
     rating: number
   }
   unit: string
+  notes: {
+    id: string
+    extra: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
 }
 
 export type RoomAvailability = {

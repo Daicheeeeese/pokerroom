@@ -219,6 +219,9 @@ export function RoomDetailSection({ room }: Props) {
                   <p className="text-2xl font-bold text-gray-900">
                     ¥{(room.baseprice || 0).toLocaleString()}
                     <span className="text-base font-normal text-gray-500">/{room.unit === 'hour' ? '時間' : '人'}</span>
+                    {room.notes?.some(note => note.extra.includes('dealer')) && (
+                      <span className="text-base font-normal text-gray-500 ml-2">（ディーラー込み）</span>
+                    )}
                   </p>
                 </div>
                 {session ? (
@@ -245,7 +248,10 @@ export function RoomDetailSection({ room }: Props) {
           <div>
             <p className="text-xl font-bold text-gray-900">
               ¥{(room.baseprice || 0).toLocaleString()}
-                  <span className="text-base font-normal text-gray-500">/{room.unit === 'hour' ? '時間' : '人'}</span>
+              <span className="text-base font-normal text-gray-500">/{room.unit === 'hour' ? '時間' : '人'}</span>
+              {room.notes?.some(note => note.extra.includes('dealer')) && (
+                <span className="text-base font-normal text-gray-500 ml-2">（ディーラー込み）</span>
+              )}
             </p>
           </div>
           {session ? (
