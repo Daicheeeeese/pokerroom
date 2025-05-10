@@ -42,8 +42,8 @@ export default async function RoomsPage({
       ? { baseprice: 'asc' } 
       : { baseprice: 'desc' }
 
-    // ルーム一覧を取得（サーバーサイドで直接Prismaを使用）
-    const rooms = await prisma.room.findMany({
+    // 全ルームを取得（サーバーサイドで直接Prismaを使用）
+    const allRooms = await prisma.room.findMany({
       include: {
         reviews: true,
         images: {
@@ -54,8 +54,10 @@ export default async function RoomsPage({
         nearestStations: true
       },
       orderBy,
-      take: 6
     }) as RoomWithReviews[]
+
+    // 最初の6件を表示
+    const rooms = allRooms.slice(0, 6)
 
     // デバッグ用のログを追加
     console.log('Fetched rooms with nearest stations:', rooms.map(room => ({
