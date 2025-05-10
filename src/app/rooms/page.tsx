@@ -52,16 +52,26 @@ export default async function RoomsPage({
       }
     }) as RoomWithReviews[]
 
-    // JavaScriptで並び替え
+    console.log('取得した全ルーム数:', allRooms.length)
+
+    // 全ルームを価格で並び替え
     const sortedRooms = [...allRooms].sort((a, b) => {
       if (sort === 'price_asc') {
+        // 価格が安い順
         return a.baseprice - b.baseprice
       } else {
+        // 価格が高い順
         return b.baseprice - a.baseprice
       }
     })
 
-    // 最初の6件を表示
+    console.log('並び替え後の最初の3件:', sortedRooms.slice(0, 3).map(room => ({
+      id: room.id,
+      name: room.name,
+      baseprice: room.baseprice
+    })))
+
+    // 並び替え後の最初の6件を表示
     const rooms = sortedRooms.slice(0, 6)
 
     // デバッグ用のログを追加
