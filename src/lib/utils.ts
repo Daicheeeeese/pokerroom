@@ -43,4 +43,24 @@ export const getHourlyPrice = async (roomId: string, date: Date, prisma: PrismaC
       pricePerHour: room.pricePerHour,
     }];
   }
-}; 
+};
+
+export function isInAppBrowser(userAgent: string): boolean {
+  const inAppBrowsers = [
+    'Line', // LINE
+    'FBAN', // Facebook/Messenger
+    'Instagram', // Instagram
+    'Twitter', // X (Twitter)
+  ]
+
+  return inAppBrowsers.some(browser => userAgent.includes(browser))
+}
+
+export function getExternalBrowserUrl(url: string): string {
+  // iOSの場合
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+    return `googlechrome://${url.replace(/^https?:\/\//, '')}`
+  }
+  // Androidの場合
+  return `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`
+} 

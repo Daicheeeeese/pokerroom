@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import ExternalBrowserRedirect from '@/components/ExternalBrowserRedirect'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -58,6 +59,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+        <ExternalBrowserRedirect />
         <div className="flex flex-col min-h-screen">
           <NextAuthProvider>
             <Header />
