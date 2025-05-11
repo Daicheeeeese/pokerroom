@@ -145,15 +145,15 @@ export function RoomDetailSection({ room }: Props) {
                     className="flex items-center gap-2 bg-white"
                   >
                     {getTagIcon(roomTag.tag.id)}
-                    <span className="text-medium text-gray-700">{roomTag.tag.name}</span>
+                    <span className="text-medium text-black-700">{roomTag.tag.name}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="border-b border-gray-200 py-6">
-            <h3 className="text-lg font-bold text-gray-900">住所・アクセス</h3>
+          <div className="border-b border-black-200 py-6">
+            <h3 className="text-lg font-bold text-black-900">住所・アクセス</h3>
             {room.latitude && room.longitude && (
               <div className="mt-2">
                 <RoomMap
@@ -167,7 +167,7 @@ export function RoomDetailSection({ room }: Props) {
               <div className="text-mediumtext-gray-700">{room.address}</div>
               <div className="flex flex-col gap-1">
                 {room.nearestStations.map((station) => (
-                  <span key={station.id} className="text-mediumtext-gray-700">
+                  <span key={station.id} className="text-mediumtext-black-700">
                     {station.name} 徒歩{station.minutes}分
                   </span>
                 ))}
@@ -177,19 +177,19 @@ export function RoomDetailSection({ room }: Props) {
 
           <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-bold text-gray-900">収容人数</h3>
-            <p className="mt-2 text-medium text-gray-600">{room.capacity}人</p>
+            <p className="mt-2 text-medium text-gray-700">{room.capacity}人</p>
           </div>
 
           <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-bold text-gray-900">予約可能時間</h3>
-            <p className="mt-2 font-medium text-gray-600 whitespace-pre-line">
+            <p className="mt-2 font-medium text-gray-700 whitespace-pre-line">
               {getBusinessHours().join('\n')}
             </p>
           </div>
 
           <div className="border-b border-gray-200 py-6">
             <h3 className="text-lg font-bold text-gray-900">支払い方法</h3>
-            <p className="mt-2 text-medium text-gray-600">現地決済</p>
+            <p className="mt-2 text-medium text-gray-700">現地決済</p>
           </div>
           {room.options && room.options.length > 0 && (
             <div className="py-6">
@@ -219,9 +219,9 @@ export function RoomDetailSection({ room }: Props) {
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
                     ¥{(room.baseprice || 0).toLocaleString()}
-                    <span className="text-base font-normal text-gray-500">/{room.unit === 'hour' ? '時間' : '人'}</span>
+                    <span className="text-base font-normal text-gray-700">/{room.unit === 'hour' ? '時間' : '人'}</span>
                     {room.notes?.some(note => note.extra.includes('dealer')) && (
-                      <span className="text-base font-normal text-gray-500 ml-2">（ディーラー込み）</span>
+                      <span className="text-base font-normal text-gray-700 ml-2">（ディーラー込み）</span>
                     )}
                   </p>
                 </div>
