@@ -112,12 +112,12 @@ export default async function RoomPage({ params }: Props) {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{room.name}</h1>
-                <p className="mt-2 text-gray-500 text-sm md:text-base">{room.description || ''}</p>
+                <p className="mt-2 text-black text-sm md:text-base">{room.description || ''}</p>
                 {room.score && (
                   <div className="mt-2 flex items-center gap-2">
                     <span className="text-yellow-500">★</span>
-                    <span className="text-gray-700">{room.score.rating.toFixed(1)}</span>
-                    <span className="text-gray-500 text-sm">(Google Map)</span>
+                    <span className="text-black">{room.score.rating.toFixed(1)}</span>
+                    <span className="text-black text-sm">(Google Map)</span>
                   </div>
                 )}
               </div>
