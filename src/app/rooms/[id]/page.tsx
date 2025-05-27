@@ -5,6 +5,7 @@ import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import { RoomWithDetails } from '@/types/room'
 import { ReservationForm } from '@/components/rooms/ReservationForm'
+import { ReserveButton } from './ReserveButton'
 
 interface Props {
   params: {
@@ -129,13 +130,7 @@ export default async function RoomPage({ params }: Props) {
               <RoomDetailSection room={room} />
             </div>
             <div className="lg:col-span-1">
-              <button
-                type="button"
-                onClick={() => window.location.href = `/reservations/request?roomId=${room.id}`}
-                className="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 transition-colors"
-              >
-                予約
-              </button>
+              <ReserveButton roomId={room.id} />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
