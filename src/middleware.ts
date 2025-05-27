@@ -28,7 +28,9 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/reservations/:path*",
+    // 予約リクエスト（ゲスト可）は除外
+    // その他の予約関連ページのみ認証ガード
+    "/reservations/(bookings|edit|[0-9a-zA-Z-]+|check|confirm|complete|history|cancel)/:path*",
     "/api/reservations/:path*",
   ]
 } 
