@@ -8,6 +8,7 @@ import Image from "next/image"
 import { Calendar } from "@/components/Calendar"
 import { useSession } from "next-auth/react"
 import { Room } from "@prisma/client"
+import { generateReservationCode } from "@/lib/reservation"
 
 type Props = {
   room: Room
@@ -20,15 +21,26 @@ export function ReservationForm({ room }: Props) {
   const [startTime, setStartTime] = useState("10")
   const [endTime, setEndTime] = useState("11")
   const [isLoading, setIsLoading] = useState(false)
+  const [isGuestMode, setIsGuestMode] = useState(false)
+  const [guestInfo, setGuestInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  })
 
   const handleReservation = async () => {
-    if (!session?.user) {
-      router.push("/login")
+    if (!session?.user && !isGuestMode) {
+      setIsGuestMode(true)
       return
     }
 
     if (!selectedDate) {
       alert("利用日を選択してください")
+      return
+    }
+
+    if (isGuestMode && (!guestInfo.name || !guestInfo.email || !guestInfo.phone)) {
+      alert("ゲスト情報を入力してください")
       return
     }
 
@@ -45,6 +57,12 @@ export function ReservationForm({ room }: Props) {
           date: selectedDate,
           startTime: parseInt(startTime),
           endTime: parseInt(endTime),
+          ...(isGuestMode && {
+            guestName: guestInfo.name,
+            guestEmail: guestInfo.email,
+            guestPhone: guestInfo.phone,
+            reservationCode: generateReservationCode()
+          })
         }),
       })
 
@@ -52,7 +70,8 @@ export function ReservationForm({ room }: Props) {
         throw new Error("予約に失敗しました")
       }
 
-      router.push("/bookings")
+      const data = await response.json()
+      router.push(`/reservations/${data.id}/complete`)
     } catch (error) {
       alert("予約に失敗しました。もう一度お試しください。")
     } finally {
@@ -121,11 +140,11 @@ export function ReservationForm({ room }: Props) {
                 <select
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className="w-full p-2 border rounded-md"
                 >
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {`${i.toString().padStart(2, "0")}:00`}
+                  {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                    <option key={hour} value={hour}>
+                      {hour}:00
                     </option>
                   ))}
                 </select>
@@ -135,11 +154,11 @@ export function ReservationForm({ room }: Props) {
                 <select
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md p-2"
+                  className="w-full p-2 border rounded-md"
                 >
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {`${i.toString().padStart(2, "0")}:00`}
+                  {Array.from({ length: 24 }, (_, i) => i + 1).map((hour) => (
+                    <option key={hour} value={hour}>
+                      {hour}:00
                     </option>
                   ))}
                 </select>
@@ -147,17 +166,64 @@ export function ReservationForm({ room }: Props) {
             </div>
           </div>
 
-          {/* 料金表示 */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">合計金額</span>
-              <span className="text-xl font-bold">
-                ¥{calculateTotalPrice().toLocaleString()}
-              </span>
-            </div>
-          </div>
+          {/* ゲスト情報入力フォーム */}
+          {isGuestMode && (
+            <div className="mb-6 space-y-4">
+              <h3 className="text-lg font-semibold">ゲスト情報</h3>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  お名前
+                </label>
+                <input
+                  type="text"
+                  value={guestInfo.name}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full p-2 border rounded-md"
+                  required
+                />
+              </div>
 
-          {/* 予約ボタン */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  メールアドレス
+                </label>
+                <input
+                  type="email"
+                  value={guestInfo.email}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full p-2 border rounded-md"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  電話番号
+                </label>
+                <input
+                  type="tel"
+                  value={guestInfo.phone}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  className="w-full p-2 border rounded-md"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {/* 料金表示 */}
+          {startTime && endTime && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-md">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">合計金額</span>
+                <span className="text-xl font-bold">
+                  ¥{calculateTotalPrice().toLocaleString()}
+                </span>
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleReservation}

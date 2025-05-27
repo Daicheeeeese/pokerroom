@@ -84,20 +84,27 @@ model Review {
 }
 
 model Reservation {
-  id         String              @id @default(cuid())
-  userId     String
-  date       DateTime
-  startTime  String
-  endTime    String
-  totalPrice Int
-  status     ReservationStatus   @default(PENDING)
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-  people     Int                 @default(1)
-  roomId     String
-  room       Room                @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  options    ReservationOption[]
+  id          String    @id @default(cuid())
+  roomId      String
+  room        Room      @relation(fields: [roomId], references: [id])
+  userId      String?   // nullableに変更
+  user        User?     @relation(fields: [userId], references: [id])
+  date        DateTime
+  startTime   String
+  endTime     String
+  totalPrice  Int
+  status      ReservationStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // ゲスト予約用のフィールド
+  guestName   String?
+  guestEmail  String?
+  guestPhone  String?
+  reservationCode String? @unique // 予約確認用のコード
+
+  // リレーション
+  options     ReservationOption[]
 
   @@index([roomId])
   @@index([userId])
