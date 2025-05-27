@@ -92,6 +92,9 @@ export default function ReservationRequestPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [guestName, setGuestName] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
+  const [guestPhone, setGuestPhone] = useState('')
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -158,7 +161,10 @@ export default function ReservationRequestPage() {
       setError('利用日と利用時間を選択してください')
       return
     }
-
+    if (!guestName || !guestEmail || !guestPhone) {
+      setError('ゲスト代表者の情報を入力してください')
+      return
+    }
     if (!roomId) {
       setError('ルームIDが指定されていません')
       return
@@ -178,6 +184,9 @@ export default function ReservationRequestPage() {
       endTime,
       numberOfPeople: numberOfPeople.toString(),
       options: JSON.stringify(selectedOptionsList),
+      guestName,
+      guestEmail,
+      guestPhone,
     })
 
     router.push(`/reservations/confirm?${queryParams.toString()}`)
@@ -386,6 +395,37 @@ export default function ReservationRequestPage() {
               </div>
             </div>
           )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ゲスト代表者の名前</label>
+            <input
+              type="text"
+              value={guestName}
+              onChange={e => setGuestName(e.target.value)}
+              className="w-full p-2 border rounded-md"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ゲスト代表者のメールアドレス</label>
+            <input
+              type="email"
+              value={guestEmail}
+              onChange={e => setGuestEmail(e.target.value)}
+              className="w-full p-2 border rounded-md"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ゲスト代表者の電話番号</label>
+            <input
+              type="tel"
+              value={guestPhone}
+              onChange={e => setGuestPhone(e.target.value)}
+              className="w-full p-2 border rounded-md"
+              required
+            />
+          </div>
 
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">

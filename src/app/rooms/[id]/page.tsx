@@ -129,7 +129,13 @@ export default async function RoomPage({ params }: Props) {
               <RoomDetailSection room={room} />
             </div>
             <div className="lg:col-span-1">
-              <ReservationForm room={room} />
+              <button
+                type="button"
+                onClick={() => window.location.href = `/reservations/request?roomId=${room.id}`}
+                className="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 transition-colors"
+              >
+                予約
+              </button>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

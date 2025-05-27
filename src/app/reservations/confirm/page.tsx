@@ -87,6 +87,9 @@ export default function ReservationConfirmPage() {
   const numberOfPeople = searchParams.get('numberOfPeople')
   const optionsParam = searchParams.get('options')
   const selectedOptions: SelectedOption[] = optionsParam ? JSON.parse(optionsParam) : []
+  const guestName = searchParams.get('guestName') || ''
+  const guestEmail = searchParams.get('guestEmail') || ''
+  const guestPhone = searchParams.get('guestPhone') || ''
 
   const [room, setRoom] = useState<Room | null>(null)
   const [error, setError] = useState<string>('')
@@ -157,6 +160,9 @@ export default function ReservationConfirmPage() {
           people: parseInt(numberOfPeople || '1'),
           options: selectedOptions,
           totalPrice,
+          guestName,
+          guestEmail,
+          guestPhone,
         }),
       })
       if (!response.ok) throw new Error('予約の作成に失敗しました')
@@ -235,7 +241,13 @@ export default function ReservationConfirmPage() {
         <p className="text-lg font-bold mt-4">合計金額: ¥{totalPrice.toLocaleString()}</p>
       </Card>
       <Card className="p-6">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold mb-2">ゲスト代表者情報</h2>
+            <p>名前: {guestName}</p>
+            <p>メールアドレス: {guestEmail}</p>
+            <p>電話番号: {guestPhone}</p>
+          </div>
           {error && <p className="text-red-600">{error}</p>}
           <button
             type="submit"
