@@ -31,6 +31,7 @@ export const config = {
     // 予約リクエスト（ゲスト可）は除外
     // その他の予約関連ページのみ認証ガード
     "/reservations/(bookings|edit|[0-9a-zA-Z-]+|check|confirm|complete|history|cancel)/:path*",
-    "/api/reservations/:path*",
+    // APIは本当に認証が必要なものだけ指定（例: /api/reservations/history など）
+    // "/api/reservations/history/:path*",
   ]
 } 
