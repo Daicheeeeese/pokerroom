@@ -4,6 +4,7 @@ import { RoomDetailSection } from '@/components/rooms/RoomDetailSection'
 import ImageGallery from '@/components/rooms/ImageGallery'
 import { notFound } from 'next/navigation'
 import { RoomWithDetails } from '@/types/room'
+import { ReservationForm } from '@/components/rooms/ReservationForm'
 
 interface Props {
   params: {
@@ -128,7 +129,7 @@ export default async function RoomPage({ params }: Props) {
               <RoomDetailSection room={room} />
             </div>
             <div className="lg:col-span-1">
-              {/* 予約フォームやその他の情報をここに配置 */}
+              <ReservationForm room={room} />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
